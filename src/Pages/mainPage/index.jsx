@@ -129,7 +129,7 @@ const MainPage = () => {
     <>
       <Styles.Wrapper>
         <Styles.Video controls={false} muted autoPlay loop>
-          <source src="http://35.216.50.89:8000/video" type="video/mp4" />
+          <source src="assets/video.mp4" type="video/mp4" />
         </Styles.Video>
         <Styles.ContentBox>
           <Styles.Title>
