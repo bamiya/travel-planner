@@ -29,7 +29,7 @@ const MainPage = () => {
   };
   const getUserPlan = async () => {
     // DB에 있는 플랜데이터
-    const data = await axios.get("http://35.216.50.89:8080/getPlan");
+    const data = await axios.get("http://localhost:8080/getPlan");
     if (data) {
       setContent(data.data.data.sort((a, b) => b.likeCount - a.likeCount).slice(0, data.data.data.length < 5 ? data.data.data.length : 5));
     } else {
@@ -96,7 +96,7 @@ const MainPage = () => {
   };
 
   const getLikes = async () => {
-    const data = await axios.post("http://35.216.50.89:8080/getLikes");
+    const data = await axios.post("http://localhost:8080/getLikes");
     if (data === undefined) {
       getLikes();
     } else {
@@ -108,9 +108,9 @@ const MainPage = () => {
   const addLikes = async (id) => {
     try {
       if (like.filter((e) => Number(e.id) === Number(id)).length) {
-        await axios.delete(`http://35.216.50.89:8080/removeLikes/${id}`);
+        await axios.delete(`http://localhost:8080/removeLikes/${id}`);
       } else {
-        await axios.post("http://35.216.50.89:8080/addLikes", {
+        await axios.post("http://localhost:8080/addLikes", {
           id: id,
           type: "P",
         });
