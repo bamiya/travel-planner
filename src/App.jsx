@@ -64,7 +64,7 @@ const MainLayout = () => {
 
 const App = () => {
   return (
-      <BrowserRouter>
+      <BrowserRouter basename={process.env.PUBLIC_URL}>
         <ScrollToTop/>
         <Routes>
           <Route element={<MainLayout/>}>
