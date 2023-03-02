@@ -19,7 +19,7 @@ const LoginPage = () => {
     const code = new URL(window.location.href).searchParams.get("code");
     const params = {
       client_id: "0a61f9efbdac3933e6a14ed6f553bd00",
-      redirect_uri: "http://35.216.50.89:80/login",
+      redirect_uri: "http://localhost:3000/login",
       client_secret: "K2uqygqk3ddG8UFgrIFdE76bKg9SpEwT",
       code: code,
       grant_type: "authorization_code",
@@ -30,7 +30,7 @@ const LoginPage = () => {
           params: params,
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
         });
-        const userInfo = await axios.get("http://35.216.50.89:8080/kakaoLogin", { params: { token: token.data.access_token } });
+        const userInfo = await axios.get("http://localhost:8080/kakaoLogin", { params: { token: token.data.access_token } });
         if (userInfo.status == 200) {
           if (userInfo.data.data.isUser === "N") {
             // 현재 DB에 회원이 없음
@@ -62,7 +62,7 @@ const LoginPage = () => {
     
 
     try {
-      data = await axios.post("http://35.216.50.89:8080/login", { email, pw: createHashedPassword });
+      data = await axios.post("http://localhost:8080/login", { email, pw: createHashedPassword });
       sessionStorage.setItem("access_token", data.data.data.access_token);
       sessionStorage.setItem("profileImg", data.data.data.profileImg);
       localStorage.setItem("refresh_token", data.data.data.refresh_token);

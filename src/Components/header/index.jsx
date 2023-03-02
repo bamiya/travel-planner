@@ -8,7 +8,7 @@ const Header = () => {
   const location = useLocation();
   const [isOpenList, setIsOpenList] = useState(false);
 
-  const [scrollPosition, setScrollPosition] = useState(0); // 스트롤
+  const [scrollPosition, setScrollPosition] = useState(0); // 스크롤 초기값0으로 주고 스크롤이 100px내려갈때부터 백그라운드색상 변경할때 사용
 
   const updateScroll = () => {
     setScrollPosition(window.scrollY || document.documentElement.scrollTop);
@@ -79,7 +79,7 @@ const Header = () => {
                   <Styles.MyProfileImg
                     src={
                       sessionStorage.getItem("profileImg")
-                        ? `http://35.216.50.89:8080/image/view?value=${sessionStorage.getItem("profileImg")}`
+                        ? `http://localhost:8080/image/view?value=${sessionStorage.getItem("profileImg")}`
                         : "assets/defaultProfile.png"
                     }
                   />
