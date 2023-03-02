@@ -74,7 +74,7 @@ const TravelPage = () => {
         setTotalItemCount(Arr.length);
       }
       setRendering(true);
-    });
+    })();
   };
   const handleOnKeyPress = (e) => {
     // 검색 함수

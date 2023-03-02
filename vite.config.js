@@ -21,7 +21,7 @@ export default ({ mode }) => {
       ViteEjsPlugin((viteconfig) => {
         return {
           root: viteconfig.root,
-          KAKAO_MAP_API: env.VITE_KAKAO_MAP_API_KEY,
+          KAKAO_MAP_API: env.VITE_APP_KAKAO_MAP_API_KEY,
         };
       }),
       //VitePluginHtmlEnv()
