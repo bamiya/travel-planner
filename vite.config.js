@@ -15,6 +15,7 @@ export default ({ mode }) => {
     // comment this out if that isn't relevant for your project
     build: {
       outDir: "build",
+      chunkSizeWarningLimit: 1600,
     },
     plugins: [
       react(),
