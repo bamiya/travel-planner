@@ -1,5 +1,4 @@
 {
-  "homepage": "https://bamiya.github.io/travel-planner/index.html",
   "name": "travel-planner",
   "version": "0.1.0",
   "private": true,
@@ -32,9 +31,7 @@
   "scripts": {
     "start": "vite",
     "build": "vite build",
-    "serve": "vite preview",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "serve": "vite preview"
   },
   "browserslist": {
     "production": [
