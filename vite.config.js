@@ -11,7 +11,7 @@ export default ({ mode }) => {
   const env = { ...process.env, ...loadEnv(mode, process.cwd()) };
 
   return defineConfig({
-    base: "travel-planner",
+    base: "/travel-planner/",
     build: {
       chunkSizeWarningLimit: 1600,
     },
