@@ -180,7 +180,7 @@ const TravelPage = () => {
                 return (
                   <div key={idx}>
                     <Styles.TravelWrapper>
-                      <Styles.Image src={tour.firstimage2 === "" ? "assets/logo.png" : tour.firstimage2} onClick={() => infoMove(tour.contentid)} />
+                      <Styles.Image src={tour.firstimage ? tour.firstimage : tour.firstimage2 ? tour.firstimage2 : "assets/logo.png"} onClick={() => infoMove(tour.contentid)} />
                       <Styles.Txt>
                         <Styles.PlaceTitle onClick={() => infoMove(tour.contentid)}>{tour.title}</Styles.PlaceTitle>
                         <Styles.Address>{tour.addr1}</Styles.Address>
