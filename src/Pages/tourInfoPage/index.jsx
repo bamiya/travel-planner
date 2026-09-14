@@ -39,8 +39,15 @@ const InformationPage = () => {
         history.back();
         return;
       }
-      const likeCount = await axios.get(`http://localhost:8080/getLikeCount/${data[0].contentid}`);
-      setInfoData({ ...data[0], likeCount: likeCount.data.data });
+      // 관광지 본문 정보는 여기서 바로 보여주고, 좋아요 수는 별도로 시도한다.
+      // 좋아요 수 조회(백엔드)가 실패해도 이미 받아온 본문 정보는 그대로 보여줘야 한다.
+      setInfoData({ ...data[0], likeCount: 0 });
+      try {
+        const likeCount = await axios.get(`http://localhost:8080/getLikeCount/${data[0].contentid}`);
+        setInfoData((prev) => ({ ...prev, likeCount: likeCount.data.data }));
+      } catch (e) {
+        // 좋아요 수는 부가 정보라 실패해도 무시한다.
+      }
     } catch (e) {
       toast.error("관광지 정보를 불러오지 못했습니다.");
     }

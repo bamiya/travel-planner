@@ -1,12 +1,21 @@
-/*global kakao*/ 
-import React, { useEffect } from 'react'
+/*global kakao*/
+import React, { useEffect, useState } from 'react'
 import './map.css'
 const Map=(props)=>{
 
   const lat = props.lat == null ? 35.87572504970846 : props.lat;
   const lon = props.lon == null ? 128.68151215551117 : props.lon;
-  
+  const [mapFailed, setMapFailed] = useState(false);
+
   useEffect(()=>{
+    // 카카오맵 API 키가 없거나 SDK 로딩이 실패하면 전역 kakao 객체 자체가
+    // 없어서 아래 코드가 그대로 ReferenceError를 던진다. 에러 경계가 없는
+    // 리액트 트리에서는 이 에러 하나로 화면 전체가 흰 화면이 되어버리므로,
+    // 지도 없이도 나머지 페이지는 정상적으로 보이도록 방어한다.
+    if (typeof kakao === 'undefined' || !kakao.maps) {
+      setMapFailed(true);
+      return;
+    }
     const container = document.getElementById('map');
     const options = {
       center: new kakao.maps.LatLng(lat, lon), 
@@ -155,6 +164,15 @@ const Map=(props)=>{
     } 
     //@@@@@@@@@@@@@@@카테고리 끝
     },)
+
+    if (mapFailed) {
+      return (
+        <div className="map_wrap" style={{ display: "flex", alignItems: "center", justifyContent: "center", background: "#f3f3f3" }}>
+          지도를 불러올 수 없습니다.
+        </div>
+      );
+    }
+
     return (
       <div className="map_wrap">
         <div id="map" style={{width:"100%",height:"100%",position:"relative",overflow:"hidden"}}></div>
