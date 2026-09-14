@@ -4,6 +4,7 @@ import MyPage from "../../myPage";
 import { MarginTopWrapper } from "../../../Common/style";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const SharedPlan = () => {
   const navigate = useNavigate();
@@ -30,7 +31,7 @@ const SharedPlan = () => {
         await axios.put("http://localhost:8080/updateSharePlan", { id: plan[0][1].id });
         getUserPlan();
       } catch (e) {
-        alert("공유 버튼 에러");
+        toast.error("공유 버튼 에러");
       }
     }
   };

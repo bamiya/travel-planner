@@ -3,6 +3,7 @@ import * as Styles from "./style";
 import { UserBlueBtn } from "../../Common/style";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const FindPassPage = () => {
   const navigate = useNavigate();
@@ -15,7 +16,7 @@ const FindPassPage = () => {
       await axios.post("http://localhost:8080/sendResetCode", { email });
       setStep("code");
     } catch (e) {
-      alert(e.response.data.msg);
+      toast.error(e.response.data.msg);
     }
   };
 
@@ -24,7 +25,7 @@ const FindPassPage = () => {
       const result = await axios.post("http://localhost:8080/verifyResetCode", { email, code });
       navigate("/changePass", { state: result.data.data.resetToken });
     } catch (e) {
-      alert(e.response.data.msg);
+      toast.error(e.response.data.msg);
     }
   };
 

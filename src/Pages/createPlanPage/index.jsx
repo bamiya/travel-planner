@@ -5,6 +5,7 @@ import Map from "../../Components/kakaoMap";
 import Paging from "../../Components/paging";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const CreatePlanCalendar = ({ open, setOpen, setDateList }) => {
   // 팝업
@@ -32,7 +33,7 @@ const CreatePlanCalendar = ({ open, setOpen, setDateList }) => {
     // 오늘보다 이전 날짜면 끝냄
     if (dateArr[0] < new Date().setHours(0, 0, 0, 0)) {
       // 시간을 0으로 초기화
-      alert("현재 날짜 이후로 선택해주세요.");
+      toast.error("현재 날짜 이후로 선택해주세요.");
       onChange(new Date());
       return;
     }
@@ -211,7 +212,7 @@ const CreatePlanPage = () => {
       }
       navigate("/");
     } catch (e) {
-      alert(e.response.data.msg);
+      toast.error(e.response.data.msg);
       navigate("/");
     }
   };
@@ -221,7 +222,7 @@ const CreatePlanPage = () => {
       setUpdate(idx);
       settravelOpen(true);
     } else if ((update !== null) & (update !== idx)) {
-      alert("현재 수정하고 있는 DAY가 있습니다.");
+      toast.error("현재 수정하고 있는 DAY가 있습니다.");
     } else {
       setTourSelect([]);
       setUpdate(null);
@@ -232,7 +233,7 @@ const CreatePlanPage = () => {
 
   const onClose = () => {
     if (update !== null) {
-      return alert("아직 작업중인 DAY가 있습니다.");
+      return toast.error("아직 작업중인 DAY가 있습니다.");
     }
     setControlOpen(!controlOpen);
   };
@@ -386,14 +387,14 @@ const CreatePlanPage = () => {
     }
 
     if (count < 1) {
-      return alert("플랜생성 시 관광지 하나 이상을 추가하세요");
+      return toast.error("플랜생성 시 관광지 하나 이상을 추가하세요");
     } else {
       let planTitle = prompt("플랜명을 입력하세요", "");
       if (planTitle === null) {
         return;
       }
       if (planTitle.length === 0 || planTitle.length < 4 || planTitle.length > 15) {
-        return alert("플랜명은 최소 4글자에서 최대 15글자 입니다.");
+        return toast.error("플랜명은 최소 4글자에서 최대 15글자 입니다.");
       } else {
         createPlan(planTitle);
       }

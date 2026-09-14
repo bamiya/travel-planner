@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import * as Styles from "./style";
 import { useNavigate, useLocation } from "react-router-dom";
 import { MarginTopWrapper } from "../../Common/style";
+import { toast } from "react-toastify";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ const Header = () => {
   };
 
   const goCreatePlanPage = () => {
-    alert("로그인 후 이용해 주세요.");
+    toast.info("로그인 후 이용해 주세요.");
     navigate("/login");
     setIsMobileMenuOpen(false);
   };

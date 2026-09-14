@@ -4,6 +4,7 @@ import { UserBlueBtn } from "../../Common/style";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import CryptoJS from "crypto-js";
+import { toast } from "react-toastify";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -44,7 +45,7 @@ const LoginPage = () => {
           }
         }
       } catch (e) {
-        alert("알 수 없는 오류! 나중에 다시 시도해주세요.");
+        toast.error("알 수 없는 오류! 나중에 다시 시도해주세요.");
         navigate("/login");
       }
     }
@@ -68,7 +69,7 @@ const LoginPage = () => {
       localStorage.setItem("refresh_token", data.data.data.refresh_token);
       navigate("/");
     } catch (e) {
-      alert(e.response.data.msg);
+      toast.error(e.response.data.msg);
       navigate("/login");
     }
   };

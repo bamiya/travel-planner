@@ -4,12 +4,13 @@ import { MarginTopWrapper } from "../../Common/style";
 import Map from "../../Components/kakaoMap";
 import { HeartOutlined, HeartFilled } from "@ant-design/icons";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const InformationPage = () => {
   const [infoData, setInfoData] = useState();
   useEffect(() => {
     if (location.search === "") {
-      alert("url이 잘못되었습니다.");
+      toast.error("url이 잘못되었습니다.");
       history.back();
     } else {
       getTravelInfo(location.search.split("=")[1]);
@@ -41,17 +42,17 @@ const InformationPage = () => {
 
   const writing = async (id) => {
     if (!sessionStorage.getItem("access_token")) {
-      alert("로그인 후 이용해 주세요");
+      toast.info("로그인 후 이용해 주세요");
       return;
     }
     if (window.confirm("등록하시겠습니까?")) {
       try {
         await axios.post("http://localhost:8080/addComment", { id, content, type: "T" });
         getcontent();
-        alert("댓글 추가 성공");
+        toast.success("댓글 추가 성공");
         setContent("");
       } catch (e) {
-        alert(e.response.data.msg);
+        toast.error(e.response.data.msg);
       }
     }
   };
@@ -109,7 +110,7 @@ const InformationPage = () => {
       }
       getLikes();
     } catch (e) {
-      alert("로그인 후 이용해 주세요.");
+      toast.info("로그인 후 이용해 주세요.");
     }
   };
 

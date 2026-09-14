@@ -4,6 +4,7 @@ import { MarginTopWrapper } from "../../Common/style";
 import Paging from "../../Components/paging";
 import { useNavigate, useLocation } from "react-router-dom";
 import { HeartOutlined, HeartFilled } from "@ant-design/icons";
+import { toast } from "react-toastify";
 import axios from "axios";
 
 
@@ -124,12 +125,12 @@ const TravelPage = () => {
       }
       getLikes();
     } catch (e) {
-      alert("로그인 후 이용해 주세요.");
+      toast.info("로그인 후 이용해 주세요.");
     }
   };
 
   const goCreatePlanPage = () => {
-    alert("로그인 후 이용해 주세요.");
+    toast.info("로그인 후 이용해 주세요.");
     navigate("/login");
   };
 

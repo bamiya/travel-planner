@@ -5,6 +5,7 @@ import { MarginTopWrapper } from "../../../Common/style";
 import { HeartFilled } from "@ant-design/icons";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Like = () => {
   const navigate = useNavigate();
@@ -77,7 +78,7 @@ const Like = () => {
         getTourData();
       }
     } catch (e) {
-      alert("좋아요 에러");
+      toast.error("좋아요 에러");
     }
   };
 
@@ -92,7 +93,7 @@ const Like = () => {
         setTourInfo(tourInfo.filter((e) => e.contentid !== id));
       }
     } catch (e) {
-      alert("좋아요 에러");
+      toast.error("좋아요 에러");
     }
   };
 

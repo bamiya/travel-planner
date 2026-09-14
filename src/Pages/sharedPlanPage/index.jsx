@@ -5,6 +5,7 @@ import Paging from "../../Components/paging";
 import { HeartOutlined, HeartFilled } from "@ant-design/icons";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const SharedPlanPage = () => {
   const [clicked, setClicked] = useState("Latest");
@@ -75,7 +76,7 @@ const SharedPlanPage = () => {
       }
       reload();
     } catch (e) {
-      alert("로그인 후 이용해 주세요.");
+      toast.info("로그인 후 이용해 주세요.");
     }
   };
 

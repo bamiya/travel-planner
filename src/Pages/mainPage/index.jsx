@@ -5,6 +5,7 @@ import { MarginTopWrapper } from "../../Common/style";
 import { getAddressData } from "../../Data";
 import axios from "axios";
 import { HeartOutlined, HeartFilled } from "@ant-design/icons";
+import { toast } from "react-toastify";
 
 const MainPage = () => {
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ const MainPage = () => {
     }
   };
   const goCreatePlanPage = () => {
-    alert("로그인 후 이용해 주세요.");
+    toast.info("로그인 후 이용해 주세요.");
     navigate("/login");
   };
   const moveSharedPlan = () => {
@@ -121,7 +122,7 @@ const MainPage = () => {
       }
       reload();
     } catch (e) {
-      alert("로그인 후 이용해 주세요.");
+      toast.info("로그인 후 이용해 주세요.");
     }
   };
 

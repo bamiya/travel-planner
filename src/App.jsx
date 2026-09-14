@@ -22,6 +22,8 @@ import ScrollToTop from "./scrollToTop";
 import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
 import { getAccessToken } from "./Data";
 import axios from "axios";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 axios.interceptors.response.use(
   response => {
@@ -87,6 +89,7 @@ const App = () => {
 
   return (
       <BrowserRouter basename={process.env.PUBLIC_URL}>
+        <ToastContainer position="top-center" autoClose={2500} pauseOnHover />
         <ScrollToTop/>
         <Routes>
           <Route element={<MainLayout/>}>

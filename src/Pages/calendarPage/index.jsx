@@ -5,6 +5,7 @@ import Map from "../../Components/kakaoMap";
 import { useNavigate} from "react-router-dom";
 import axios from "axios";
 import { HeartOutlined, HeartFilled } from "@ant-design/icons";
+import { toast } from "react-toastify";
 
 const CalendarPage = () => {
   const navigate = useNavigate();
@@ -19,7 +20,7 @@ const CalendarPage = () => {
 
   useEffect(() => {
     if (location.search === "") {
-      alert("url이 잘못되었습니다.");
+      toast.error("url이 잘못되었습니다.");
       history.back();
     } else {
       sessionStorage.getItem("access_token") !== null ? getEmail() : ""; //  비로그인 시 (토큰없음) getEmail() 실행 X
@@ -79,17 +80,17 @@ const CalendarPage = () => {
 
   const writing = async (id) => {
     if (!sessionStorage.getItem("access_token")) {
-      alert("로그인 후 이용해 주세요");
+      toast.info("로그인 후 이용해 주세요");
       return;
     }
     if (window.confirm("등록하시겠습니까?")) {
       try {
         await axios.post("http://localhost:8080/addComment", { id, content, type: "P" });
         getcontent();
-        alert("댓글 추가 성공");
+        toast.success("댓글 추가 성공");
         setContent("");
       } catch (e) {
-        alert(e.response.data.msg);
+        toast.error(e.response.data.msg);
       }
     }
   };
@@ -103,7 +104,7 @@ const CalendarPage = () => {
       await axios.put("http://localhost:8080/updateSharePlan", { id: location.search.split("=")[1] });
       getUserPlanById(location.search.split("=")[1]);
     } catch (e) {
-      alert("사용자 본인만 이용할 수 있는 버튼 입니다.");
+      toast.error("사용자 본인만 이용할 수 있는 버튼 입니다.");
     }
   };
 
@@ -128,7 +129,7 @@ const CalendarPage = () => {
       }
       getLikes();
     } catch (e) {
-      alert("로그인 후 이용해 주세요.");
+      toast.info("로그인 후 이용해 주세요.");
     }
   };
 
