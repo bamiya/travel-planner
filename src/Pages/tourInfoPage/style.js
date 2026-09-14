@@ -33,14 +33,20 @@ export const LikeBox = styled.div`
 `
 export const Like = styled.button`
     border: 0;
-    width: 70px;
-    background: ${props => {
-        return props.dibs ? "rgba(0, 150, 100, 0.5)" : "rgba(255, 0, 100, 0.5)"
-    }};
+    width: 90px;
+    height: 34px;
+    font-weight: 700;
+    font-size: 13px;
+    background: ${props => (props.dibs ? "var(--color-success)" : "var(--color-accent)")};
     color: white;
-    border-radius: 10px;
+    border-radius: var(--radius-sm);
     margin-left: 15px;
     cursor: pointer;
+    transition: var(--transition-base);
+
+    &:hover {
+        filter: brightness(0.94);
+    }
 `
 export const TopBar = styled.div` 
     width: 100%;
@@ -54,18 +60,18 @@ export const TitleImgBox = styled.div`
    margin-bottom: 30px;
 `
 export const InformationTitle = styled.div`
-    font-size: 20px;
+    font-size: 21px;
     margin-bottom: 20px;
-    font-weight: bold;
+    font-weight: 800;
+    color: var(--color-text);
 `
 export const InformationBox = styled.div`
     width: 100%;
 `
 export const TalkMessageBox = styled.div`
     margin-bottom: 50px;
-    background-color: rgba(49, 49, 49, 0.2);
-    /* opacity: 0.5; */
-    border-radius: 20px;
+    background-color: var(--color-bg);
+    border-radius: var(--radius-lg);
     box-sizing: border-box;
     padding: 50px 70px;
 
@@ -74,9 +80,17 @@ export const TalkMessageBox = styled.div`
     }
 `
 export const InformationContnet = styled.div`
-    font-size: 18px;
-    margin-bottom: 20px;
+    font-size: 16px;
+    line-height: 1.9;
+    color: var(--color-text);
+    letter-spacing: 0.2px;
     word-break: keep-all;
+    white-space: pre-line;
+    background-color: var(--color-bg);
+    border-radius: var(--radius-md);
+    box-sizing: border-box;
+    padding: 24px 26px;
+    margin-bottom: 30px;
 `
 
 export const Talk = styled.div`
@@ -92,26 +106,32 @@ export const Msg = styled.div`
 export const InformationBar = styled.div`
     width: 600px;
     max-width: 100%;
-    height: 3px;
+    height: 1px;
     margin-top: 10px;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
     margin-right: 35px;
-    background-color: grey ;
-    opacity: 0.2;
+    background-color: var(--color-border);
 `
 export const MessageBar = styled.div`
     width: 100%;
-    height: 3px;
-    background-color: Black;
+    height: 1px;
+    background-color: var(--color-border);
 `
-export const MessageInput = styled.textarea` 
-    border: 0;
+export const MessageInput = styled.textarea`
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
     flex: 1;
     height: 100px;
-    font-size: 18px;
-    background-color: white ;
+    font-size: 16px;
+    padding: 12px;
+    background-color: var(--color-white);
     margin: 0 40px;
     resize: none;
+
+    &:focus {
+        outline: none;
+        border-color: var(--color-primary);
+    }
 `
 export const MessageCommentsBox = styled.div`
     margin-bottom: 200px;
@@ -129,7 +149,7 @@ export const MessageCommentIcon = styled.div` // 나중에 img 로 바꿀꺼
     width: 35px;
     height: 35px;
     border-radius: 17.5px;
-    background-color: blue;
+    background-color: var(--color-primary-light);
     margin-right: 180px;
 
     @media (max-width: 768px) {
@@ -149,12 +169,18 @@ export const Days = styled.div`
 export const MessageBtn = styled.button`
     border: 0;
     width: 70px;
-    height: 30px;
-    background: rgba(0, 50, 100, 1);
+    height: 32px;
+    font-weight: 700;
+    background: var(--color-primary);
     color: white;
-    border-radius: 5px;
+    border-radius: var(--radius-sm);
     align-self: flex-end;
     cursor: pointer;
+    transition: var(--transition-base);
+
+    &:hover {
+        background: var(--color-primary-dark);
+    }
 `
 export const Map = styled.div`
     margin-bottom: 30px;
@@ -198,6 +224,10 @@ export const Img1 = styled.div`
 `
 export const Titleimage = styled.img`
     width: 100%;
+    max-height: 480px;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+    background-color: var(--color-bg);
 `
 export const Profile = styled.img`
     width: 35px;
