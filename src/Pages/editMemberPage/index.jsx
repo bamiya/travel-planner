@@ -4,6 +4,7 @@ import { MarginTopWrapper } from "../../Common/style";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import CryptoJS from "crypto-js";
+import { toast } from "react-toastify";
 
 export const EditmemberPage = () => {
   const navigate = useNavigate();
@@ -59,12 +60,12 @@ export const EditmemberPage = () => {
         try {
           const data = await axios.post("http://localhost:8080/getUserUpdate", { name, tel: phone });
           getData(); // 변경된 데이터를 다시 불러오기
-          alert(data.data.msg);
+          toast.success(data.data.msg);
         } catch (e) {
-          alert(e.response.data.msg);
+          toast.error(e.response.data.msg);
         }
       } else {
-        alert("형식에 맞지 않는 값이 있습니다.");
+        toast.error("형식에 맞지 않는 값이 있습니다.");
       }
     }
   };
@@ -77,12 +78,12 @@ export const EditmemberPage = () => {
           const createHashedPw = CryptoJS.SHA256(pw).toString(CryptoJS.enc.Base64);
           const createHashedNewPw = CryptoJS.SHA256(newPw).toString(CryptoJS.enc.Base64);
           await axios.post("http://localhost:8080/getUserUpdatePw", { pw: createHashedPw, newPw: createHashedNewPw });
-          alert("비밀번호 변경 성공");
+          toast.success("비밀번호 변경 성공");
         } catch (e) {
-          alert(e.response.data.msg);
+          toast.error(e.response.data.msg);
         }
       } else {
-        alert("형식에 맞지 않는 값이 있습니다.");
+        toast.error("형식에 맞지 않는 값이 있습니다.");
       }
     }
   };
@@ -95,12 +96,12 @@ export const EditmemberPage = () => {
     if (window.confirm("정말로 탈퇴하시겠습니까??")) {
       try {
         const data = await axios.delete("http://localhost:8080/userDelete");
-        alert(data.data.msg);
+        toast.success(data.data.msg);
         localStorage.clear();
         sessionStorage.clear();
         navigate("/");
       } catch (e) {
-        alert("탈퇴 실패! 잠시 후 다시 시도해주세요.");
+        toast.error("탈퇴 실패! 잠시 후 다시 시도해주세요.");
         // console.log("탈퇴 실패", e);
       }
     }
@@ -183,7 +184,7 @@ export const EditmemberPage = () => {
     axios.post("http://localhost:8080/uploadFile", formData, {
       headers: {"Content-Type": "multipart/form-data"}
     });
-    alert("다시 로그인 후 적용됩니다.");
+    toast.info("다시 로그인 후 적용됩니다.");
   };
 
   return (

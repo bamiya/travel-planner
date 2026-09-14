@@ -3,24 +3,35 @@ import * as Styles from "./style";
 import { UserBlueBtn } from "../../Common/style";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const FindPassPage = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
+  const [code, setCode] = useState("");
+  const [step, setStep] = useState("email"); // "email" -> "code"
 
-  const ConfirmEmail = async () => {
+  const sendCode = async () => {
     try {
-      await axios.post("http://localhost:8080/checkEmail", { email });
-
-      navigate("/changePass", { state: email });
+      await axios.post("http://localhost:8080/sendResetCode", { email });
+      setStep("code");
     } catch (e) {
-      alert(e.response.data.msg);
+      toast.error(e.response.data.msg);
+    }
+  };
+
+  const verifyCode = async () => {
+    try {
+      const result = await axios.post("http://localhost:8080/verifyResetCode", { email, code });
+      navigate("/changePass", { state: result.data.data.resetToken });
+    } catch (e) {
+      toast.error(e.response.data.msg);
     }
   };
 
   const onKeyPress = (e) => {
     if (e.key == "Enter") {
-      ConfirmEmail();
+      step === "email" ? sendCode() : verifyCode();
     }
   };
 
@@ -29,12 +40,23 @@ const FindPassPage = () => {
       <Styles.ContentBox>
         <Styles.LoginText>비밀번호 찾기</Styles.LoginText>
 
-        <Styles.LoginText2>
-          이메일
-          <Styles.Input placeholder="이메일을 입력하세요" onChange={(e) => setEmail(e.target.value)} onKeyPress={onKeyPress}></Styles.Input>
-        </Styles.LoginText2>
-
-        <UserBlueBtn onClick={ConfirmEmail}>이메일 확인</UserBlueBtn>
+        {step === "email" ? (
+          <>
+            <Styles.LoginText2>
+              이메일
+              <Styles.Input placeholder="이메일을 입력하세요" onChange={(e) => setEmail(e.target.value)} onKeyPress={onKeyPress}></Styles.Input>
+            </Styles.LoginText2>
+            <UserBlueBtn onClick={sendCode}>인증코드 받기</UserBlueBtn>
+          </>
+        ) : (
+          <>
+            <Styles.LoginText2>
+              인증코드
+              <Styles.Input placeholder="이메일로 받은 인증코드를 입력하세요" onChange={(e) => setCode(e.target.value)} onKeyPress={onKeyPress}></Styles.Input>
+            </Styles.LoginText2>
+            <UserBlueBtn onClick={verifyCode}>인증코드 확인</UserBlueBtn>
+          </>
+        )}
       </Styles.ContentBox>
     </Styles.Wrapper>
   );

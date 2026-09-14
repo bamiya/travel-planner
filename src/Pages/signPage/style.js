@@ -11,57 +11,79 @@ export const ContentBox = styled.div`
 `
 
 export const SignText = styled.div`
-    font-size: 60px;
-    font-weight: 500;
-    color: black;
+    font-size: 52px;
+    font-weight: 800;
+    color: var(--color-text);
     margin-bottom: 40px;
+
+    @media (max-width: 480px) {
+        font-size: 36px;
+    }
 `
 
 export const SignText2 = styled.label`
-    font-size: 18px;
-    font-weight: 550;
+    font-size: 15px;
+    font-weight: 700;
     margin-bottom: 30px;
-    color: black;
+    color: var(--color-text-muted);
 `
 
 export const ErrorMessage = styled.label`
     font-size: 14px;
     font-weight: 400;
-    color: red;
+    color: var(--color-accent);
 `
 
 export const Input = styled.input`
     margin: 0;
-    border: 0;
+    border: 1px solid var(--color-border);
     outline: none;
     font-size: 15px;
     font-weight: 450;
     display: block;
-    width: 350px;
-    height: 40px;
-    border-radius: 10px;
+    width: 100%;
+    max-width: 350px;
+    height: 44px;
+    border-radius: var(--radius-sm);
     box-sizing: border-box;
-    padding: 0 0 0 9px;
-    background-color: #F3F3F3;
+    padding: 0 0 0 12px;
+    background-color: var(--color-bg);
     margin-top: 7px;
+    transition: var(--transition-base);
+
+    &:focus {
+        border-color: var(--color-primary);
+        background-color: var(--color-white);
+    }
 `
 
 export const UserGreenBtn = styled.button`
     width: 150px;
-    height: 35px;
-    background-color: #90F0DF;
+    height: 40px;
+    background-color: var(--color-success);
+    border-radius: var(--radius-sm);
     margin-top: 20px;
     color: white;
+    font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     border: none;
+    transition: var(--transition-base);
+
+    &:hover {
+        background-color: var(--color-success-dark);
+    }
 `
 
 export const RadioWrap = styled.div`
     margin: 0 130px 100px;
-    display: flex;    
+    display: flex;
+
+    @media (max-width: 480px) {
+        margin: 0 20px 40px;
+    }
 `
 
 export const RadioBtn = styled.input`

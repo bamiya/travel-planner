@@ -1,10 +1,13 @@
 import moment from "moment/moment";
+import "react-calendar/dist/Calendar.css";
 import React, { useState, useEffect, useRef } from "react";
 import * as Styles from "./style";
 import Map from "../../Components/kakaoMap";
 import Paging from "../../Components/paging";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import Spinner from "../../Common/Spinner";
 
 const CreatePlanCalendar = ({ open, setOpen, setDateList }) => {
   // 팝업
@@ -32,7 +35,7 @@ const CreatePlanCalendar = ({ open, setOpen, setDateList }) => {
     // 오늘보다 이전 날짜면 끝냄
     if (dateArr[0] < new Date().setHours(0, 0, 0, 0)) {
       // 시간을 0으로 초기화
-      alert("현재 날짜 이후로 선택해주세요.");
+      toast.error("현재 날짜 이후로 선택해주세요.");
       onChange(new Date());
       return;
     }
@@ -51,11 +54,11 @@ const CreatePlanCalendar = ({ open, setOpen, setDateList }) => {
   };
 
   return (
-    <Styles.ModalCustom isOpen={open} style={{ overlay: { zIndex: "1", backgroundColor: "white" } }} ariaHideApp={false}>
+    <Styles.ModalCustom isOpen={open} style={{ overlay: { zIndex: "1", backgroundColor: "rgba(20, 20, 30, 0.5)" } }} ariaHideApp={false}>
       <Styles.CalendarCustom onChange={onChange} value={value} selectRange />
       <Styles.BtnBox>
         <Styles.Btn onClick={onBack}>이전</Styles.Btn>
-        <Styles.Btn onClick={() => getApply()}>적용하기</Styles.Btn>
+        <Styles.Btn primary onClick={() => getApply()}>적용하기</Styles.Btn>
       </Styles.BtnBox>
     </Styles.ModalCustom>
   );
@@ -94,9 +97,34 @@ const CreatePlanPage = () => {
   const [tourMakerSelect2, setTourMakerSelect2] = useState(); // 찜하기 관광지 지도 마커
 
   // 관광지
+  // TourAPI contentTypeId: 12 관광지 / 39 음식점 / 32 숙박
+  const [contentType, setContentType] = useState("12");
+  const categoryTabs = [
+    { id: "12", label: "관광지" },
+    { id: "39", label: "음식점" },
+    { id: "32", label: "숙박" },
+  ];
+
+  // TourAPI cat1(대분류) 기준 세부 필터. 이미 받아온 목록을 클라이언트에서
+  // 한 번 더 걸러내는 방식이라 API를 추가로 호출하지 않는다.
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [selectedCats, setSelectedCats] = useState([]);
+  const catOptions = [
+    { id: "A01", label: "자연" },
+    { id: "A02", label: "인문" },
+    { id: "A03", label: "레포츠" },
+    { id: "A04", label: "쇼핑" },
+    { id: "A05", label: "음식" },
+  ];
+  const toggleCat = (id) => {
+    setSelectedCats((prev) => (prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]));
+    setPage1(1);
+  };
   const [searchKeyword, setSearchKeyword] = useState(""); // 키워드
+  const travelInputRef = useRef(null);
   const [tourStorage, setTourStorage] = useState(); // 전체 관광지
   const [tours, setTours] = useState([]); // 키워드 검색 결과 관광지
+  const visibleTours = selectedCats.length === 0 ? tours : tours.filter((t) => selectedCats.includes(t.cat1));
   const [cart, setCart] = useState([]); // 찜
   const [tourSelect, setTourSelect] = useState([]); // 필요없는데 필요함..? 렌더링안됨
   const [dayList, setDayList] = useState(); // 총 일정목록
@@ -152,6 +180,32 @@ const CreatePlanPage = () => {
       setDayList(arr);
     }
   }, [dateList]);
+
+  // 하루 일정에 추가한 장소 사이의 이동거리/시간 안내 (OSRM 무료 라우팅 API)
+  const [routeLegs, setRouteLegs] = useState([]);
+  useEffect(() => {
+    const getRouteLegs = async () => {
+      if (!update || !dayList || !dayList[update - 1]) {
+        setRouteLegs([]);
+        return;
+      }
+      const stops = dayList[update - 1][1];
+      if (stops.length < 2) {
+        setRouteLegs([]);
+        return;
+      }
+      try {
+        const coords = stops.map((s) => `${s.mapx},${s.mapy}`).join(";");
+        const response = await fetch(`https://router.project-osrm.org/route/v1/driving/${coords}?overview=false`);
+        const json = await response.json();
+        setRouteLegs(json.routes?.[0]?.legs ?? []);
+      } catch (e) {
+        // 무료 공개 데모 서버라 실패해도 조용히 무시하고 안내를 숨긴다.
+        setRouteLegs([]);
+      }
+    };
+    getRouteLegs();
+  }, [dayList, update]);
 
   useEffect(() => {
     if (pagingHook.current) {
@@ -211,7 +265,7 @@ const CreatePlanPage = () => {
       }
       navigate("/");
     } catch (e) {
-      alert(e.response.data.msg);
+      toast.error(e.response.data.msg);
       navigate("/");
     }
   };
@@ -221,7 +275,7 @@ const CreatePlanPage = () => {
       setUpdate(idx);
       settravelOpen(true);
     } else if ((update !== null) & (update !== idx)) {
-      alert("현재 수정하고 있는 DAY가 있습니다.");
+      toast.error("현재 수정하고 있는 DAY가 있습니다.");
     } else {
       setTourSelect([]);
       setUpdate(null);
@@ -232,26 +286,31 @@ const CreatePlanPage = () => {
 
   const onClose = () => {
     if (update !== null) {
-      return alert("아직 작업중인 DAY가 있습니다.");
+      return toast.error("아직 작업중인 DAY가 있습니다.");
     }
     setControlOpen(!controlOpen);
   };
 
-  const tourData = async () => {
+  const tourData = async (overrideType) => {
     // 전체 검색 함수
     setRendering2(false);
     (async () => {
-      const response = await fetch(
-        `https://apis.data.go.kr/B551011/KorService/areaBasedSyncList?serviceKey=${process.env.VITE_TOUR_API_KEY}&numOfRows=30000&MobileOS=ETC&MobileApp=AppTest&_type=json&contentTypeId=12`
-      );
-      const json = await response.json();
-      const tourItems = json.response.body.items.item;
-      setStotalItemCount1(tourItems.length);
-      setTours(tourItems);
-      setTourStorage(tourItems);
-      setPage1(1);
-      setTourMakerSelect1(Array(tourItems.length).fill(false));
-      setRendering2(true);
+      try {
+        const response = await fetch(
+          `https://apis.data.go.kr/B551011/KorService2/areaBasedList2?serviceKey=${process.env.VITE_TOUR_API_KEY}&numOfRows=30000&MobileOS=ETC&MobileApp=AppTest&_type=json&contentTypeId=${overrideType ?? contentType}`
+        );
+        const json = await response.json();
+        const tourItems = json.response?.body?.items?.item ?? [];
+        setStotalItemCount1(tourItems.length);
+        setTours(tourItems);
+        setTourStorage(tourItems);
+        setPage1(1);
+        setTourMakerSelect1(Array(tourItems.length).fill(false));
+      } catch (e) {
+        toast.error("여행지 정보를 불러오지 못했습니다.");
+      } finally {
+        setRendering2(true);
+      }
     })();
   };
 
@@ -259,18 +318,23 @@ const CreatePlanPage = () => {
     // 찜하기 함수
     setRendering(false);
     let Arr = [];
-    for (let i = 0; i < idx.length; i++) {
-      const response = await fetch(
-        `https://apis.data.go.kr/B551011/KorService/detailCommon?serviceKey=${process.env.VITE_TOUR_API_KEY}&MobileOS=ETC&MobileApp=AppTest&_type=json&contentId=${idx[i]}&contentTypeId=12&defaultYN=Y&firstImageYN=Y&areacodeYN=N&catcodeYN=N&addrinfoYN=Y&mapinfoYN=Y&overviewYN=N`
-      );
-      const json = await response.json();
-      const tourItems = json.response.body.items.item[0];
-      Arr[i] = tourItems;
-      setStotalItemCount2(Arr.length);
-      setPage2(1);
-      setTourMakerSelect2(Array(Arr.length).fill(false));
+    try {
+      for (let i = 0; i < idx.length; i++) {
+        const response = await fetch(
+          `https://apis.data.go.kr/B551011/KorService2/detailCommon2?serviceKey=${process.env.VITE_TOUR_API_KEY}&MobileOS=ETC&MobileApp=AppTest&_type=json&contentId=${idx[i]}`
+        );
+        const json = await response.json();
+        const tourItems = (json.response?.body?.items?.item ?? [])[0];
+        Arr[i] = tourItems;
+        setStotalItemCount2(Arr.length);
+        setPage2(1);
+        setTourMakerSelect2(Array(Arr.length).fill(false));
+      }
+    } catch (e) {
+      toast.error("찜한 여행지 정보를 불러오지 못했습니다.");
+    } finally {
+      setRendering(true);
     }
-    setRendering(true);
     return Arr;
   };
 
@@ -291,26 +355,38 @@ const CreatePlanPage = () => {
     }
   };
 
+  const searchTours = async (keyword) => {
+    // 키워드 검색 함수 (이름 기반 TourAPI 검색 사용, 없으면 전체 목록으로 복귀)
+    if (!keyword) {
+      setTours(tourStorage);
+      setStotalItemCount1(tourStorage.length);
+      setTourMakerSelect1(Array(tourStorage.length).fill(false));
+      setPage1(1);
+      return;
+    }
+    setRendering2(false);
+    try {
+      const response = await fetch(
+        `https://apis.data.go.kr/B551011/KorService2/searchKeyword2?serviceKey=${process.env.VITE_TOUR_API_KEY}&numOfRows=100000&MobileOS=ETC&MobileApp=AppTest&_type=json&contentTypeId=${contentType}&keyword=${encodeURIComponent(keyword)}`
+      );
+      const json = await response.json();
+      const tourItems = json.response?.body?.items?.item ?? []; // 검색 결과가 없으면 items가 빈 문자열로 온다
+      setTours(tourItems);
+      setStotalItemCount1(tourItems.length);
+      setTourMakerSelect1(Array(tourItems.length).fill(false));
+      setPage1(1);
+    } catch (e) {
+      toast.error("검색 결과를 불러오지 못했습니다.");
+    } finally {
+      setRendering2(true);
+    }
+  };
+
   const handleOnKeyPress = (e) => {
     // 검색 함수
     if (e.key === "Enter") {
       setSearchKeyword(e.target.value);
-      if (e.target.value !== "") {
-        let Arr = [];
-        tourStorage.filter((el, idx) => {
-          if (el.addr1.indexOf(e.target.value) !== -1) {
-            Arr = [...Arr, el];
-          }
-        });
-        setTours(Arr);
-        setStotalItemCount1(Arr.length);
-        setTourMakerSelect1(Array(Arr.length).fill(false));
-      } else {
-        setTours(tourStorage);
-        setStotalItemCount1(tourStorage.length);
-        setTourMakerSelect1(Array(tourStorage.length).fill(false));
-      }
-      setPage1(1);
+      searchTours(e.target.value);
     }
   };
 
@@ -321,18 +397,12 @@ const CreatePlanPage = () => {
 
   const onSubmit = () => {
     // 검색 클릭 함수
-    if (searchKeyword !== "") {
-      let Arr = [];
-      tourStorage.filter((el) => {
-        if (el.addr1.indexOf(searchKeyword) !== -1) {
-          Arr = [...Arr, el];
-        }
-      });
-      setTours(Arr);
-      setStotalItemCount1(Arr.length);
-      setPage1(1);
-      setTourMakerSelect1(Array(Arr.length).fill(false));
-    }
+    // searchKeyword state는 blur 시점에만 갱신되는데, input에서 바로
+    // 검색 버튼을 클릭하면 blur의 setState가 아직 반영되기 전이라
+    // 오래된(대부분 빈) 값을 읽게 된다. input의 현재 값을 직접 읽는다.
+    const keyword = travelInputRef.current?.value ?? "";
+    setSearchKeyword(keyword);
+    searchTours(keyword);
   };
 
   const moveMapLocation = (e, id) => {
@@ -364,21 +434,22 @@ const CreatePlanPage = () => {
 
   const addTour = (el, idx) => {
     // 관광지 추가 함수
-    dayList[idx - 1][1] = [...dayList[idx - 1][1], el];
-    setDayList(dayList);
-    setTourMakerSelect0(Array(dayList[idx - 1][1].length).fill(false));
+    // dayList를 직접 mutate하고 같은 참조로 setDayList를 부르면 React가
+    // 참조 비교로 변경을 감지 못해 이 값을 의존하는 effect(동선 계산 등)가
+    // 다시 실행되지 않는다. 매번 새 배열을 만들어 넘겨야 한다.
+    const newStops = [...dayList[idx - 1][1], el];
+    const newDayList = dayList.map((day, i) => (i === idx - 1 ? [day[0], newStops] : day));
+    setDayList(newDayList);
+    setTourMakerSelect0(Array(newStops.length).fill(false));
     setTourSelect([...tourSelect, el]);
   };
 
   const removeTour = (idx, idx2) => {
     // 추가한 관광지 삭제 함수
-    for (let i = 0; i < dayList[idx2 - 1][1].length; i++) {
-      if (idx === i) {
-        dayList[idx2 - 1][1].splice(i, 1);
-        setDayList(dayList);
-        setTourSelect([...tourSelect]);
-      }
-    }
+    const newStops = dayList[idx2 - 1][1].filter((_, i) => i !== idx);
+    const newDayList = dayList.map((day, i) => (i === idx2 - 1 ? [day[0], newStops] : day));
+    setDayList(newDayList);
+    setTourSelect([...tourSelect]);
   };
 
   const checkTitle = () => {
@@ -390,14 +461,14 @@ const CreatePlanPage = () => {
     }
 
     if (count < 1) {
-      return alert("플랜생성 시 관광지 하나 이상을 추가하세요");
+      return toast.error("플랜생성 시 관광지 하나 이상을 추가하세요");
     } else {
       let planTitle = prompt("플랜명을 입력하세요", "");
       if (planTitle === null) {
         return;
       }
       if (planTitle.length === 0 || planTitle.length < 4 || planTitle.length > 15) {
-        return alert("플랜명은 최소 4글자에서 최대 15글자 입니다.");
+        return toast.error("플랜명은 최소 4글자에서 최대 15글자 입니다.");
       } else {
         createPlan(planTitle);
       }
@@ -445,11 +516,17 @@ const CreatePlanPage = () => {
             onClick={() => {
               setControlOpen(!controlOpen);
             }}>
-            {controlOpen ? "<<" : ">>"}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ transform: controlOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>
+              <path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
           </Styles.OpenBtn>
           <Styles.ControlBox open={controlOpen}>
             <Styles.ContentBox>
-              <Styles.CloseBtn right onClick={onClose} src="assets/x.png" />
+              <Styles.CloseBtn right onClick={onClose}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+                </svg>
+              </Styles.CloseBtn>
               <Styles.DateBox>
                 <Styles.TravelDate>{`${moment(dateList[0]).format("YYYY-MM-DD")} ~ ${moment(dateList[dateList.length - 1]).format(
                   "YYYY-MM-DD"
@@ -468,11 +545,11 @@ const CreatePlanPage = () => {
                                 <Styles.DayItem>
                                   <Styles.DayItemImg
                                     src={e.firstimage2 === "" ? "assets/logo.png" : e.firstimage2}
-                                    onClick={() => window.open(`${window.location.origin}/information?id=${e.contentid}`)}
+                                    onClick={() => window.open(`${window.location.origin}${import.meta.env.BASE_URL}information?id=${e.contentid}`)}
                                   />
                                   <Styles.DayItemTextBox notcolumn={true}>
                                     <Styles.DayItemTextBox>
-                                      <Styles.DayItemTitle onClick={() => window.open(`${window.location.origin}/information?id=${e.contentid}`)}>
+                                      <Styles.DayItemTitle onClick={() => window.open(`${window.location.origin}${import.meta.env.BASE_URL}information?id=${e.contentid}`)}>
                                         {e.title}
                                       </Styles.DayItemTitle>
                                       <Styles.LocationImg open={tourMakerSelect0[id]} value={[e.mapy, e.mapx, 0]} onClick={(e) => moveMapLocation(e, id)} />
@@ -485,6 +562,11 @@ const CreatePlanPage = () => {
                                     </Styles.DayItemSubTextBox>
                                   </Styles.DayItemTextBox>
                                 </Styles.DayItem>
+                                {routeLegs[id] && (
+                                  <Styles.RouteInfo>
+                                    🚗 {(routeLegs[id].distance / 1000).toFixed(1)}km · 약 {Math.round(routeLegs[id].duration / 60)}분
+                                  </Styles.RouteInfo>
+                                )}
                               </div>
                             );
                           })
@@ -508,24 +590,55 @@ const CreatePlanPage = () => {
           <Styles.TravelBox open={travelOpen}>
             <Styles.ContentBox>
               <Styles.TravelInputBox>
-                <Styles.TravelInput placeholder="검색할 여행지를 입력해주세요." onBlur={(e) => handleBlur(e)} onKeyUp={handleOnKeyPress} />
+                <Styles.TravelInput ref={travelInputRef} placeholder="검색할 여행지를 입력해주세요." onBlur={(e) => handleBlur(e)} onKeyUp={handleOnKeyPress} />
                 <Styles.TravelInputBtn onClick={onSubmit}>검색</Styles.TravelInputBtn>
               </Styles.TravelInputBox>
+              <Styles.CategoryTabBox>
+                {categoryTabs.map((tab) => (
+                  <Styles.CategoryTab
+                    key={tab.id}
+                    active={contentType === tab.id}
+                    onClick={() => {
+                      setContentType(tab.id);
+                      setSearchKeyword("");
+                      tourData(tab.id);
+                    }}>
+                    {tab.label}
+                  </Styles.CategoryTab>
+                ))}
+              </Styles.CategoryTabBox>
               <Styles.ListBox>
                 <Styles.ListTitleBox>
                   <Styles.ListTitle>전체 여행지</Styles.ListTitle>
+                  <Styles.ListFilter onClick={() => setFilterOpen(!filterOpen)}>필터</Styles.ListFilter>
                 </Styles.ListTitleBox>
+                {filterOpen && (
+                  <>
+                    <Styles.FilterBox>
+                      {catOptions.map((cat) => (
+                        <Styles.FilterItemBox key={cat.id} onClick={() => toggleCat(cat.id)}>
+                          <Styles.FilterCheckBox type="checkbox" checked={selectedCats.includes(cat.id)} onChange={() => toggleCat(cat.id)} />
+                          <Styles.FilterItemText>{cat.label}</Styles.FilterItemText>
+                        </Styles.FilterItemBox>
+                      ))}
+                    </Styles.FilterBox>
+                    <Styles.FilterBtnBox>
+                      <Styles.FilterBtn onClick={() => setSelectedCats([])}>초기화</Styles.FilterBtn>
+                      <Styles.FilterBtn onClick={() => setFilterOpen(false)}>닫기</Styles.FilterBtn>
+                    </Styles.FilterBtnBox>
+                  </>
+                )}
                 <Styles.ScrollBox>
                   {!rendering2 ? (
-                    <Styles.DayItemTextBox>
-                      <Styles.DayItemTitle>로딩 중...</Styles.DayItemTitle>
-                    </Styles.DayItemTextBox>
-                  ) : tours.length === 0 ? (
+                    <Spinner text="여행지를 불러오는 중입니다..." padding="40px 0" size="28px" />
+                  ) : visibleTours.length === 0 ? (
                     <Styles.DayItem>
-                      <Styles.DayItemTitle>"{decodeURIComponent(searchKeyword)}" 에 대한 검색결과가 없습니다.</Styles.DayItemTitle>
+                      <Styles.DayItemTitle>
+                        {selectedCats.length > 0 ? "선택한 카테고리에 해당하는 결과가 없습니다." : `"${decodeURIComponent(searchKeyword)}" 에 대한 검색결과가 없습니다.`}
+                      </Styles.DayItemTitle>
                     </Styles.DayItem>
                   ) : (
-                    tours
+                    visibleTours
                       .filter((e, index) => {
                         if (index >= (page1 - 1) * itemsCount && index < page1 * itemsCount) return e;
                       })
@@ -535,11 +648,11 @@ const CreatePlanPage = () => {
                             <Styles.DayItem>
                               <Styles.DayItemImg
                                 src={tour.firstimage2 === "" ? "assets/logo.png" : tour.firstimage2}
-                                onClick={() => window.open(`${window.location.origin}/information?id=${tour.contentid}`)}
+                                onClick={() => window.open(`${window.location.origin}${import.meta.env.BASE_URL}information?id=${tour.contentid}`)}
                               />
                               <Styles.DayItemTextBox notcolumn={true}>
                                 <Styles.DayItemTextBox>
-                                  <Styles.DayItemTitle onClick={() => window.open(`${window.location.origin}/information?id=${tour.contentid}`)}>
+                                  <Styles.DayItemTitle onClick={() => window.open(`${window.location.origin}${import.meta.env.BASE_URL}information?id=${tour.contentid}`)}>
                                     {tour.title}
                                   </Styles.DayItemTitle>
                                   <Styles.LocationImg open={tourMakerSelect1[id]} value={[tour.mapy, tour.mapx, 1]} onClick={(e) => moveMapLocation(e, id)} />
@@ -555,7 +668,7 @@ const CreatePlanPage = () => {
                       })
                   )}
                 </Styles.ScrollBox>
-                {tours === "" ? "" : <Paging page={page1} count={totalItemsCount1} setPage={setPage1} itemsCount={itemsCount} />}
+                {tours === "" ? "" : <Paging page={page1} count={visibleTours.length} setPage={setPage1} itemsCount={itemsCount} />}
               </Styles.ListBox>
               <Styles.ListBox>
                 <Styles.ListTitleBox>
@@ -563,9 +676,7 @@ const CreatePlanPage = () => {
                 </Styles.ListTitleBox>
                 <Styles.ScrollBox>
                   {!rendering ? (
-                    <Styles.DayItemTextBox>
-                      <Styles.DayItemTitle>로딩 중...</Styles.DayItemTitle>
-                    </Styles.DayItemTextBox>
+                    <Spinner text="찜한 여행지를 불러오는 중입니다..." padding="40px 0" size="28px" />
                   ) : cart.length === 0 ? (
                     <Styles.DayItem>
                       <Styles.DayItemTitle>찜한 목록이 없습니다.</Styles.DayItemTitle>
@@ -581,11 +692,11 @@ const CreatePlanPage = () => {
                             <Styles.DayItem>
                               <Styles.DayItemImg
                                 src={el.firstimage2 === "" ? "assets/logo.png" : el.firstimage2}
-                                onClick={() => window.open(`${window.location.origin}/information?id=${el.contentid}`)}
+                                onClick={() => window.open(`${window.location.origin}${import.meta.env.BASE_URL}information?id=${el.contentid}`)}
                               />
                               <Styles.DayItemTextBox notcolumn={true}>
                                 <Styles.DayItemTextBox>
-                                  <Styles.DayItemTitle onClick={() => window.open(`${window.location.origin}/information?id=${el.contentid}`)}>
+                                  <Styles.DayItemTitle onClick={() => window.open(`${window.location.origin}${import.meta.env.BASE_URL}information?id=${el.contentid}`)}>
                                     {el.title}
                                   </Styles.DayItemTitle>
                                   <Styles.LocationImg open={tourMakerSelect2[idx]} value={[el.mapy, el.mapx, 2]} onClick={(e) => moveMapLocation(e, idx)} />

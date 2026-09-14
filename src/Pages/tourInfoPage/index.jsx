@@ -4,12 +4,14 @@ import { MarginTopWrapper } from "../../Common/style";
 import Map from "../../Components/kakaoMap";
 import { HeartOutlined, HeartFilled } from "@ant-design/icons";
 import axios from "axios";
+import { toast } from "react-toastify";
+import Spinner from "../../Common/Spinner";
 
 const InformationPage = () => {
   const [infoData, setInfoData] = useState();
   useEffect(() => {
     if (location.search === "") {
-      alert("url이 잘못되었습니다.");
+      toast.error("url이 잘못되었습니다.");
       history.back();
     } else {
       getTravelInfo(location.search.split("=")[1]);
@@ -26,32 +28,44 @@ const InformationPage = () => {
   }, [infoData]);
 
   const getTravelInfo = async (id) => {
-    const response = await fetch(
-      `https://apis.data.go.kr/B551011/KorService/detailCommon?serviceKey=${process.env.VITE_TOUR_API_KEY}&MobileOS=ETC&MobileApp=AppTest&_type=json&contentId=${id}&contentTypeId=12&defaultYN=Y&firstImageYN=Y&areacodeYN=Y&catcodeYN=Y&addrinfoYN=Y&mapinfoYN=Y&overviewYN=Y`
-    );
-    const json = await response.json();
-    const data = json.response.body.items.item;
-    const likeCount = await axios.get(`http://localhost:8080/getLikeCount/${data[0].contentid}`);
-    setInfoData({ ...data[0], likeCount: likeCount.data.data });
+    try {
+      const response = await fetch(
+        `https://apis.data.go.kr/B551011/KorService2/detailCommon2?serviceKey=${process.env.VITE_TOUR_API_KEY}&MobileOS=ETC&MobileApp=AppTest&_type=json&contentId=${id}`
+      );
+      const json = await response.json();
+      const data = json.response?.body?.items?.item ?? [];
+      if (data.length === 0) {
+        toast.error("존재하지 않는 관광지입니다.");
+        history.back();
+        return;
+      }
+      // 관광지 본문 정보는 여기서 바로 보여주고, 좋아요 수는 별도로 시도한다.
+      // 좋아요 수 조회(백엔드)가 실패해도 이미 받아온 본문 정보는 그대로 보여줘야 한다.
+      setInfoData({ ...data[0], likeCount: 0 });
+      try {
+        const likeCount = await axios.get(`http://localhost:8080/getLikeCount/${data[0].contentid}`);
+        setInfoData((prev) => ({ ...prev, likeCount: likeCount.data.data }));
+      } catch (e) {
+        // 좋아요 수는 부가 정보라 실패해도 무시한다.
+      }
+    } catch (e) {
+      toast.error("관광지 정보를 불러오지 못했습니다.");
+    }
   };
-
-  if (infoData === null) {
-    return null;
-  }
 
   const writing = async (id) => {
     if (!sessionStorage.getItem("access_token")) {
-      alert("로그인 후 이용해 주세요");
+      toast.info("로그인 후 이용해 주세요");
       return;
     }
     if (window.confirm("등록하시겠습니까?")) {
       try {
         await axios.post("http://localhost:8080/addComment", { id, content, type: "T" });
         getcontent();
-        alert("댓글 추가 성공");
+        toast.success("댓글 추가 성공");
         setContent("");
       } catch (e) {
-        alert(e.response.data.msg);
+        toast.error(e.response.data.msg);
       }
     }
   };
@@ -109,9 +123,14 @@ const InformationPage = () => {
       }
       getLikes();
     } catch (e) {
-      alert("로그인 후 이용해 주세요.");
+      toast.info("로그인 후 이용해 주세요.");
     }
   };
+
+  if (!infoData) {
+    // 모든 hook을 먼저 호출한 뒤에 조건부 리턴해야 hooks 규칙을 어기지 않는다.
+    return <Spinner text="관광지 정보를 불러오는 중입니다..." padding="150px 0" />;
+  }
 
   return (
     <MarginTopWrapper margin>

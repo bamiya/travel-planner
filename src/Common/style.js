@@ -1,7 +1,10 @@
 import styled from "styled-components";
 
 export const MarginTopWrapper = styled.div`
-    width: 1200px;
+    width: 100%;
+    max-width: 1200px;
+    box-sizing: border-box;
+    padding: 0 20px;
     margin: ${props => {
         return props.margin ? "80px auto 0 auto" : "0 auto"
     }};
@@ -11,14 +14,23 @@ export const MarginTopWrapper = styled.div`
 // 팝업 회원쪽 공용 스타일
 
 export const UserBlueBtn = styled.button`
-    width: 350px;
-    height: 35px;
-    background-color: #38B7FF;
+    width: 100%;
+    max-width: 350px;
+    height: 44px;
+    background-color: var(--color-primary);
     margin-top: 20px;
     color: white;
+    font-size: 15px;
+    font-weight: 700;
+    border-radius: var(--radius-sm);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     border: none;
+    transition: var(--transition-base);
+
+    &:hover {
+        background-color: var(--color-primary-dark);
+    }
 `

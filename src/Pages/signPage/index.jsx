@@ -3,6 +3,7 @@ import * as Styles from "./style";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import CryptoJS from "crypto-js";
+import { toast } from "react-toastify";
 
 const SignPage = () => {
   const location = useLocation();
@@ -52,13 +53,13 @@ const SignPage = () => {
           birth,
           profileImg: "",
         });
-        alert(data.data.msg);
+        toast.success(data.data.msg);
         replace("/");
       } catch (e) {
-        alert(e.response.data.msg);
+        toast.error(e.response.data.msg);
       }
     } else {
-      alert("형식에 맞지 않는 값이 있습니다.");
+      toast.error("형식에 맞지 않는 값이 있습니다.");
     }
   };
 

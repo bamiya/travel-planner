@@ -37,13 +37,22 @@ export const IconItem = styled.div`
 `
 
 export const Icon = styled.img`
-    width: 60px;
+    width: 56px;
     border-radius: 30px;
     cursor: pointer;
     margin: 0 10px;
+    transition: var(--transition-base);
+    opacity: 0.85;
+
+    &:hover {
+        opacity: 1;
+        transform: translateY(-3px);
+    }
 `
 
 export const IconText = styled.div`
-    color: whitesmoke;
-    font-size: 10px;
+    color: var(--color-text-muted);
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 6px;
 `
