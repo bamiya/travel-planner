@@ -16,6 +16,10 @@ export const LoginText = styled.div`
     font-weight: 500;
     color: black;
     margin-bottom: 40px;
+
+    @media (max-width: 480px) {
+        font-size: 36px;
+    }
 `
 
 export const LoginText2 = styled.div`
@@ -32,7 +36,8 @@ export const Input = styled.input`
     font-size: 15px;
     font-weight: 450;
     display: block;
-    width: 350px;
+    width: 100%;
+    max-width: 350px;
     height: 40px;
     border-radius: 10px;
     box-sizing: border-box;

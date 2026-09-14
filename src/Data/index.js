@@ -10,4 +10,7 @@ export const getAddressData = async () => {
 export const getAccessToken = async () => {
   const data = await axios.post("http://localhost:8080/getTokenUsedRefreshToken", { refreshToken: localStorage.getItem("refresh_token") });
   sessionStorage.setItem("access_token", data.data.data.access_token);
+  if (data.data.data.profileImg) {
+    sessionStorage.setItem("profileImg", data.data.data.profileImg);
+  }
 };

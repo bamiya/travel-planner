@@ -56,17 +56,70 @@ export const Header = styled.div`
     width: 100%;
     height: 80px;
     display: flex;
+    align-items: center;
     justify-content: space-between;
+`
+
+export const LogoArea = styled.div`
+    display: flex;
+    align-items: center;
+`
+
+export const HamburgerBtn = styled.div`
+    display: none;
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+    color: #393939;
+    user-select: none;
+
+    @media (max-width: 768px) {
+        display: block;
+    }
+`
+
+export const NavArea = styled.div`
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    @media (max-width: 768px) {
+        display: ${props => props.open ? "flex" : "none"};
+        position: absolute;
+        top: 80px;
+        left: 0;
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+        background: white;
+        box-sizing: border-box;
+        padding: 15px 20px 25px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
 `
 
 export const LogSign = styled.div`
     display: flex;
     align-items: center;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+    }
 `
 
 export const Menu = styled.div`
     display: flex;
     align-items: center;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+    }
 `
 
 export const Text = styled.span`

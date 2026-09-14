@@ -7,6 +7,7 @@ const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isOpenList, setIsOpenList] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const [scrollPosition, setScrollPosition] = useState(0); // 스크롤 초기값0으로 주고 스크롤이 100px내려갈때부터 백그라운드색상 변경할때 사용
 
@@ -26,73 +27,99 @@ const Header = () => {
   const goCreatePlanPage = () => {
     alert("로그인 후 이용해 주세요.");
     navigate("/login");
+    setIsMobileMenuOpen(false);
   };
 
   return (
     <Styles.Wrapper bg={location.pathname === "/" ? true : false} scroll={scrollPosition > 100 ? true : false}>
       <MarginTopWrapper>
         <Styles.Header>
-          <Styles.Menu>
+          <Styles.LogoArea>
             <Styles.Img
               src={"assets/logo.png"}
               alt="logo"
               onClick={() => {
                 navigate("/");
+                setIsMobileMenuOpen(false);
               }}
             />
-            <Styles.Text
-              onClick={() => {
-                navigate("/travel");
-              }}>
-              여행지
-            </Styles.Text>
-            {!sessionStorage.getItem("access_token") ? (
-              <>
-                <Styles.Text onClick={goCreatePlanPage}>플랜 생성</Styles.Text>
-              </>
-            ) : (
-              <>
-                <Styles.Text
-                  onClick={() => {
-                    navigate("/CreatePlanPage");
-                  }}>
-                  플랜 생성
-                </Styles.Text>
-              </>
-            )}
-            <Styles.Text
-              onClick={() => {
-                navigate("/shared");
-              }}>
-              공유된 플랜 보기
-            </Styles.Text>
-          </Styles.Menu>
-          <Styles.LogSign>
-            {!sessionStorage.getItem("access_token") ? (
-              <>
-                <Styles.Text onClick={() => navigate("/login")}>로그인</Styles.Text>
-                <Styles.Text onClick={() => navigate("/sign")}>회원가입</Styles.Text>
-              </>
-            ) : (
-              <>
-                <Styles.MyProfile onClick={() => setIsOpenList(!isOpenList)}>
-                  <Styles.MyProfileImg
-                    src={
-                      sessionStorage.getItem("profileImg")
-                        ? `http://localhost:8080/image/view?value=${sessionStorage.getItem("profileImg")}`
-                        : "assets/defaultProfile.png"
-                    }
-                  />
-                  <Styles.MyProfileListBox clicked={isOpenList}>
-                    <Styles.MyProfileItem onClick={() => navigate("/myPlan")}>MY PAGE</Styles.MyProfileItem>
-                    <Styles.MyProfileItem last onClick={logout}>
-                      LOGOUT
-                    </Styles.MyProfileItem>
-                  </Styles.MyProfileListBox>
-                </Styles.MyProfile>
-              </>
-            )}
-          </Styles.LogSign>
+          </Styles.LogoArea>
+
+          <Styles.HamburgerBtn onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+            {isMobileMenuOpen ? "✕" : "☰"}
+          </Styles.HamburgerBtn>
+
+          <Styles.NavArea open={isMobileMenuOpen}>
+            <Styles.Menu>
+              <Styles.Text
+                onClick={() => {
+                  navigate("/travel");
+                  setIsMobileMenuOpen(false);
+                }}>
+                여행지
+              </Styles.Text>
+              {!sessionStorage.getItem("access_token") ? (
+                <>
+                  <Styles.Text onClick={goCreatePlanPage}>플랜 생성</Styles.Text>
+                </>
+              ) : (
+                <>
+                  <Styles.Text
+                    onClick={() => {
+                      navigate("/CreatePlanPage");
+                      setIsMobileMenuOpen(false);
+                    }}>
+                    플랜 생성
+                  </Styles.Text>
+                </>
+              )}
+              <Styles.Text
+                onClick={() => {
+                  navigate("/shared");
+                  setIsMobileMenuOpen(false);
+                }}>
+                공유된 플랜 보기
+              </Styles.Text>
+            </Styles.Menu>
+            <Styles.LogSign>
+              {!sessionStorage.getItem("access_token") ? (
+                <>
+                  <Styles.Text
+                    onClick={() => {
+                      navigate("/login");
+                      setIsMobileMenuOpen(false);
+                    }}>
+                    로그인
+                  </Styles.Text>
+                  <Styles.Text
+                    onClick={() => {
+                      navigate("/sign");
+                      setIsMobileMenuOpen(false);
+                    }}>
+                    회원가입
+                  </Styles.Text>
+                </>
+              ) : (
+                <>
+                  <Styles.MyProfile onClick={() => setIsOpenList(!isOpenList)}>
+                    <Styles.MyProfileImg
+                      src={
+                        sessionStorage.getItem("profileImg")
+                          ? `http://localhost:8080/image/view?value=${sessionStorage.getItem("profileImg")}`
+                          : "assets/defaultProfile.png"
+                      }
+                    />
+                    <Styles.MyProfileListBox clicked={isOpenList}>
+                      <Styles.MyProfileItem onClick={() => navigate("/myPlan")}>MY PAGE</Styles.MyProfileItem>
+                      <Styles.MyProfileItem last onClick={logout}>
+                        LOGOUT
+                      </Styles.MyProfileItem>
+                    </Styles.MyProfileListBox>
+                  </Styles.MyProfile>
+                </>
+              )}
+            </Styles.LogSign>
+          </Styles.NavArea>
         </Styles.Header>
       </MarginTopWrapper>
     </Styles.Wrapper>

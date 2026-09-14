@@ -1,7 +1,10 @@
 import styled from "styled-components";
 
 export const MarginTopWrapper = styled.div`
-    width: 1200px;
+    width: 100%;
+    max-width: 1200px;
+    box-sizing: border-box;
+    padding: 0 20px;
     margin: ${props => {
         return props.margin ? "80px auto 0 auto" : "0 auto"
     }};
@@ -11,7 +14,8 @@ export const MarginTopWrapper = styled.div`
 // 팝업 회원쪽 공용 스타일
 
 export const UserBlueBtn = styled.button`
-    width: 350px;
+    width: 100%;
+    max-width: 350px;
     height: 35px;
     background-color: #38B7FF;
     margin-top: 20px;

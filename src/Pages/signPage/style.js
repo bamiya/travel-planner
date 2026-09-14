@@ -15,6 +15,10 @@ export const SignText = styled.div`
     font-weight: 500;
     color: black;
     margin-bottom: 40px;
+
+    @media (max-width: 480px) {
+        font-size: 36px;
+    }
 `
 
 export const SignText2 = styled.label`
@@ -37,7 +41,8 @@ export const Input = styled.input`
     font-size: 15px;
     font-weight: 450;
     display: block;
-    width: 350px;
+    width: 100%;
+    max-width: 350px;
     height: 40px;
     border-radius: 10px;
     box-sizing: border-box;
@@ -61,7 +66,11 @@ export const UserGreenBtn = styled.button`
 
 export const RadioWrap = styled.div`
     margin: 0 130px 100px;
-    display: flex;    
+    display: flex;
+
+    @media (max-width: 480px) {
+        margin: 0 20px 40px;
+    }
 `
 
 export const RadioBtn = styled.input`

@@ -1,5 +1,12 @@
+*{
+  box-sizing: border-box;
+}
+
 html, body{
   margin: 0;
+  /* 페이지 내부 요소가 고정 픽셀 너비를 갖고 있어도 좁은 화면에서
+     가로 스크롤이 생기지 않도록 하는 안전망 */
+  overflow-x: hidden;
 }
 
 body {
@@ -9,6 +16,10 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+img {
+  max-width: 100%;
 }
 
 code {

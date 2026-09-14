@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "./Components/header";
 import Footer from "./Components/footer";
 import MainPage from './Pages/mainPage';
@@ -62,6 +62,29 @@ const MainLayout = () => {
 };
 
 const App = () => {
+  const [authChecked, setAuthChecked] = useState(false);
+
+  useEffect(() => {
+    // 브라우저를 새로 열면 access_token(sessionStorage)은 사라지지만
+    // refresh_token(localStorage)은 남아있다. 이 값으로 access_token을
+    // 먼저 재발급받아둬야 로그인 상태가 유지된 채로 화면이 그려진다.
+    const restoreSession = async () => {
+      if (!sessionStorage.getItem("access_token") && localStorage.getItem("refresh_token")) {
+        try {
+          await getAccessToken();
+        } catch (e) {
+          localStorage.clear(); // 리프레쉬 토큰도 만료/무효 -> 로그아웃 상태로 정리
+        }
+      }
+      setAuthChecked(true);
+    };
+    restoreSession();
+  }, []);
+
+  if (!authChecked) {
+    return null;
+  }
+
   return (
       <BrowserRouter basename={process.env.PUBLIC_URL}>
         <ScrollToTop/>

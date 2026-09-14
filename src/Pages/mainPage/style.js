@@ -22,10 +22,11 @@ export const Video = styled.video`
 
 export const ContentBox = styled.div`
     width: 1000px;
+    max-width: 92vw;
     position: absolute;
     top: 45%;
     left: 50%;
-    margin-left: -500px;
+    transform: translateX(-50%);
     margin-top: -150px;
     display: flex;
     flex-direction: column;
@@ -38,6 +39,11 @@ export const Title = styled.div`
     color: white;
     margin-bottom: 40px;
     position: relative;
+
+    @media (max-width: 480px) {
+        font-size: 32px;
+        text-align: center;
+    }
 `
 
 export const ColorBar = styled.div`
@@ -52,6 +58,7 @@ export const ColorBar = styled.div`
 
 export const InputBox = styled.div`
     width: 700px;
+    max-width: 100%;
     height: 48px;
     background-color: white;
     border-radius: 5px;
@@ -64,6 +71,7 @@ export const InputBox = styled.div`
 
 export const InputPreView = styled.div`
     width: 650px;
+    max-width: 100%;
     height: 330px;
     background-color: #F5F5F5;
     position: absolute;
@@ -159,6 +167,7 @@ export const BottonContentTitle = styled.div`
 
 export const BottomContentText = styled.div`
     width: 350px;
+    max-width: 100%;
     word-break: keep-all;
 `
 
@@ -190,6 +199,7 @@ export const CarouselTitle = styled.div`
 
 export const SliderCustom = styled(Slider)`
     width: 930px;
+    max-width: 100%;
     margin-bottom: 20px;
 `
 

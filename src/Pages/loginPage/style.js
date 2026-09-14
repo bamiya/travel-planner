@@ -17,6 +17,10 @@ export const LoginText = styled.div`
     font-weight: 500;
     color: black;
     margin-bottom: 40px;
+
+    @media (max-width: 480px) {
+        font-size: 36px;
+    }
 `
 
 export const LoginText2 = styled.div`
@@ -27,7 +31,8 @@ export const LoginText2 = styled.div`
 `
 
 export const KakaoBtn = styled.div`
-    width: 350px;
+    width: 100%;
+    max-width: 350px;
     height: 35px;
     background-color: #F6EF3D;
     margin-top: 10px;
@@ -46,7 +51,8 @@ export const Input = styled.input`
     font-size: 15px;
     font-weight: 450;
     display: block;
-    width: 350px;
+    width: 100%;
+    max-width: 350px;
     height: 40px;
     border-radius: 10px;
     box-sizing: border-box;
@@ -70,7 +76,9 @@ export const FindSignText = styled.span`
 export const FindPassModal = styled(Modal)`
     position: absolute;
     width: 700px;
+    max-width: 90vw;
     height: 600px;
+    max-height: 85vh;
     background: rgb(255 255 255);
     border-radius: 4px;
     outline: none;
@@ -80,4 +88,5 @@ export const FindPassModal = styled(Modal)`
     box-sizing: border-box;
     padding: 20px 20px;
     box-shadow: 0px 0px 10px 4px black;
+    overflow-y: auto;
 `
