@@ -1,4 +1,5 @@
 import moment from "moment/moment";
+import "react-calendar/dist/Calendar.css";
 import React, { useState, useEffect, useRef } from "react";
 import * as Styles from "./style";
 import Map from "../../Components/kakaoMap";
@@ -53,11 +54,11 @@ const CreatePlanCalendar = ({ open, setOpen, setDateList }) => {
   };
 
   return (
-    <Styles.ModalCustom isOpen={open} style={{ overlay: { zIndex: "1", backgroundColor: "white" } }} ariaHideApp={false}>
+    <Styles.ModalCustom isOpen={open} style={{ overlay: { zIndex: "1", backgroundColor: "rgba(20, 20, 30, 0.5)" } }} ariaHideApp={false}>
       <Styles.CalendarCustom onChange={onChange} value={value} selectRange />
       <Styles.BtnBox>
         <Styles.Btn onClick={onBack}>이전</Styles.Btn>
-        <Styles.Btn onClick={() => getApply()}>적용하기</Styles.Btn>
+        <Styles.Btn primary onClick={() => getApply()}>적용하기</Styles.Btn>
       </Styles.BtnBox>
     </Styles.ModalCustom>
   );
@@ -509,11 +510,17 @@ const CreatePlanPage = () => {
             onClick={() => {
               setControlOpen(!controlOpen);
             }}>
-            {controlOpen ? "<<" : ">>"}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ transform: controlOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>
+              <path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
           </Styles.OpenBtn>
           <Styles.ControlBox open={controlOpen}>
             <Styles.ContentBox>
-              <Styles.CloseBtn right onClick={onClose} src="assets/x.png" />
+              <Styles.CloseBtn right onClick={onClose}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+                </svg>
+              </Styles.CloseBtn>
               <Styles.DateBox>
                 <Styles.TravelDate>{`${moment(dateList[0]).format("YYYY-MM-DD")} ~ ${moment(dateList[dateList.length - 1]).format(
                   "YYYY-MM-DD"

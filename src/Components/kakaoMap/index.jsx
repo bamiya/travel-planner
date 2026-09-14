@@ -167,8 +167,26 @@ const Map=(props)=>{
 
     if (mapFailed) {
       return (
-        <div className="map_wrap" style={{ display: "flex", alignItems: "center", justifyContent: "center", background: "#f3f3f3" }}>
-          지도를 불러올 수 없습니다.
+        <div
+          className="map_wrap"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px",
+            alignItems: "center",
+            justifyContent: "center",
+            background: "var(--color-bg)",
+            color: "var(--color-text-muted)",
+            borderRadius: "var(--radius-md)",
+          }}>
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M12 2C8.13 2 5 5.24 5 9.2 5 14.6 12 22 12 22s7-7.4 7-12.8C19 5.24 15.87 2 12 2zm0 9.7a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"
+              fill="currentColor"
+              opacity="0.5"
+            />
+          </svg>
+          <span style={{ fontSize: "14px", fontWeight: 600 }}>지도를 불러올 수 없습니다</span>
         </div>
       );
     }

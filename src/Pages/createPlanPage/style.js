@@ -5,8 +5,10 @@ import Calendar from 'react-calendar';
 export const ModalCustom = styled(Modal)`
     width: 600px;
     max-width: 90vw;
-    background-color: white;
-    border: 1px solid gray;
+    background-color: var(--color-white);
+    border: none;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-hover);
     position: absolute;
     top: 50%;
     left: 50%;
@@ -15,6 +17,8 @@ export const ModalCustom = styled(Modal)`
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    padding: 28px 28px 0;
+    box-sizing: border-box;
     ${props => {
         if(props.filter){
             return {
@@ -27,68 +31,138 @@ export const ModalCustom = styled(Modal)`
 
 export const BtnBox = styled.div`
     width: 100%;
-    border-top: 1px solid gray;
-    height: 50px;
+    border-top: 1px solid var(--color-border);
+    height: 66px;
     display: flex;
     align-items: center;
     justify-content: flex-end;
     box-sizing: border-box;
-    padding: 0 25px;
+    margin: 0 -28px;
+    padding: 0 28px;
 `
 
 export const Btn = styled.div`
-    display: inline-block;
+    display: inline-flex;
     box-sizing: border-box;
-    padding: 3px 5px;
-    height: 30px;
-    border: 1px solid rgba(95, 95, 95, 0.5);
+    padding: 9px 18px;
+    height: 38px;
+    border-radius: var(--radius-sm);
     font-size: 13px;
-    display: flex;
+    font-weight: 700;
     align-items: center;
     justify-content: center;
-    margin-left: 15px;
+    margin-left: 12px;
     cursor: pointer;
+    transition: var(--transition-base);
+    background-color: ${(props) => (props.primary ? "var(--color-primary)" : "var(--color-bg)")};
+    color: ${(props) => (props.primary ? "var(--color-white)" : "var(--color-text-muted)")};
+
+    &:hover {
+        background-color: ${(props) => (props.primary ? "var(--color-primary-dark)" : "var(--color-border)")};
+    }
 `
 
 export const CalendarCustom = styled(Calendar)`
     width: 100%;
-    background-color: white;
-    margin-bottom: 100px;
-    /* ~~~ container styles ~~~ */
+    background-color: var(--color-white);
+    border: none;
+    font-family: inherit;
+    margin-bottom: 40px;
+
+    /* ~~~ 상단 네비게이션(년/월, 이전·다음) ~~~ */
     .react-calendar__navigation {
         display: flex;
+        margin-bottom: 12px;
+
+        button {
+            min-width: 40px;
+            background: none;
+            border-radius: var(--radius-sm);
+            font-size: 15px;
+            color: var(--color-text);
+
+            &:disabled {
+                color: var(--color-border);
+            }
+        }
+
         .react-calendar__navigation__label {
-            font-weight: bold;
+            font-weight: 800;
+            font-size: 17px;
         }
         .react-calendar__navigation__arrow {
             flex-grow: 0.333;
+            font-size: 20px;
+            color: var(--color-text-muted);
         }
     }
-    /* ~~~ label styles ~~~ */
+
+    /* ~~~ 요일 라벨 ~~~ */
     .react-calendar__month-view__weekdays {
         text-align: center;
-    }
-    /* ~~~ button styles ~~~ */
-    button {
-        background-color: white;
-        border: 0;
-        color: black;
-        padding: 8px 0;
-        &:hover {
-            background-color: #D6D6D6;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--color-text-muted);
+        margin-bottom: 6px;
+
+        abbr {
+            text-decoration: none;
         }
     }
-    /* ~~~ day grid styles ~~~ */
+
+    /* ~~~ 날짜 버튼 공통 ~~~ */
+    button {
+        background-color: var(--color-white);
+        border: 0;
+        border-radius: var(--radius-sm);
+        color: var(--color-text);
+        padding: 10px 0;
+        transition: var(--transition-base);
+
+        &:enabled:hover {
+            background-color: var(--color-primary-light);
+        }
+    }
+
+    /* ~~~ 날짜 그리드 ~~~ */
     .react-calendar__month-view__days {
         display: grid !important;
-        grid-template-columns: 14.2% 14.2% 14.2% 14.2% 14.2% 14.2% 14.2%; 
+        grid-template-columns: 14.2% 14.2% 14.2% 14.2% 14.2% 14.2% 14.2%;
+        row-gap: 4px;
 
+        .react-calendar__tile {
+            position: relative;
+        }
+
+        /* 오늘 */
+        .react-calendar__tile--now {
+            background-color: var(--color-bg);
+            font-weight: 800;
+        }
+
+        /* 선택 범위 안 */
         .react-calendar__tile--range {
-            background-color: #9F9F9F;
-            color: white;
+            background-color: var(--color-primary-light);
+            color: var(--color-primary-dark);
+            border-radius: 0;
+        }
+
+        /* 범위의 시작/끝(실제 선택한 날짜) */
+        .react-calendar__tile--rangeStart,
+        .react-calendar__tile--rangeEnd,
+        .react-calendar__tile--active {
+            background-color: var(--color-primary) !important;
+            color: var(--color-white) !important;
+            font-weight: 800;
+            border-radius: var(--radius-sm);
+        }
+
+        .react-calendar__month-view__days__day--neighboringMonth {
+            color: var(--color-border);
         }
     }
-    /* ~~~ other view styles ~~~ */
+
+    /* ~~~ 연/10년/세기 단위 뷰 ~~~ */
   .react-calendar__year-view__months, .react-calendar__decade-view__years, .react-calendar__century-view__decades {
     display: grid !important;
     grid-template-columns: 20% 20% 20% 20% 20%;
@@ -158,20 +232,28 @@ export const ContentBox = styled.div`
 `
 
 export const OpenBtn = styled.div`
-    width: 50px;
-    height: 50px;
-    background-color: blanchedalmond;
+    width: 44px;
+    height: 44px;
+    background-color: var(--color-white);
+    color: var(--color-text);
     position: absolute;
-    left: 0%;
-    font-size: 25px;
+    left: 16px;
+    top: 16px;
+    border-radius: 50%;
+    box-shadow: var(--shadow-hover);
     display: ${props => {
         return props.open ? "none" : "flex"
     }};
     align-items: center;
     justify-content: center;
-    top: 0;
     cursor: pointer;
     z-index: 2;
+    transition: var(--transition-base);
+
+    &:hover {
+        background-color: var(--color-primary-light);
+        color: var(--color-primary-dark);
+    }
 `
 
 export const DateBox = styled.div`
@@ -298,15 +380,28 @@ export const PlanAddBtn = styled.div`
     cursor: pointer;
 `
 
-export const CloseBtn = styled.img`
-    width: 25px;
-    height: 25px;
+export const CloseBtn = styled.div`
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
     position: absolute;
-    top: 10px;
+    top: 14px;
     cursor: pointer;
+    color: var(--color-text-muted);
+    transition: var(--transition-base);
+    z-index: 1;
+
+    &:hover {
+        background-color: var(--color-bg);
+        color: var(--color-text);
+    }
+
     ${props => {
-        if(props.right) return "right: 20px;"
-        if(props.left) return "left: 20;"
+        if(props.right) return "right: 16px;"
+        if(props.left) return "left: 16px;"
     }}
 `
 
@@ -537,16 +632,23 @@ export const PlanApplyBtn = styled.button`
     box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
 `
 
+const pinSvg = (color) =>
+    `data:image/svg+xml,${encodeURIComponent(
+        `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${color}"><path d="M12 2C8.13 2 5 5.24 5 9.2 5 14.6 12 22 12 22s7-7.4 7-12.8C19 5.24 15.87 2 12 2zm0 9.7a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>`
+    )}`
+
 export const LocationImg = styled.button`
     border: none;
     outline: none;
-    border-radius: 10px;
+    border-radius: 50%;
     cursor: pointer;
-    background: ${props => {
-        return (props.open ? "url(/assets/image35_1.png) " : "url(/assets/image35.png) ") + "no-repeat scroll 0 0 transparent"
-    }};
-    background-size: contain ;
-    width: 25px;
-    height: 25px;
+    flex-shrink: 0;
+    background: ${props => (props.open ? "var(--color-primary-light)" : "transparent")} url(${props => (props.open ? pinSvg("#2F9BFF") : pinSvg("#A6ACB8"))}) no-repeat center / 16px 16px;
+    width: 26px;
+    height: 26px;
+    transition: var(--transition-base);
 
+    &:hover {
+        background-color: var(--color-primary-light);
+    }
 `
