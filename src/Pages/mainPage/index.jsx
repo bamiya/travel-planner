@@ -6,6 +6,7 @@ import { getAddressData } from "../../Data";
 import axios from "axios";
 import { HeartOutlined, HeartFilled } from "@ant-design/icons";
 import { toast } from "react-toastify";
+import Spinner from "../../Common/Spinner";
 
 const MainPage = () => {
   const navigate = useNavigate();
@@ -22,11 +23,16 @@ const MainPage = () => {
     reload();
   }, []);
 
-  const reload = () => {
+  const reload = async () => {
+    // getUserPlan/getLikes는 비동기라 기다리지 않고 setIsLoding(true)를
+    // 바로 호출하면 실제로는 데이터가 오기 전에 로딩이 끝난 것처럼 보인다.
+    // 실패하더라도 finally에서 로딩을 꺼줘야 스피너가 영원히 돌지 않는다.
     setIsLoding(false);
-    getUserPlan();
-    getLikes();
-    setIsLoding(true);
+    try {
+      await Promise.all([getUserPlan(), getLikes()]);
+    } finally {
+      setIsLoding(true);
+    }
   };
   const getUserPlan = async () => {
     // DB에 있는 플랜데이터
@@ -106,8 +112,6 @@ const MainPage = () => {
       getLikes();
     } else {
       setLike(data.data.data.filter((e) => e.type === "P"));
-
-      setIsLoding(true);
     }
   };
   const addLikes = async (id) => {
@@ -211,7 +215,11 @@ const MainPage = () => {
           </Styles.BottomContentBox>
           <Styles.BottomContentBox column paddingBottom="50px">
             <Styles.CarouselTitle>인기플랜</Styles.CarouselTitle>
-            {content.length < 3 && "현재 플랜이 3개 이상이 되지 않습니다."}
+            {!isLoding ? (
+              <Spinner text="플랜을 불러오는 중입니다..." padding="40px 0" />
+            ) : (
+              content.length < 3 && "현재 플랜이 3개 이상이 되지 않습니다."
+            )}
             <Styles.SliderCustom {...settings}>
               {content.length < 3
                 ? null

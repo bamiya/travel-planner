@@ -6,6 +6,7 @@ import { HeartFilled } from "@ant-design/icons";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import Spinner from "../../../Common/Spinner";
 
 const Like = () => {
   const navigate = useNavigate();
@@ -79,6 +80,8 @@ const Like = () => {
       }
     } catch (e) {
       toast.error("좋아요 에러");
+      setIsLikeLoding(true);
+      setIsPlanLoding(true);
     }
   };
 
@@ -101,19 +104,24 @@ const Like = () => {
   const getDibsData = async () => {
     setIsDibsLoding(false);
     setDibsInfo((dibsInfo.length = 0));
-    if (sessionStorage.getItem("dibs")) {
-      const dibs = sessionStorage.getItem("dibs").split(" ");
-      dibs.pop();
-      for (let i = 0; i < dibs.length; i++) {
-        const response = await fetch(getTourURL(dibs[i]));
-        const json = await response.json();
-        const dibsItems = json.response?.body?.items?.item ?? [];
-        const dibsData = dibsInfo;
-        dibsData.push(dibsItems[0]);
-        setDibsInfo(dibsData);
+    try {
+      if (sessionStorage.getItem("dibs")) {
+        const dibs = sessionStorage.getItem("dibs").split(" ");
+        dibs.pop();
+        for (let i = 0; i < dibs.length; i++) {
+          const response = await fetch(getTourURL(dibs[i]));
+          const json = await response.json();
+          const dibsItems = json.response?.body?.items?.item ?? [];
+          const dibsData = dibsInfo;
+          dibsData.push(dibsItems[0]);
+          setDibsInfo(dibsData);
+        }
       }
+    } catch (e) {
+      toast.error("찜하기 정보를 불러오지 못했습니다.");
+    } finally {
+      setIsDibsLoding(true);
     }
-    setIsDibsLoding(true);
   };
 
   // 찜하기 취소 함수
@@ -152,7 +160,7 @@ const Like = () => {
             <Styles.SmallBox>
               <Styles.HeartSumText>
                 {!isPlanLoding
-                  ? `로딩 중...`
+                  ? <Spinner text="불러오는 중입니다..." padding="30px 0" size="26px" />
                   : planInfo.length === 0
                   ? "좋아요를 누른 항목이 없습니다."
                   : planInfo.map((el, idx) => {
@@ -184,7 +192,7 @@ const Like = () => {
             <Styles.SmallBox>
               <Styles.HeartSumText>
                 {!isLikeLoding
-                  ? `로딩 중...`
+                  ? <Spinner text="불러오는 중입니다..." padding="30px 0" size="26px" />
                   : tourInfo.length === 0
                   ? "좋아요를 누른 항목이 없습니다."
                   : tourInfo.map((el, idx) => {
@@ -226,7 +234,7 @@ const Like = () => {
             {!sessionStorage.getItem("dibs")
               ? "찜하기로 선택된 항목이 없습니다."
               : !isDibsLoding
-              ? "로딩 중..."
+              ? <Spinner text="불러오는 중입니다..." padding="30px 0" size="26px" />
               : dibsInfo.map((el, idx) => {
                   return (
                     <Styles.LineBox key={idx}>

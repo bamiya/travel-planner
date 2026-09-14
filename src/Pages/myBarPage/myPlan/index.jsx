@@ -4,6 +4,7 @@ import MyPage from "../../myPage";
 import { MarginTopWrapper } from "../../../Common/style";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Spinner from "../../../Common/Spinner";
 
 const MyPlan = () => {
   const navigate = useNavigate();
@@ -15,12 +16,12 @@ const MyPlan = () => {
 
   const getUserPlan = async () => {
     // DB에 있는 플랜데이터
-    const data = await axios.get("http://localhost:8080/getUserPlan");
-    if (!data) {
-      getUserPlan();
-    } else {
+    try {
+      const data = await axios.get("http://localhost:8080/getUserPlan");
       const planArr = Object.entries(data.data.data);
       setPlan(planArr);
+    } catch (e) {
+      setPlan([]);
     }
   };
 
@@ -49,9 +50,12 @@ const MyPlan = () => {
           <Styles.Box>
             <Styles.Text>나의 플랜</Styles.Text>
           </Styles.Box>
-          {plan === undefined
-            ? ""
-            : plan.map((el, idx) => {
+          {plan === undefined ? (
+            <Spinner text="플랜을 불러오는 중입니다..." />
+          ) : plan.length === 0 ? (
+            "등록된 플랜이 없습니다."
+          ) : (
+            plan.map((el, idx) => {
                 return (
                   <div key={idx}>
                     <Styles.SmallBox>
@@ -88,7 +92,8 @@ const MyPlan = () => {
                     </Styles.SmallBox>
                   </div>
                 );
-              })}
+              })
+          )}
         </Styles.BigBox>
       </MarginTopWrapper>
     </>

@@ -6,6 +6,7 @@ import { useNavigate} from "react-router-dom";
 import axios from "axios";
 import { HeartOutlined, HeartFilled } from "@ant-design/icons";
 import { toast } from "react-toastify";
+import Spinner from "../../Common/Spinner";
 
 const CalendarPage = () => {
   const navigate = useNavigate();
@@ -50,8 +51,8 @@ const CalendarPage = () => {
 
   const getUserPlanById = async (id) => {
     // DB에 있는 플랜데이터
-    const data = await axios.get(`http://localhost:8080/getPlansById/${id}`);
-    if (data) {
+    try {
+      const data = await axios.get(`http://localhost:8080/getPlansById/${id}`);
       setDateList(data.data.data);
       let count = 0;
       let newArr = [];
@@ -61,8 +62,8 @@ const CalendarPage = () => {
       }
       setTourCount(newArr);
       setMapMarker(Array(count).fill(false));
-    } else {
-      getUserPlanById(id);
+    } catch (e) {
+      toast.error("플랜 정보를 불러오지 못했습니다.");
     }
   };
 
@@ -148,7 +149,7 @@ const CalendarPage = () => {
   return (
     <>
       {dateList === undefined ? (
-        ""
+        <Spinner text="플랜 정보를 불러오는 중입니다..." padding="150px 0" />
       ) : (
         <>
           <Styles.ImageBox>

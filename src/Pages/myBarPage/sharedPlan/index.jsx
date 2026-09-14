@@ -5,6 +5,7 @@ import { MarginTopWrapper } from "../../../Common/style";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import Spinner from "../../../Common/Spinner";
 
 const SharedPlan = () => {
   const navigate = useNavigate();
@@ -17,11 +18,11 @@ const SharedPlan = () => {
 
   const getUserPlan = async () => {
     // DB에 있는 플랜데이터
-    const data = await axios.get("http://localhost:8080/getShareMyPlan");
-    if (!data) {
-      getUserPlan();
-    } else {
+    try {
+      const data = await axios.get("http://localhost:8080/getShareMyPlan");
       setPlan(Object.entries(data.data.data));
+    } catch (e) {
+      setPlan([]);
     }
   };
 
@@ -46,9 +47,12 @@ const SharedPlan = () => {
           <Styles.Box>
             <Styles.Text>공유한 플랜</Styles.Text>
           </Styles.Box>
-          {plan === undefined
-            ? ""
-            : plan.map((el, idx) => {
+          {plan === undefined ? (
+            <Spinner text="공유한 플랜을 불러오는 중입니다..." />
+          ) : plan.length === 0 ? (
+            "공유한 플랜이 없습니다."
+          ) : (
+            plan.map((el, idx) => {
                 return (
                   <Styles.SmallBox key={idx}>
                     <Styles.LineBox>
@@ -70,7 +74,8 @@ const SharedPlan = () => {
                     </Styles.LineBox>
                   </Styles.SmallBox>
                 );
-              })}
+              })
+          )}
         </Styles.BigBox>
       </MarginTopWrapper>
     </>

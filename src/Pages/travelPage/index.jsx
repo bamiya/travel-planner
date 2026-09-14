@@ -5,6 +5,7 @@ import Paging from "../../Components/paging";
 import { useNavigate, useLocation } from "react-router-dom";
 import { HeartOutlined, HeartFilled } from "@ant-design/icons";
 import { toast } from "react-toastify";
+import Spinner from "../../Common/Spinner";
 import axios from "axios";
 
 
@@ -53,22 +54,28 @@ const TravelPage = () => {
     // 전체 조회 / 키워드 검색 함수
     setRendering(false);
     (async () => {
-      const isSearch = search !== undefined && search !== null && search !== "";
-      // 검색어가 있을 땐 전체 목록을 받아와 주소로만 거르는 대신,
-      // TourAPI의 이름 기반 검색 엔드포인트(searchKeyword2)를 직접 사용한다.
-      // (구 버전 KorService/areaBasedSyncList, searchKeyword는 서비스가 폐기되어 KorService2로 이전됨)
-      const endpoint = isSearch ? "searchKeyword2" : "areaBasedList2";
-      const keywordParam = isSearch ? `&keyword=${encodeURIComponent(search)}` : "";
-      const response = await fetch(
-        `https://apis.data.go.kr/B551011/KorService2/${endpoint}?serviceKey=${process.env.VITE_TOUR_API_KEY}&numOfRows=100000&MobileOS=ETC&MobileApp=AppTest&_type=json&contentTypeId=12${keywordParam}`
-      );
-      const json = await response.json();
-      const tourItems = json.response?.body?.items?.item ?? []; // 검색 결과가 없으면 items가 빈 문자열로 온다
-      setStorageTours(tourItems);
-      setPage(1);
-      setTours(tourItems);
-      setTotalItemCount(tourItems.length);
-      setRendering(true);
+      try {
+        const isSearch = search !== undefined && search !== null && search !== "";
+        // 검색어가 있을 땐 전체 목록을 받아와 주소로만 거르는 대신,
+        // TourAPI의 이름 기반 검색 엔드포인트(searchKeyword2)를 직접 사용한다.
+        // (구 버전 KorService/areaBasedSyncList, searchKeyword는 서비스가 폐기되어 KorService2로 이전됨)
+        const endpoint = isSearch ? "searchKeyword2" : "areaBasedList2";
+        const keywordParam = isSearch ? `&keyword=${encodeURIComponent(search)}` : "";
+        const response = await fetch(
+          `https://apis.data.go.kr/B551011/KorService2/${endpoint}?serviceKey=${process.env.VITE_TOUR_API_KEY}&numOfRows=100000&MobileOS=ETC&MobileApp=AppTest&_type=json&contentTypeId=12${keywordParam}`
+        );
+        const json = await response.json();
+        const tourItems = json.response?.body?.items?.item ?? []; // 검색 결과가 없으면 items가 빈 문자열로 온다
+        setStorageTours(tourItems);
+        setPage(1);
+        setTours(tourItems);
+        setTotalItemCount(tourItems.length);
+      } catch (e) {
+        toast.error("관광지 정보를 불러오지 못했습니다.");
+      } finally {
+        // 실패해도 여기서 로딩을 꺼줘야 스피너가 멈추지 않고 영원히 도는 걸 막는다.
+        setRendering(true);
+      }
     })();
   };
   const handleOnKeyPress = (e) => {
@@ -143,9 +150,7 @@ const TravelPage = () => {
       <Styles.ContentBox>
         <Styles.TravelListBox>
           {!rendering ? (
-            <Styles.Txt>
-              <Styles.PlaceTitle>로딩 중...</Styles.PlaceTitle>
-            </Styles.Txt>
+            <Spinner text="관광지를 불러오는 중입니다..." />
           ) : tours.length === 0 ? (
             <Styles.Txt>
               <Styles.PlaceTitle>{searchKeyword}" 에 대한 검색결과가 없습니다.</Styles.PlaceTitle>

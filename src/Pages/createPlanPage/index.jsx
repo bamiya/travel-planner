@@ -6,6 +6,7 @@ import Paging from "../../Components/paging";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import Spinner from "../../Common/Spinner";
 
 const CreatePlanCalendar = ({ open, setOpen, setDateList }) => {
   // 팝업
@@ -242,17 +243,22 @@ const CreatePlanPage = () => {
     // 전체 검색 함수
     setRendering2(false);
     (async () => {
-      const response = await fetch(
-        `https://apis.data.go.kr/B551011/KorService2/areaBasedList2?serviceKey=${process.env.VITE_TOUR_API_KEY}&numOfRows=30000&MobileOS=ETC&MobileApp=AppTest&_type=json&contentTypeId=12`
-      );
-      const json = await response.json();
-      const tourItems = json.response?.body?.items?.item ?? [];
-      setStotalItemCount1(tourItems.length);
-      setTours(tourItems);
-      setTourStorage(tourItems);
-      setPage1(1);
-      setTourMakerSelect1(Array(tourItems.length).fill(false));
-      setRendering2(true);
+      try {
+        const response = await fetch(
+          `https://apis.data.go.kr/B551011/KorService2/areaBasedList2?serviceKey=${process.env.VITE_TOUR_API_KEY}&numOfRows=30000&MobileOS=ETC&MobileApp=AppTest&_type=json&contentTypeId=12`
+        );
+        const json = await response.json();
+        const tourItems = json.response?.body?.items?.item ?? [];
+        setStotalItemCount1(tourItems.length);
+        setTours(tourItems);
+        setTourStorage(tourItems);
+        setPage1(1);
+        setTourMakerSelect1(Array(tourItems.length).fill(false));
+      } catch (e) {
+        toast.error("여행지 정보를 불러오지 못했습니다.");
+      } finally {
+        setRendering2(true);
+      }
     })();
   };
 
@@ -260,18 +266,23 @@ const CreatePlanPage = () => {
     // 찜하기 함수
     setRendering(false);
     let Arr = [];
-    for (let i = 0; i < idx.length; i++) {
-      const response = await fetch(
-        `https://apis.data.go.kr/B551011/KorService2/detailCommon2?serviceKey=${process.env.VITE_TOUR_API_KEY}&MobileOS=ETC&MobileApp=AppTest&_type=json&contentId=${idx[i]}`
-      );
-      const json = await response.json();
-      const tourItems = (json.response?.body?.items?.item ?? [])[0];
-      Arr[i] = tourItems;
-      setStotalItemCount2(Arr.length);
-      setPage2(1);
-      setTourMakerSelect2(Array(Arr.length).fill(false));
+    try {
+      for (let i = 0; i < idx.length; i++) {
+        const response = await fetch(
+          `https://apis.data.go.kr/B551011/KorService2/detailCommon2?serviceKey=${process.env.VITE_TOUR_API_KEY}&MobileOS=ETC&MobileApp=AppTest&_type=json&contentId=${idx[i]}`
+        );
+        const json = await response.json();
+        const tourItems = (json.response?.body?.items?.item ?? [])[0];
+        Arr[i] = tourItems;
+        setStotalItemCount2(Arr.length);
+        setPage2(1);
+        setTourMakerSelect2(Array(Arr.length).fill(false));
+      }
+    } catch (e) {
+      toast.error("찜한 여행지 정보를 불러오지 못했습니다.");
+    } finally {
+      setRendering(true);
     }
-    setRendering(true);
     return Arr;
   };
 
@@ -302,16 +313,21 @@ const CreatePlanPage = () => {
       return;
     }
     setRendering2(false);
-    const response = await fetch(
-      `https://apis.data.go.kr/B551011/KorService2/searchKeyword2?serviceKey=${process.env.VITE_TOUR_API_KEY}&numOfRows=100000&MobileOS=ETC&MobileApp=AppTest&_type=json&contentTypeId=12&keyword=${encodeURIComponent(keyword)}`
-    );
-    const json = await response.json();
-    const tourItems = json.response?.body?.items?.item ?? []; // 검색 결과가 없으면 items가 빈 문자열로 온다
-    setTours(tourItems);
-    setStotalItemCount1(tourItems.length);
-    setTourMakerSelect1(Array(tourItems.length).fill(false));
-    setPage1(1);
-    setRendering2(true);
+    try {
+      const response = await fetch(
+        `https://apis.data.go.kr/B551011/KorService2/searchKeyword2?serviceKey=${process.env.VITE_TOUR_API_KEY}&numOfRows=100000&MobileOS=ETC&MobileApp=AppTest&_type=json&contentTypeId=12&keyword=${encodeURIComponent(keyword)}`
+      );
+      const json = await response.json();
+      const tourItems = json.response?.body?.items?.item ?? []; // 검색 결과가 없으면 items가 빈 문자열로 온다
+      setTours(tourItems);
+      setStotalItemCount1(tourItems.length);
+      setTourMakerSelect1(Array(tourItems.length).fill(false));
+      setPage1(1);
+    } catch (e) {
+      toast.error("검색 결과를 불러오지 못했습니다.");
+    } finally {
+      setRendering2(true);
+    }
   };
 
   const handleOnKeyPress = (e) => {
@@ -514,9 +530,7 @@ const CreatePlanPage = () => {
                 </Styles.ListTitleBox>
                 <Styles.ScrollBox>
                   {!rendering2 ? (
-                    <Styles.DayItemTextBox>
-                      <Styles.DayItemTitle>로딩 중...</Styles.DayItemTitle>
-                    </Styles.DayItemTextBox>
+                    <Spinner text="여행지를 불러오는 중입니다..." padding="40px 0" size="28px" />
                   ) : tours.length === 0 ? (
                     <Styles.DayItem>
                       <Styles.DayItemTitle>"{decodeURIComponent(searchKeyword)}" 에 대한 검색결과가 없습니다.</Styles.DayItemTitle>
@@ -560,9 +574,7 @@ const CreatePlanPage = () => {
                 </Styles.ListTitleBox>
                 <Styles.ScrollBox>
                   {!rendering ? (
-                    <Styles.DayItemTextBox>
-                      <Styles.DayItemTitle>로딩 중...</Styles.DayItemTitle>
-                    </Styles.DayItemTextBox>
+                    <Spinner text="찜한 여행지를 불러오는 중입니다..." padding="40px 0" size="28px" />
                   ) : cart.length === 0 ? (
                     <Styles.DayItem>
                       <Styles.DayItemTitle>찜한 목록이 없습니다.</Styles.DayItemTitle>

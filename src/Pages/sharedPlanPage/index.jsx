@@ -6,6 +6,7 @@ import { HeartOutlined, HeartFilled } from "@ant-design/icons";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import Spinner from "../../Common/Spinner";
 
 const SharedPlanPage = () => {
   const [clicked, setClicked] = useState("Latest");
@@ -22,11 +23,13 @@ const SharedPlanPage = () => {
     reload();
   }, []);
 
-  const reload = () => {
+  const reload = async () => {
     setIsLoding(false);
-    getUserPlan();
-    getLikes();
-    setIsLoding(true);
+    try {
+      await Promise.all([getUserPlan(), getLikes()]);
+    } finally {
+      setIsLoding(true);
+    }
   };
 
   const getUserPlan = async (pageNumber = 1) => {
@@ -60,8 +63,6 @@ const SharedPlanPage = () => {
       getLikes();
     } else {
       setLike(data.data.data.filter((e) => e.type === "P"));
-
-      setIsLoding(true);
     }
   };
   const addLikes = async (id) => {
@@ -112,7 +113,7 @@ const SharedPlanPage = () => {
       <Styles.PlanLodingText>
         <Styles.PlanBox>
           {!isLoding
-            ? "로딩 중..."
+            ? <Spinner text="플랜을 불러오는 중입니다..." />
             : content.length === 0
             ? "공유된 플랜이 없습니다."
             : content.map((el, idx) => {
