@@ -7,6 +7,21 @@ export const ContentBox1 = styled.div`
     width: 1200px;
     max-width: 100%;
 `
+export const CategoryTabBox = styled.div`
+    display: flex;
+    gap: 10px;
+    margin: 20px 10px 0;
+`
+export const CategoryTab = styled.button`
+    border: 0;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: ${(props) => (props.active ? "#38B7FF" : "#F0F0F0")};
+    color: ${(props) => (props.active ? "white" : "#555")};
+`
 export const InputBox = styled.div`
     width: 75%;
     height: 48px;

@@ -292,6 +292,21 @@ export const TravelInputBox = styled.div`
     margin-bottom: 30px;
 `
 
+export const CategoryTabBox = styled.div`
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+`
+export const CategoryTab = styled.div`
+    padding: 6px 14px;
+    border-radius: 16px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: ${(props) => (props.active ? "#38B7FF" : "#F0F0F0")};
+    color: ${(props) => (props.active ? "white" : "#555")};
+`
+
 export const TravelInput = styled.input`
     width: 100%;
     height: 40px;

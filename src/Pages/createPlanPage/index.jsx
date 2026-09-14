@@ -96,6 +96,13 @@ const CreatePlanPage = () => {
   const [tourMakerSelect2, setTourMakerSelect2] = useState(); // 찜하기 관광지 지도 마커
 
   // 관광지
+  // TourAPI contentTypeId: 12 관광지 / 39 음식점 / 32 숙박
+  const [contentType, setContentType] = useState("12");
+  const categoryTabs = [
+    { id: "12", label: "관광지" },
+    { id: "39", label: "음식점" },
+    { id: "32", label: "숙박" },
+  ];
   const [searchKeyword, setSearchKeyword] = useState(""); // 키워드
   const [tourStorage, setTourStorage] = useState(); // 전체 관광지
   const [tours, setTours] = useState([]); // 키워드 검색 결과 관광지
@@ -239,13 +246,13 @@ const CreatePlanPage = () => {
     setControlOpen(!controlOpen);
   };
 
-  const tourData = async () => {
+  const tourData = async (overrideType) => {
     // 전체 검색 함수
     setRendering2(false);
     (async () => {
       try {
         const response = await fetch(
-          `https://apis.data.go.kr/B551011/KorService2/areaBasedList2?serviceKey=${process.env.VITE_TOUR_API_KEY}&numOfRows=30000&MobileOS=ETC&MobileApp=AppTest&_type=json&contentTypeId=12`
+          `https://apis.data.go.kr/B551011/KorService2/areaBasedList2?serviceKey=${process.env.VITE_TOUR_API_KEY}&numOfRows=30000&MobileOS=ETC&MobileApp=AppTest&_type=json&contentTypeId=${overrideType ?? contentType}`
         );
         const json = await response.json();
         const tourItems = json.response?.body?.items?.item ?? [];
@@ -315,7 +322,7 @@ const CreatePlanPage = () => {
     setRendering2(false);
     try {
       const response = await fetch(
-        `https://apis.data.go.kr/B551011/KorService2/searchKeyword2?serviceKey=${process.env.VITE_TOUR_API_KEY}&numOfRows=100000&MobileOS=ETC&MobileApp=AppTest&_type=json&contentTypeId=12&keyword=${encodeURIComponent(keyword)}`
+        `https://apis.data.go.kr/B551011/KorService2/searchKeyword2?serviceKey=${process.env.VITE_TOUR_API_KEY}&numOfRows=100000&MobileOS=ETC&MobileApp=AppTest&_type=json&contentTypeId=${contentType}&keyword=${encodeURIComponent(keyword)}`
       );
       const json = await response.json();
       const tourItems = json.response?.body?.items?.item ?? []; // 검색 결과가 없으면 items가 빈 문자열로 온다
@@ -524,6 +531,20 @@ const CreatePlanPage = () => {
                 <Styles.TravelInput placeholder="검색할 여행지를 입력해주세요." onBlur={(e) => handleBlur(e)} onKeyUp={handleOnKeyPress} />
                 <Styles.TravelInputBtn onClick={onSubmit}>검색</Styles.TravelInputBtn>
               </Styles.TravelInputBox>
+              <Styles.CategoryTabBox>
+                {categoryTabs.map((tab) => (
+                  <Styles.CategoryTab
+                    key={tab.id}
+                    active={contentType === tab.id}
+                    onClick={() => {
+                      setContentType(tab.id);
+                      setSearchKeyword("");
+                      tourData(tab.id);
+                    }}>
+                    {tab.label}
+                  </Styles.CategoryTab>
+                ))}
+              </Styles.CategoryTabBox>
               <Styles.ListBox>
                 <Styles.ListTitleBox>
                   <Styles.ListTitle>전체 여행지</Styles.ListTitle>

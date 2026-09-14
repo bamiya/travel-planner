@@ -24,10 +24,19 @@ const TravelPage = () => {
   const location = useLocation(); //mainPage 받아온 키워드 값
   const { state } = location;
 
+  // TourAPI contentTypeId: 12 관광지 / 39 음식점 / 32 숙박
+  const [contentType, setContentType] = useState("12");
+  const categoryTabs = [
+    { id: "12", label: "관광지" },
+    { id: "39", label: "음식점" },
+    { id: "32", label: "숙박" },
+  ];
+
   useEffect(() => {
     // location.search에 의존해야 이 페이지 안에서 다시 검색해도(같은 라우트,
     // 쿼리스트링만 바뀜) 재조회가 된다. 기존엔 []로 마운트 시 1회만 실행되고
     // tours.length===0 일때만 조회해서, 첫 조회 이후로는 재검색이 반영되지 않았다.
+    // contentType도 같이 봐야 카테고리 탭을 바꿨을 때 다시 조회된다.
     const search = location.search.split("="); // url 에 있는 search 를 가져옴
     window.scroll(0, 0);
     if (search[0] === '?search') {
@@ -36,7 +45,7 @@ const TravelPage = () => {
       tourData();
     }
     setSearchKeyword(search[1] === undefined ? '전체' : decodeURI(search[1]));
-  }, [location.search]);
+  }, [location.search, contentType]);
 
   useEffect(() => {
     getLikes();
@@ -62,7 +71,7 @@ const TravelPage = () => {
         const endpoint = isSearch ? "searchKeyword2" : "areaBasedList2";
         const keywordParam = isSearch ? `&keyword=${encodeURIComponent(search)}` : "";
         const response = await fetch(
-          `https://apis.data.go.kr/B551011/KorService2/${endpoint}?serviceKey=${process.env.VITE_TOUR_API_KEY}&numOfRows=100000&MobileOS=ETC&MobileApp=AppTest&_type=json&contentTypeId=12${keywordParam}`
+          `https://apis.data.go.kr/B551011/KorService2/${endpoint}?serviceKey=${process.env.VITE_TOUR_API_KEY}&numOfRows=100000&MobileOS=ETC&MobileApp=AppTest&_type=json&contentTypeId=${contentType}${keywordParam}`
         );
         const json = await response.json();
         const tourItems = json.response?.body?.items?.item ?? []; // 검색 결과가 없으면 items가 빈 문자열로 온다
@@ -146,6 +155,13 @@ const TravelPage = () => {
       <Styles.InputBox>
         <Styles.Input placeholder="검색하세요." onKeyUp={handleOnKeyPress} />
       </Styles.InputBox>
+      <Styles.CategoryTabBox>
+        {categoryTabs.map((tab) => (
+          <Styles.CategoryTab key={tab.id} active={contentType === tab.id} onClick={() => setContentType(tab.id)}>
+            {tab.label}
+          </Styles.CategoryTab>
+        ))}
+      </Styles.CategoryTabBox>
       <Styles.ListSumBox>{searchKeyword === null || searchKeyword === "" ? "#전체" : `#${searchKeyword}`}</Styles.ListSumBox>
       <Styles.ContentBox>
         <Styles.TravelListBox>
