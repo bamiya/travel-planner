@@ -26,13 +26,25 @@ export const PlanBox = styled.div` //전체박스
     display: grid;
     grid-template-columns: repeat(3,1fr);
     margin-bottom: 100px;
+
+    @media (max-width: 900px) {
+        grid-template-columns: repeat(2,1fr);
+    }
+
+    @media (max-width: 600px) {
+        grid-template-columns: 1fr;
+    }
 `
 export const PlanContentBox = styled.div` //첫번째 내용박스
     margin: 50px 50px 50px;
-    
+
+    @media (max-width: 768px) {
+        margin: 25px 15px;
+    }
 `
 export const PlanImg = styled.img`
     width: 300px;
+    max-width: 100%;
     height: 200px;
     border-radius: 12px;
     cursor: pointer;
@@ -60,6 +72,7 @@ export const ContentBox = styled.div`
 `
 export const ContentListBox = styled.div`
     width: 300px;
+    max-width: 100%;
     height: 140px;
     margin-top: 10px;
     border: 0.5px solid black;
@@ -75,6 +88,11 @@ export const LatestpopularBox =styled.div`
     margin-left: 1050px;
     margin-bottom: 10px;
     display: flex;
+
+    @media (max-width: 1200px) {
+        margin-left: auto;
+        margin-right: 15px;
+    }
 `
 export const LatestBtn = styled.button`
     border: none;

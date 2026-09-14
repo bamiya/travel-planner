@@ -4,6 +4,7 @@ import Calendar from 'react-calendar';
 
 export const ModalCustom = styled(Modal)`
     width: 600px;
+    max-width: 90vw;
     background-color: white;
     border: 1px solid gray;
     position: absolute;
@@ -117,6 +118,7 @@ export const Map = styled.div`
 
 export const ControlBox = styled.div`
     width: 350px;
+    max-width: 90vw;
     height: 100vh;
     background-color: white;
     position:fixed;
@@ -132,6 +134,7 @@ export const ControlBox = styled.div`
 
 export const TravelBox = styled.div`
     width: 500px;
+    max-width: 90vw;
     height: 100vh;
     background-color: white;
     top: 0;
@@ -392,6 +395,7 @@ export const FilterItemBox = styled.div`
     border-radius: 5px;
     display: flex;
     width: 110px;
+    max-width: 100%;
     box-sizing: border-box;
     padding: 5px 0;
     justify-content: center;
@@ -405,6 +409,11 @@ export const FilterBox = styled.div`
     grid-template-columns: repeat(4, 1fr);
     justify-items: center;
     row-gap: 15px;
+    column-gap: 5px;
+
+    @media (max-width: 480px) {
+        grid-template-columns: repeat(2, 1fr);
+    }
 `
 
 export const FilterCheckBox = styled.input`

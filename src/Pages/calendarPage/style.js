@@ -59,6 +59,11 @@ export const IntroTitle = styled.div`
     align-content: space-between;
     left: 100px;
     bottom: 50px;
+
+    @media (max-width: 768px) {
+        left: 20px;
+        right: 20px;
+    }
 `
 export const IntroText = styled.div`
     font-size:40px;
@@ -188,6 +193,10 @@ export const Box = styled.div`
     display: flex;
     height: calc(100% - 50px);
 
+    @media (max-width: 768px) {
+        flex-direction: column;
+        height: auto;
+    }
 `
 
 export const PlanInfoList = styled.div`    
@@ -316,6 +325,10 @@ export const MapBox = styled.div`
     height: 750px;
     z-index: 0;
 
+    @media (max-width: 768px) {
+        width: 100%;
+        height: 400px;
+    }
 `
 
 export const Comment = styled.div`
@@ -339,6 +352,10 @@ export const CommentBox = styled.div`
     flex-wrap: wrap;
     align-content: space-between;
     margin-bottom: 30px;
+
+    @media (max-width: 768px) {
+        padding: 0 20px;
+    }
 `
 
 export const ReviewBox = styled.div`

@@ -68,6 +68,10 @@ export const TalkMessageBox = styled.div`
     border-radius: 20px;
     box-sizing: border-box;
     padding: 50px 70px;
+
+    @media (max-width: 768px) {
+        padding: 30px 20px;
+    }
 `
 export const InformationContnet = styled.div`
     font-size: 18px;
@@ -87,6 +91,7 @@ export const Msg = styled.div`
 `
 export const InformationBar = styled.div`
     width: 600px;
+    max-width: 100%;
     height: 3px;
     margin-top: 10px;
     margin-bottom: 10px;
@@ -126,6 +131,10 @@ export const MessageCommentIcon = styled.div` // 나중에 img 로 바꿀꺼
     border-radius: 17.5px;
     background-color: blue;
     margin-right: 180px;
+
+    @media (max-width: 768px) {
+        margin-right: 20px;
+    }
 `
 export const Comment = styled.div`
     font-size: 15px;

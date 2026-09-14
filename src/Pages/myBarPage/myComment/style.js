@@ -5,6 +5,14 @@ export const BigBox = styled.div`
     margin-left: 155px;
     margin-top: 120px;
     margin-bottom: 100px;
+
+    @media (max-width: 768px) {
+        width: 100%;
+        margin-left: 0;
+        margin-top: 100px;
+        padding: 0 15px;
+        box-sizing: border-box;
+    }
 `
 
 export const Box = styled.div`
@@ -13,6 +21,10 @@ export const Box = styled.div`
     background-color: #ECECEC;
     border-radius: 10px;
     margin-bottom: 30px;
+
+    @media (max-width: 768px) {
+        width: 100%;
+    }
 `
 
 export const SmallBox = styled.div`
@@ -20,6 +32,10 @@ export const SmallBox = styled.div`
     //background-color: #ECECEC;
     border-radius: 10px;
     margin-bottom: 30px;
+
+    @media (max-width: 768px) {
+        width: 100%;
+    }
 `
 
 export const LineBox = styled.div`
@@ -31,6 +47,13 @@ export const LineBox = styled.div`
     background-color: #ECECEC;
     display: flex;
     cursor: pointer;
+
+    @media (max-width: 768px) {
+        width: 100%;
+        height: auto;
+        flex-direction: column;
+        box-sizing: border-box;
+    }
 `
 
 export const ContentBox = styled.div`
@@ -38,6 +61,13 @@ export const ContentBox = styled.div`
     margin-left: 50px;
     margin-top:10px;
     margin-bottom: 10px;
+
+    @media (max-width: 768px) {
+        width: 100%;
+        margin-left: 0;
+        box-sizing: border-box;
+        padding: 0 10px;
+    }
 `
 
 export const DayBox = styled.div`
@@ -46,7 +76,12 @@ export const DayBox = styled.div`
     font-weight: bold;
     margin-top:50px;
     margin-bottom: 50px;
-    text-align: center; 
+    text-align: center;
+
+    @media (max-width: 768px) {
+        margin-top: 15px;
+        margin-bottom: 10px;
+    }
 `
 
 export const ImgBox = styled.img`
@@ -59,7 +94,7 @@ export const ImgBox = styled.img`
 `
 
 export const Text = styled.div`
-    width: 100%; 
+    width: 100%;
     font-size: 16px;
     text-align: center;
     padding-top: 20px;
@@ -67,21 +102,25 @@ export const Text = styled.div`
 `
 
 export const ContentText = styled.div`
-    width: 100%; 
+    width: 100%;
     font-size: 16px;
     padding-top: 5px;
     font-weight: bold;
 `
 export const ContentTe = styled.div`
-    width: 100%; 
+    width: 100%;
     font-size: 14px;
     padding-top: 5px;
     margin-top: 10px;
 `
 
 export const PageText = styled.div`
-    width: 900px; 
+    width: 900px;
     font-size: 16px;
     font-weight: bold;
     text-align: center;
+
+    @media (max-width: 768px) {
+        width: 100%;
+    }
 `

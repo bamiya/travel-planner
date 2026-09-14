@@ -6,25 +6,48 @@ export const EditTitle = styled.div`
     font-weight: 500px;
     margin: 150px 150px 20px;
     font-weight: bold;
+
+    @media (max-width: 768px) {
+        margin: 60px 20px 20px;
+        font-size: 24px;
+    }
 `
-export const TitleBar = styled.div` 
+export const TitleBar = styled.div`
     width: 170px;
     height: 1px;
     margin-left: 60px;
     margin-top: 15px;
     background-color: gray ;
+
+    @media (max-width: 768px) {
+        margin-left: auto;
+        margin-right: auto;
+    }
 `
 export const ProfileBox = styled.div`
     display: flex;
     table-layout: fixed;
     width: 800px;
-    margin: 0 150px 200px ; 
+    max-width: 100%;
+    margin: 0 150px 200px ;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        width: 100%;
+        margin: 0 0 60px;
+    }
 `
 export const LeftProfileBox = styled.div`
     width: 300px;
     background-color: rgba(72, 112, 110, 0.16);
     box-shadow: 5px 1px 8px 0 rgb(0 0 0 / 6%);
     border-left: 1px solid rgba(0,0,0,.08);
+
+    @media (max-width: 768px) {
+        width: 100%;
+        box-sizing: border-box;
+        padding-bottom: 20px;
+    }
 `
 export const LeftContent = styled.div` //클릭했을 때 찐하게 해놓기 자동 첫번째
     width: 120px;
@@ -36,11 +59,16 @@ export const LeftContent = styled.div` //클릭했을 때 찐하게 해놓기 �
         if(props.click) return "2px solid"
         else return "none"
     }};
-    
+
     font-weight: ${props => {
         if(props.click) return "bold"
         else return "none"
     }};
+
+    @media (max-width: 768px) {
+        width: auto;
+        margin: 20px auto;
+    }
 `
 export const MemberInforBox = styled.div`
     height: 600px;
@@ -51,6 +79,12 @@ export const MemberInforBox = styled.div`
     border: solid 1px rgba(54, 66, 69, 0.56);
     background-color: #fff;
     box-sizing: border-box;
+
+    @media (max-width: 768px) {
+        height: auto;
+        margin: 20px 0 0;
+        padding-bottom: 30px;
+    }
 `
 export const ProfileImg = styled.img`
     width: 100px;
@@ -58,6 +92,11 @@ export const ProfileImg = styled.img`
     border-radius: 50px;
     box-shadow: 0 3px 6px 0 rgb(29 34 53 / 8%);
     margin: 100px 100px 10px;
+
+    @media (max-width: 768px) {
+        display: block;
+        margin: 40px auto 10px;
+    }
 `
 export const MemberContentBox = styled.div`
     margin: 20px 0 0;
@@ -120,6 +159,12 @@ export const MyProfileBox = styled.div`
     border: solid 1px rgba(54, 66, 69, 0.56);
     background-color: #fff;
     box-sizing: border-box;
+
+    @media (max-width: 768px) {
+        height: auto;
+        margin: 20px 0 0;
+        padding-bottom: 30px;
+    }
 `
 export const Content = styled.input`
     margin: 0;
@@ -129,6 +174,7 @@ export const Content = styled.input`
     font-weight: 450;
     display: block;
     width: 350px;
+    max-width: 100%;
     height: 40px;
     border-radius: 10px;
     box-sizing: border-box;
@@ -146,6 +192,11 @@ export const EditBtn = styled.button`
     color: white;
     border-radius: 5px;
     cursor: pointer;
+
+    @media (max-width: 768px) {
+        margin: 30px auto;
+        display: block;
+    }
 `
 export const BasicInfoBtn = styled.button`
     border: 0;
@@ -157,6 +208,11 @@ export const BasicInfoBtn = styled.button`
     color: white;
     border-radius: 5px;
     cursor: pointer;
+
+    @media (max-width: 768px) {
+        margin: 30px auto;
+        display: block;
+    }
 `
 export const DeleteBtn = styled.button`
     border: none;
@@ -167,6 +223,12 @@ export const DeleteBtn = styled.button`
     font-weight: bold;
     font-size: 13px;
     cursor: pointer;
+
+    @media (max-width: 768px) {
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+    }
 `
 export const BtnBox = styled.div`
     width: 100%;

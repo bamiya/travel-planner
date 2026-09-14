@@ -5,6 +5,7 @@ export const ContentBox = styled.div`
 `
 export const ContentBox1 = styled.div`
     width: 1200px;
+    max-width: 100%;
 `
 export const InputBox = styled.div`
     width: 75%;
@@ -47,12 +48,13 @@ export const TravelListBox = styled.div`
 `
 export const TravelFilterTag = styled.div`
     width: 330px;
+    max-width: 90%;
     height: 590px;
     background: rgba(0, 150, 100, 0.5);
     margin: 20px auto 0 auto;
     border-radius: 20px;
     padding: 30px 0 30px 0;
-      
+
 `
 export const GridTagBoxItem = styled.div`
     grid-column : 1;
@@ -81,23 +83,34 @@ export const TravelFilterTagBox = styled.div`
 `
 export const SteamListButtonBox = styled.div`
     width: 1200px;
+    max-width: 100%;
     height: 100px;
     text-align: end;
-   
+
 `
 export const TravelWrapper = styled.div`
     width: 900px;
-    height: 160px; 
+    max-width: 100%;
+    height: 160px;
     padding: 20px 0 20px 0;
     display: flex;
     border-bottom: 1px solid #eeeeef;
     border-bottom: 1px solid #9ea4ad ;
+
+    @media (max-width: 768px) {
+        height: auto;
+        flex-wrap: wrap;
+    }
 `
 export const Image = styled.img`
     width: 200px;
     object-fit: cover;
     border-radius: 10px;
     cursor: pointer;
+
+    @media (max-width: 480px) {
+        width: 120px;
+    }
 `
 export const Title = styled.div`
     overflow: hidden;
