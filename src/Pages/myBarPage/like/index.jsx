@@ -27,7 +27,7 @@ const Like = () => {
   }, []);
 
   const getTourURL = (id) => {
-    return `https://apis.data.go.kr/B551011/KorService/detailCommon?serviceKey=${process.env.VITE_TOUR_API_KEY}&MobileOS=ETC&MobileApp=AppTest&_type=json&contentId=${id}&contentTypeId=12&defaultYN=Y&firstImageYN=Y&areacodeYN=N&catcodeYN=N&addrinfoYN=Y&mapinfoYN=N&overviewYN=Y`;
+    return `https://apis.data.go.kr/B551011/KorService2/detailCommon2?serviceKey=${process.env.VITE_TOUR_API_KEY}&MobileOS=ETC&MobileApp=AppTest&_type=json&contentId=${id}`;
   };
 
   // 좋아요를 누른 관광지 정보를 가져옴
@@ -45,7 +45,7 @@ const Like = () => {
           for (let i = 0; i < likeData.length; i++) {
             const response = await fetch(getTourURL(likeData[i].id));
             const json = await response.json();
-            const tourItems = json.response.body.items.item;
+            const tourItems = json.response?.body?.items?.item ?? [];
             const tourData = tourInfo;
             tourData.push(tourItems[0]);
             setTourInfo(tourData);
@@ -106,7 +106,7 @@ const Like = () => {
       for (let i = 0; i < dibs.length; i++) {
         const response = await fetch(getTourURL(dibs[i]));
         const json = await response.json();
-        const dibsItems = json.response.body.items.item;
+        const dibsItems = json.response?.body?.items?.item ?? [];
         const dibsData = dibsInfo;
         dibsData.push(dibsItems[0]);
         setDibsInfo(dibsData);

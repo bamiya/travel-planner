@@ -242,10 +242,10 @@ const CreatePlanPage = () => {
     setRendering2(false);
     (async () => {
       const response = await fetch(
-        `https://apis.data.go.kr/B551011/KorService/areaBasedSyncList?serviceKey=${process.env.VITE_TOUR_API_KEY}&numOfRows=30000&MobileOS=ETC&MobileApp=AppTest&_type=json&contentTypeId=12`
+        `https://apis.data.go.kr/B551011/KorService2/areaBasedList2?serviceKey=${process.env.VITE_TOUR_API_KEY}&numOfRows=30000&MobileOS=ETC&MobileApp=AppTest&_type=json&contentTypeId=12`
       );
       const json = await response.json();
-      const tourItems = json.response.body.items.item;
+      const tourItems = json.response?.body?.items?.item ?? [];
       setStotalItemCount1(tourItems.length);
       setTours(tourItems);
       setTourStorage(tourItems);
@@ -261,10 +261,10 @@ const CreatePlanPage = () => {
     let Arr = [];
     for (let i = 0; i < idx.length; i++) {
       const response = await fetch(
-        `https://apis.data.go.kr/B551011/KorService/detailCommon?serviceKey=${process.env.VITE_TOUR_API_KEY}&MobileOS=ETC&MobileApp=AppTest&_type=json&contentId=${idx[i]}&contentTypeId=12&defaultYN=Y&firstImageYN=Y&areacodeYN=N&catcodeYN=N&addrinfoYN=Y&mapinfoYN=Y&overviewYN=N`
+        `https://apis.data.go.kr/B551011/KorService2/detailCommon2?serviceKey=${process.env.VITE_TOUR_API_KEY}&MobileOS=ETC&MobileApp=AppTest&_type=json&contentId=${idx[i]}`
       );
       const json = await response.json();
-      const tourItems = json.response.body.items.item[0];
+      const tourItems = (json.response?.body?.items?.item ?? [])[0];
       Arr[i] = tourItems;
       setStotalItemCount2(Arr.length);
       setPage2(1);
@@ -291,26 +291,33 @@ const CreatePlanPage = () => {
     }
   };
 
+  const searchTours = async (keyword) => {
+    // 키워드 검색 함수 (이름 기반 TourAPI 검색 사용, 없으면 전체 목록으로 복귀)
+    if (!keyword) {
+      setTours(tourStorage);
+      setStotalItemCount1(tourStorage.length);
+      setTourMakerSelect1(Array(tourStorage.length).fill(false));
+      setPage1(1);
+      return;
+    }
+    setRendering2(false);
+    const response = await fetch(
+      `https://apis.data.go.kr/B551011/KorService2/searchKeyword2?serviceKey=${process.env.VITE_TOUR_API_KEY}&numOfRows=100000&MobileOS=ETC&MobileApp=AppTest&_type=json&contentTypeId=12&keyword=${encodeURIComponent(keyword)}`
+    );
+    const json = await response.json();
+    const tourItems = json.response?.body?.items?.item ?? []; // 검색 결과가 없으면 items가 빈 문자열로 온다
+    setTours(tourItems);
+    setStotalItemCount1(tourItems.length);
+    setTourMakerSelect1(Array(tourItems.length).fill(false));
+    setPage1(1);
+    setRendering2(true);
+  };
+
   const handleOnKeyPress = (e) => {
     // 검색 함수
     if (e.key === "Enter") {
       setSearchKeyword(e.target.value);
-      if (e.target.value !== "") {
-        let Arr = [];
-        tourStorage.filter((el, idx) => {
-          if (el.addr1.indexOf(e.target.value) !== -1) {
-            Arr = [...Arr, el];
-          }
-        });
-        setTours(Arr);
-        setStotalItemCount1(Arr.length);
-        setTourMakerSelect1(Array(Arr.length).fill(false));
-      } else {
-        setTours(tourStorage);
-        setStotalItemCount1(tourStorage.length);
-        setTourMakerSelect1(Array(tourStorage.length).fill(false));
-      }
-      setPage1(1);
+      searchTours(e.target.value);
     }
   };
 
@@ -321,18 +328,7 @@ const CreatePlanPage = () => {
 
   const onSubmit = () => {
     // 검색 클릭 함수
-    if (searchKeyword !== "") {
-      let Arr = [];
-      tourStorage.filter((el) => {
-        if (el.addr1.indexOf(searchKeyword) !== -1) {
-          Arr = [...Arr, el];
-        }
-      });
-      setTours(Arr);
-      setStotalItemCount1(Arr.length);
-      setPage1(1);
-      setTourMakerSelect1(Array(Arr.length).fill(false));
-    }
+    searchTours(searchKeyword);
   };
 
   const moveMapLocation = (e, id) => {

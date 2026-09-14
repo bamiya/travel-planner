@@ -27,10 +27,10 @@ const InformationPage = () => {
 
   const getTravelInfo = async (id) => {
     const response = await fetch(
-      `https://apis.data.go.kr/B551011/KorService/detailCommon?serviceKey=${process.env.VITE_TOUR_API_KEY}&MobileOS=ETC&MobileApp=AppTest&_type=json&contentId=${id}&contentTypeId=12&defaultYN=Y&firstImageYN=Y&areacodeYN=Y&catcodeYN=Y&addrinfoYN=Y&mapinfoYN=Y&overviewYN=Y`
+      `https://apis.data.go.kr/B551011/KorService2/detailCommon2?serviceKey=${process.env.VITE_TOUR_API_KEY}&MobileOS=ETC&MobileApp=AppTest&_type=json&contentId=${id}`
     );
     const json = await response.json();
-    const data = json.response.body.items.item;
+    const data = json.response?.body?.items?.item ?? [];
     const likeCount = await axios.get(`http://localhost:8080/getLikeCount/${data[0].contentid}`);
     setInfoData({ ...data[0], likeCount: likeCount.data.data });
   };

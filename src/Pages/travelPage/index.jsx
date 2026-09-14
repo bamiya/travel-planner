@@ -23,19 +23,18 @@ const TravelPage = () => {
   const { state } = location;
 
   useEffect(() => {
+    // location.search에 의존해야 이 페이지 안에서 다시 검색해도(같은 라우트,
+    // 쿼리스트링만 바뀜) 재조회가 된다. 기존엔 []로 마운트 시 1회만 실행되고
+    // tours.length===0 일때만 조회해서, 첫 조회 이후로는 재검색이 반영되지 않았다.
     const search = location.search.split("="); // url 에 있는 search 를 가져옴
     window.scroll(0, 0);
-    if (Array.isArray(tours) && tours.length === 0) {
-      if (search[0] === '' || search[0] !== '?search') {
-        tourData();
-      } else {
-        if(search[0] === '?search'){
-          tourData(decodeURI(search[1]));
-        }
-      }
+    if (search[0] === '?search') {
+      tourData(decodeURI(search[1]));
+    } else {
+      tourData();
     }
     setSearchKeyword(search[1] === undefined ? '전체' : decodeURI(search[1]));
-  }, []);
+  }, [location.search]);
 
   useEffect(() => {
     getLikes();
@@ -55,11 +54,12 @@ const TravelPage = () => {
     (async () => {
       const isSearch = search !== undefined && search !== null && search !== "";
       // 검색어가 있을 땐 전체 목록을 받아와 주소로만 거르는 대신,
-      // TourAPI의 이름 기반 검색 엔드포인트(searchKeyword)를 직접 사용한다.
-      const endpoint = isSearch ? "searchKeyword" : "areaBasedSyncList";
+      // TourAPI의 이름 기반 검색 엔드포인트(searchKeyword2)를 직접 사용한다.
+      // (구 버전 KorService/areaBasedSyncList, searchKeyword는 서비스가 폐기되어 KorService2로 이전됨)
+      const endpoint = isSearch ? "searchKeyword2" : "areaBasedList2";
       const keywordParam = isSearch ? `&keyword=${encodeURIComponent(search)}` : "";
       const response = await fetch(
-        `https://apis.data.go.kr/B551011/KorService/${endpoint}?serviceKey=${process.env.VITE_TOUR_API_KEY}&numOfRows=100000&MobileOS=ETC&MobileApp=AppTest&_type=json&contentTypeId=12${keywordParam}`
+        `https://apis.data.go.kr/B551011/KorService2/${endpoint}?serviceKey=${process.env.VITE_TOUR_API_KEY}&numOfRows=100000&MobileOS=ETC&MobileApp=AppTest&_type=json&contentTypeId=12${keywordParam}`
       );
       const json = await response.json();
       const tourItems = json.response?.body?.items?.item ?? []; // 검색 결과가 없으면 items가 빈 문자열로 온다
@@ -73,7 +73,10 @@ const TravelPage = () => {
   const handleOnKeyPress = (e) => {
     // 검색 함수
     if (e.key === "Enter") {
-      window.open(`${window.location.origin}/travel?search=${e.target.value}`, '_self');
+      // window.open(..., '_self')로 origin 기준 절대경로를 새로 만들면
+      // base path(/travel-planner/)가 빠져 배포 환경에서 404가 난다.
+      // 라우터의 navigate를 써야 base path가 자동으로 유지된다.
+      navigate(`/travel?search=${e.target.value}`);
     }
   };
 
