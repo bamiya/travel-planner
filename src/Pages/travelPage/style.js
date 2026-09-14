@@ -14,36 +14,40 @@ export const CategoryTabBox = styled.div`
 `
 export const CategoryTab = styled.button`
     border: 0;
-    padding: 8px 20px;
-    border-radius: 20px;
+    padding: 9px 22px;
+    border-radius: var(--radius-lg);
     font-size: 15px;
-    font-weight: bold;
+    font-weight: 700;
     cursor: pointer;
-    background-color: ${(props) => (props.active ? "#38B7FF" : "#F0F0F0")};
-    color: ${(props) => (props.active ? "white" : "#555")};
+    transition: var(--transition-base);
+    background-color: ${(props) => (props.active ? "var(--color-primary)" : "var(--color-bg)")};
+    color: ${(props) => (props.active ? "white" : "var(--color-text-muted)")};
+
+    &:hover {
+        background-color: ${(props) => (props.active ? "var(--color-primary-dark)" : "var(--color-primary-light)")};
+    }
 `
 export const InputBox = styled.div`
     width: 75%;
-    height: 48px;
-    background-color: white;
+    height: 52px;
+    background-color: var(--color-white);
     box-sizing: border-box;
-    padding: 0 0 0 7px;
+    padding: 0 20px;
     display: flex;
     margin-top: 250px;
-    border-bottom: 1px solid #000000;
-    border-bottom-width: 2.3px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-card);
 `
 export const ListSumBox = styled.div`
     width: 100%;
-    height: 48px;
-    background-color: white;
     box-sizing: border-box;
-    padding: 0 0 0 7px;
+    padding: 0 10px;
     display: flex;
-    font-size: 32px;
-    margin: 10px;
-    margin-bottom: 30px;
-    font-weight: bold
+    font-size: 26px;
+    margin: 20px 0 10px;
+    font-weight: 800;
+    color: var(--color-text);
 `
 export const Input = styled.input`
     margin: 0;
@@ -51,12 +55,15 @@ export const Input = styled.input`
     border: 0;
     flex: 1;
     outline: none;
-    font-size: 35px;
+    font-size: 20px;
     box-sizing: border-box;
     padding-left: 9px;
-    font-weight: 450;
-    opacity: 0.5;
-    
+    font-weight: 500;
+    color: var(--color-text);
+
+    &::placeholder {
+        color: var(--color-text-muted);
+    }
 `
 export const TravelListBox = styled.div`
     width: 100%;
@@ -106,25 +113,38 @@ export const SteamListButtonBox = styled.div`
 export const TravelWrapper = styled.div`
     width: 900px;
     max-width: 100%;
-    height: 160px;
-    padding: 20px 0 20px 0;
+    padding: 18px;
     display: flex;
-    border-bottom: 1px solid #eeeeef;
-    border-bottom: 1px solid #9ea4ad ;
+    align-items: center;
+    gap: 18px;
+    background-color: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+    margin-bottom: 16px;
+    transition: var(--transition-base);
+
+    &:hover {
+        box-shadow: var(--shadow-hover);
+        transform: translateY(-2px);
+    }
 
     @media (max-width: 768px) {
-        height: auto;
         flex-wrap: wrap;
     }
 `
 export const Image = styled.img`
-    width: 200px;
+    width: 160px;
+    height: 120px;
     object-fit: cover;
-    border-radius: 10px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
+    flex-shrink: 0;
+    background-color: var(--color-bg);
 
     @media (max-width: 480px) {
-        width: 120px;
+        width: 110px;
+        height: 100px;
     }
 `
 export const Title = styled.div`
@@ -141,40 +161,39 @@ export const Title = styled.div`
 `
 export const Txt = styled.div`
     display: flex;
-    width: 65%;
-    height: 100%;
-    margin-left: 15px;
+    flex: 1;
+    min-width: 0;
     flex-direction: column;
-    
+    justify-content: center;
 `
 export const PlaceTitle = styled.div`
     overflow: hidden;
     display: inline-block;
     width: 100%;
-    font-weight: bold;
-    font-size: 20px;
-    color: #000;
+    font-weight: 700;
+    font-size: 19px;
+    color: var(--color-text);
     text-overflow: ellipsis;
     white-space: nowrap;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
     cursor: pointer;
-
-    
 `
 export const Text = styled.div`
-    width: 100%; 
+    width: 100%;
     font-size: 30px;
     text-align: center;
     font-weight: bold
  `
  export const Address = styled.div`
-    margin-top: 5px;
-    font-size: 15px;
+    margin-top: 4px;
+    font-size: 14px;
+    color: var(--color-text-muted);
  `
 
  export const Tel = styled.div`
-    margin-top: 5px;
-    font-size: 14px;
+    margin-top: 4px;
+    font-size: 13px;
+    color: var(--color-text-muted);
  `
 
  export const SteamListButtonImg = styled.img`
@@ -187,21 +206,24 @@ export const Text = styled.div`
 `
 export const Like = styled.button`
     border: none;
-    background: ${props => {
-        return props.dibs ? "rgba(0, 150, 100, 0.5)" : "rgba(255, 0, 100, 0.5)"
-    }};
-    color: white;
-    border-radius: 10px;
-    margin-left: 15px;
+    background: ${props => (props.dibs ? "var(--color-success)" : "var(--color-bg)")};
+    color: ${props => (props.dibs ? "white" : "var(--color-text-muted)")};
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 600;
     cursor: pointer;
-    width: 80px;
-    height: 100%;
+    padding: 8px 14px;
+    white-space: nowrap;
+    transition: var(--transition-base);
+
+    &:hover {
+        filter: brightness(0.96);
+    }
  `
  export const LikeBox = styled.div`
      display: flex;
-     justify-content: center;
-     align-content: center;
-     align-items: flex-start;
-     margin-top: 150px;
-     height: 25px;
+     flex-direction: column;
+     align-items: center;
+     gap: 8px;
+     flex-shrink: 0;
  `

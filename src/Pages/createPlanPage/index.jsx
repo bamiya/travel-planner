@@ -103,9 +103,26 @@ const CreatePlanPage = () => {
     { id: "39", label: "음식점" },
     { id: "32", label: "숙박" },
   ];
+
+  // TourAPI cat1(대분류) 기준 세부 필터. 이미 받아온 목록을 클라이언트에서
+  // 한 번 더 걸러내는 방식이라 API를 추가로 호출하지 않는다.
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [selectedCats, setSelectedCats] = useState([]);
+  const catOptions = [
+    { id: "A01", label: "자연" },
+    { id: "A02", label: "인문" },
+    { id: "A03", label: "레포츠" },
+    { id: "A04", label: "쇼핑" },
+    { id: "A05", label: "음식" },
+  ];
+  const toggleCat = (id) => {
+    setSelectedCats((prev) => (prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]));
+    setPage1(1);
+  };
   const [searchKeyword, setSearchKeyword] = useState(""); // 키워드
   const [tourStorage, setTourStorage] = useState(); // 전체 관광지
   const [tours, setTours] = useState([]); // 키워드 검색 결과 관광지
+  const visibleTours = selectedCats.length === 0 ? tours : tours.filter((t) => selectedCats.includes(t.cat1));
   const [cart, setCart] = useState([]); // 찜
   const [tourSelect, setTourSelect] = useState([]); // 필요없는데 필요함..? 렌더링안됨
   const [dayList, setDayList] = useState(); // 총 일정목록
@@ -548,16 +565,35 @@ const CreatePlanPage = () => {
               <Styles.ListBox>
                 <Styles.ListTitleBox>
                   <Styles.ListTitle>전체 여행지</Styles.ListTitle>
+                  <Styles.ListFilter onClick={() => setFilterOpen(!filterOpen)}>필터</Styles.ListFilter>
                 </Styles.ListTitleBox>
+                {filterOpen && (
+                  <>
+                    <Styles.FilterBox>
+                      {catOptions.map((cat) => (
+                        <Styles.FilterItemBox key={cat.id} onClick={() => toggleCat(cat.id)}>
+                          <Styles.FilterCheckBox type="checkbox" checked={selectedCats.includes(cat.id)} onChange={() => toggleCat(cat.id)} />
+                          <Styles.FilterItemText>{cat.label}</Styles.FilterItemText>
+                        </Styles.FilterItemBox>
+                      ))}
+                    </Styles.FilterBox>
+                    <Styles.FilterBtnBox>
+                      <Styles.FilterBtn onClick={() => setSelectedCats([])}>초기화</Styles.FilterBtn>
+                      <Styles.FilterBtn onClick={() => setFilterOpen(false)}>닫기</Styles.FilterBtn>
+                    </Styles.FilterBtnBox>
+                  </>
+                )}
                 <Styles.ScrollBox>
                   {!rendering2 ? (
                     <Spinner text="여행지를 불러오는 중입니다..." padding="40px 0" size="28px" />
-                  ) : tours.length === 0 ? (
+                  ) : visibleTours.length === 0 ? (
                     <Styles.DayItem>
-                      <Styles.DayItemTitle>"{decodeURIComponent(searchKeyword)}" 에 대한 검색결과가 없습니다.</Styles.DayItemTitle>
+                      <Styles.DayItemTitle>
+                        {selectedCats.length > 0 ? "선택한 카테고리에 해당하는 결과가 없습니다." : `"${decodeURIComponent(searchKeyword)}" 에 대한 검색결과가 없습니다.`}
+                      </Styles.DayItemTitle>
                     </Styles.DayItem>
                   ) : (
-                    tours
+                    visibleTours
                       .filter((e, index) => {
                         if (index >= (page1 - 1) * itemsCount && index < page1 * itemsCount) return e;
                       })
@@ -587,7 +623,7 @@ const CreatePlanPage = () => {
                       })
                   )}
                 </Styles.ScrollBox>
-                {tours === "" ? "" : <Paging page={page1} count={totalItemsCount1} setPage={setPage1} itemsCount={itemsCount} />}
+                {tours === "" ? "" : <Paging page={page1} count={visibleTours.length} setPage={setPage1} itemsCount={itemsCount} />}
               </Styles.ListBox>
               <Styles.ListBox>
                 <Styles.ListTitleBox>

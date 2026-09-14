@@ -204,18 +204,28 @@ export const DayTitle = styled.div`
 export const DayItem = styled.div`
     height: 70px;
     width: 100%;
-    /* background-color: red; */
     box-sizing: border-box;
-    padding: 5px 0;
+    padding: 8px;
     display: flex;
-    border-bottom: 2px solid gray;
+    align-items: center;
+    border-radius: var(--radius-sm);
+    margin-bottom: 6px;
+    transition: var(--transition-base);
+
+    &:hover {
+        background-color: var(--color-bg);
+    }
 `
 
 export const DayItemImg = styled.img`
     cursor: pointer;
     height: 100%;
-    width: 90px;
-    margin-right: 5px;
+    width: 60px;
+    border-radius: var(--radius-sm);
+    object-fit: cover;
+    margin-right: 10px;
+    flex-shrink: 0;
+    background-color: var(--color-bg);
 `
 export const DayItemSubTextBox = styled.div`
     display: flex;
@@ -260,9 +270,9 @@ export const PlanAddBtnBox = styled.div`
 export const PlanAddBtn = styled.div`
     width: 100px;
     height: 30px;
-    border-radius: 5px;
+    border-radius: var(--radius-sm);
     background-color: ${props => {
-        return props.updated ? "#FF5757" : "#6FCB71"
+        return props.updated ? "var(--color-accent)" : "var(--color-success)"
     }};
 
     display: flex;
@@ -299,12 +309,17 @@ export const CategoryTabBox = styled.div`
 `
 export const CategoryTab = styled.div`
     padding: 6px 14px;
-    border-radius: 16px;
+    border-radius: var(--radius-lg);
     font-size: 13px;
-    font-weight: bold;
+    font-weight: 700;
     cursor: pointer;
-    background-color: ${(props) => (props.active ? "#38B7FF" : "#F0F0F0")};
-    color: ${(props) => (props.active ? "white" : "#555")};
+    transition: var(--transition-base);
+    background-color: ${(props) => (props.active ? "var(--color-primary)" : "var(--color-bg)")};
+    color: ${(props) => (props.active ? "white" : "var(--color-text-muted)")};
+
+    &:hover {
+        background-color: ${(props) => (props.active ? "var(--color-primary-dark)" : "var(--color-primary-light)")};
+    }
 `
 
 export const TravelInput = styled.input`
@@ -323,16 +338,21 @@ export const TravelInput = styled.input`
 export const TravelInputBtn = styled.div`
     width: 70px;
     height: 100%;
-    background-color: #6FCB71;
+    background-color: var(--color-primary);
     margin-left: 10px;
-    border-radius: 5px;
+    border-radius: var(--radius-sm);
     display: flex;
+    cursor: pointer;
+    transition: var(--transition-base);
     align-items: center;
     justify-content: center;
     font-size: 17px;
     font-weight: 500;
     color: white;
-    cursor: pointer;
+
+    &:hover {
+        background-color: var(--color-primary-dark);
+    }
 `
 
 export const ListBox = styled.div`
@@ -365,16 +385,23 @@ export const ListTitle = styled.div`
 `
 
 export const ListFilter = styled.div`
-    width: 70px;
-    height: 30px;
-    border-radius: 5px;
-    background-color: #6FCB71;
+    padding: 6px 14px;
+    border-radius: var(--radius-lg);
+    background-color: var(--color-bg);
     cursor: pointer;
-    font-size: 17px;
-    color: white;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color-text-muted);
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-left: auto;
+    transition: var(--transition-base);
+
+    &:hover {
+        background-color: var(--color-primary-light);
+        color: var(--color-primary-dark);
+    }
 `
 
 export const ItemBox = styled.div`
@@ -386,12 +413,12 @@ export const ItemBox = styled.div`
 export const ItemBtn = styled.button`
     width: 60px;
     height: 25px;
-    border-radius: 5px;
-    /* background-color: #6FCB71; */
+    border-radius: var(--radius-sm);
     background-color: ${props => {
-        return props.remove ? "#DF5151" : "#6FCB71"
+        return props.remove ? "var(--color-accent)" : "var(--color-success)"
     }};
     font-size: 10px;
+    font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -400,23 +427,33 @@ export const ItemBtn = styled.button`
     border: none;
     outline: none;
     cursor: pointer;
+    transition: var(--transition-base);
 
+    &:hover {
+        filter: brightness(0.94);
+    }
 `
 
 export const ListItemBox = styled.div`
 `
 
 export const FilterItemBox = styled.div`
-    border-radius: 5px;
+    border-radius: var(--radius-sm);
     display: flex;
     width: 110px;
     max-width: 100%;
     box-sizing: border-box;
-    padding: 5px 0;
+    padding: 7px 4px;
     justify-content: center;
     align-items: center;
-    border: 1px solid gray;
+    border: 1px solid var(--color-border);
     cursor: pointer;
+    font-size: 13px;
+    transition: var(--transition-base);
+
+    &:hover {
+        border-color: var(--color-primary);
+    }
 `
 
 export const FilterBox = styled.div`
@@ -425,6 +462,7 @@ export const FilterBox = styled.div`
     justify-items: center;
     row-gap: 15px;
     column-gap: 5px;
+    margin-bottom: 15px;
 
     @media (max-width: 480px) {
         grid-template-columns: repeat(2, 1fr);
@@ -449,6 +487,9 @@ export const FilterBtnBox = styled.div`
 export const FilterBtn = styled.div`
     margin: 0 15px;
     cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-primary-dark);
     :hover{
         text-decoration: underline;
     }
@@ -459,18 +500,24 @@ export const PlanApplyBtn = styled.button`
     outline: none;
     width: 180px;
     height: 50px;
-    background-color: greenyellow;
+    background-color: var(--color-primary);
+    color: white;
     position: absolute;
     z-index: 2;
     bottom: 50px;
     left: 50%;
     margin-left: -90px;
-    border-radius: 10px;
+    border-radius: var(--radius-lg);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 20px;
     font-weight: bold;
+    transition: var(--transition-base);
+
+    &:hover {
+        background-color: var(--color-primary-dark);
+    }
     cursor: pointer;
     box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
 `
