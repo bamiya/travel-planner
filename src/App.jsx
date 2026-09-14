@@ -88,12 +88,12 @@ const App = () => {
   }
 
   return (
-      <BrowserRouter basename={process.env.PUBLIC_URL}>
+      <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, "")}>
         <ToastContainer position="top-center" autoClose={2500} pauseOnHover />
         <ScrollToTop/>
         <Routes>
           <Route element={<MainLayout/>}>
-            <Route path="/travel-planner" element={<MainPage/>}/>
+            <Route path="/" element={<MainPage/>}/>
             <Route path="/login" element={<LoginPage />}/>
             <Route path="/sign" element={<SignPage />}/>
             <Route path="/findPass" element={<FindPassPage />}/>
