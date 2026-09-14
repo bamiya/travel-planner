@@ -3,6 +3,7 @@ import * as Styles from "./style";
 import { UserBlueBtn } from "../../Common/style";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import CryptoJS from "crypto-js";
 
 const ChangePassPage = () => {
   const data = useLocation();
@@ -23,7 +24,7 @@ const ChangePassPage = () => {
     if (isPassword && isPasswordConfirm) {
       try {
         const createHashedPassword = CryptoJS.SHA256(pw).toString(CryptoJS.enc.Base64);
-        await axios.post("http://localhost:8080/passwordChange", { email: data.state, pw: createHashedPassword });
+        await axios.post("http://localhost:8080/passwordChange", { resetToken: data.state, pw: createHashedPassword });
         navigate("/login");
       } catch (e) {
         alert(e.response.data.msg);

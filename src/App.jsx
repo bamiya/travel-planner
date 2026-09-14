@@ -32,8 +32,7 @@ axios.interceptors.response.use(
     if(error.response.status === 401){
       try{
         await getAccessToken();
-        await axios.request(error.config);
-        return;
+        return await axios.request(error.config);
       }catch(e){
         // console.log(e);
       }
