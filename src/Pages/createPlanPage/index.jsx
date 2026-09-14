@@ -179,6 +179,32 @@ const CreatePlanPage = () => {
     }
   }, [dateList]);
 
+  // 하루 일정에 추가한 장소 사이의 이동거리/시간 안내 (OSRM 무료 라우팅 API)
+  const [routeLegs, setRouteLegs] = useState([]);
+  useEffect(() => {
+    const getRouteLegs = async () => {
+      if (!update || !dayList || !dayList[update - 1]) {
+        setRouteLegs([]);
+        return;
+      }
+      const stops = dayList[update - 1][1];
+      if (stops.length < 2) {
+        setRouteLegs([]);
+        return;
+      }
+      try {
+        const coords = stops.map((s) => `${s.mapx},${s.mapy}`).join(";");
+        const response = await fetch(`https://router.project-osrm.org/route/v1/driving/${coords}?overview=false`);
+        const json = await response.json();
+        setRouteLegs(json.routes?.[0]?.legs ?? []);
+      } catch (e) {
+        // 무료 공개 데모 서버라 실패해도 조용히 무시하고 안내를 숨긴다.
+        setRouteLegs([]);
+      }
+    };
+    getRouteLegs();
+  }, [dayList, update]);
+
   useEffect(() => {
     if (pagingHook.current) {
       setTourMakerSelect1(Array(totalItemsCount1).fill(false));
@@ -401,21 +427,22 @@ const CreatePlanPage = () => {
 
   const addTour = (el, idx) => {
     // 관광지 추가 함수
-    dayList[idx - 1][1] = [...dayList[idx - 1][1], el];
-    setDayList(dayList);
-    setTourMakerSelect0(Array(dayList[idx - 1][1].length).fill(false));
+    // dayList를 직접 mutate하고 같은 참조로 setDayList를 부르면 React가
+    // 참조 비교로 변경을 감지 못해 이 값을 의존하는 effect(동선 계산 등)가
+    // 다시 실행되지 않는다. 매번 새 배열을 만들어 넘겨야 한다.
+    const newStops = [...dayList[idx - 1][1], el];
+    const newDayList = dayList.map((day, i) => (i === idx - 1 ? [day[0], newStops] : day));
+    setDayList(newDayList);
+    setTourMakerSelect0(Array(newStops.length).fill(false));
     setTourSelect([...tourSelect, el]);
   };
 
   const removeTour = (idx, idx2) => {
     // 추가한 관광지 삭제 함수
-    for (let i = 0; i < dayList[idx2 - 1][1].length; i++) {
-      if (idx === i) {
-        dayList[idx2 - 1][1].splice(i, 1);
-        setDayList(dayList);
-        setTourSelect([...tourSelect]);
-      }
-    }
+    const newStops = dayList[idx2 - 1][1].filter((_, i) => i !== idx);
+    const newDayList = dayList.map((day, i) => (i === idx2 - 1 ? [day[0], newStops] : day));
+    setDayList(newDayList);
+    setTourSelect([...tourSelect]);
   };
 
   const checkTitle = () => {
@@ -522,6 +549,11 @@ const CreatePlanPage = () => {
                                     </Styles.DayItemSubTextBox>
                                   </Styles.DayItemTextBox>
                                 </Styles.DayItem>
+                                {routeLegs[id] && (
+                                  <Styles.RouteInfo>
+                                    🚗 {(routeLegs[id].distance / 1000).toFixed(1)}km · 약 {Math.round(routeLegs[id].duration / 60)}분
+                                  </Styles.RouteInfo>
+                                )}
                               </div>
                             );
                           })

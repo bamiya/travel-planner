@@ -201,6 +201,21 @@ export const DayTitle = styled.div`
     margin-bottom: 15px;
 `
 
+export const RouteInfo = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin: 2px 0 6px 30px;
+    padding: 4px 10px;
+    width: fit-content;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-primary-dark);
+    background-color: var(--color-primary-light);
+    border-radius: var(--radius-sm);
+`
+
 export const DayItem = styled.div`
     height: 70px;
     width: 100%;
