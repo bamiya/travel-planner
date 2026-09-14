@@ -50,29 +50,23 @@ const TravelPage = () => {
   }, [page]);
 
   const tourData = (search) => {
-    // 전체 검색 함수
+    // 전체 조회 / 키워드 검색 함수
     setRendering(false);
     (async () => {
+      const isSearch = search !== undefined && search !== null && search !== "";
+      // 검색어가 있을 땐 전체 목록을 받아와 주소로만 거르는 대신,
+      // TourAPI의 이름 기반 검색 엔드포인트(searchKeyword)를 직접 사용한다.
+      const endpoint = isSearch ? "searchKeyword" : "areaBasedSyncList";
+      const keywordParam = isSearch ? `&keyword=${encodeURIComponent(search)}` : "";
       const response = await fetch(
-        `https://apis.data.go.kr/B551011/KorService/areaBasedSyncList?serviceKey=${process.env.VITE_TOUR_API_KEY}&numOfRows=100000&MobileOS=ETC&MobileApp=AppTest&_type=json&contentTypeId=12`
+        `https://apis.data.go.kr/B551011/KorService/${endpoint}?serviceKey=${process.env.VITE_TOUR_API_KEY}&numOfRows=100000&MobileOS=ETC&MobileApp=AppTest&_type=json&contentTypeId=12${keywordParam}`
       );
       const json = await response.json();
-      const tourItems = json.response.body.items.item;
+      const tourItems = json.response?.body?.items?.item ?? []; // 검색 결과가 없으면 items가 빈 문자열로 온다
       setStorageTours(tourItems);
       setPage(1);
-      if (search === undefined || search === null) {
-        setTours(tourItems);
-        setTotalItemCount(tourItems.length);
-      } else {
-        let Arr = [];
-        tourItems.filter((el, idx) => {
-          if (el.addr1.indexOf(search) !== -1) {
-            Arr = [...Arr, el];
-          }
-        });
-        setTours(Arr);
-        setTotalItemCount(Arr.length);
-      }
+      setTours(tourItems);
+      setTotalItemCount(tourItems.length);
       setRendering(true);
     })();
   };
