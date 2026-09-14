@@ -121,6 +121,7 @@ const CreatePlanPage = () => {
     setPage1(1);
   };
   const [searchKeyword, setSearchKeyword] = useState(""); // 키워드
+  const travelInputRef = useRef(null);
   const [tourStorage, setTourStorage] = useState(); // 전체 관광지
   const [tours, setTours] = useState([]); // 키워드 검색 결과 관광지
   const visibleTours = selectedCats.length === 0 ? tours : tours.filter((t) => selectedCats.includes(t.cat1));
@@ -396,7 +397,12 @@ const CreatePlanPage = () => {
 
   const onSubmit = () => {
     // 검색 클릭 함수
-    searchTours(searchKeyword);
+    // searchKeyword state는 blur 시점에만 갱신되는데, input에서 바로
+    // 검색 버튼을 클릭하면 blur의 setState가 아직 반영되기 전이라
+    // 오래된(대부분 빈) 값을 읽게 된다. input의 현재 값을 직접 읽는다.
+    const keyword = travelInputRef.current?.value ?? "";
+    setSearchKeyword(keyword);
+    searchTours(keyword);
   };
 
   const moveMapLocation = (e, id) => {
@@ -584,7 +590,7 @@ const CreatePlanPage = () => {
           <Styles.TravelBox open={travelOpen}>
             <Styles.ContentBox>
               <Styles.TravelInputBox>
-                <Styles.TravelInput placeholder="검색할 여행지를 입력해주세요." onBlur={(e) => handleBlur(e)} onKeyUp={handleOnKeyPress} />
+                <Styles.TravelInput ref={travelInputRef} placeholder="검색할 여행지를 입력해주세요." onBlur={(e) => handleBlur(e)} onKeyUp={handleOnKeyPress} />
                 <Styles.TravelInputBtn onClick={onSubmit}>검색</Styles.TravelInputBtn>
               </Styles.TravelInputBox>
               <Styles.CategoryTabBox>

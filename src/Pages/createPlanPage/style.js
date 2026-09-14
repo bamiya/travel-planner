@@ -306,11 +306,13 @@ export const DayItem = styled.div`
     display: flex;
     align-items: center;
     border-radius: var(--radius-sm);
-    margin-bottom: 6px;
+    border: 1px solid var(--color-border);
+    margin-bottom: 8px;
     transition: var(--transition-base);
 
     &:hover {
         background-color: var(--color-bg);
+        border-color: var(--color-primary);
     }
 `
 
