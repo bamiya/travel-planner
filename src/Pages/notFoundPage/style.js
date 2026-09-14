@@ -10,25 +10,33 @@ export const Wrapper = styled.div`
 `
 
 export const ErrorCode = styled.div`
-    font-weight: 500;
+    font-weight: 800;
     font-size: 100px;
+    color: var(--color-primary);
 `
 
 export const ErrorContent = styled.div`
-    font-weight: 300;
+    font-weight: 500;
+    color: var(--color-text-muted);
     margin: 20px 0px;
 `
 
 export const Button = styled(Link)`
-    width: 100px;
-    height: 40px;
-    background-color: gray;
-    border-radius: 5px;
+    width: 120px;
+    height: 44px;
+    background-color: var(--color-primary);
+    border-radius: var(--radius-sm);
     border: 0;
     color: white;
+    font-weight: 700;
     cursor: pointer;
     text-decoration: none;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: var(--transition-base);
+
+    &:hover {
+        background-color: var(--color-primary-dark);
+    }
 `

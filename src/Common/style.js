@@ -16,13 +16,21 @@ export const MarginTopWrapper = styled.div`
 export const UserBlueBtn = styled.button`
     width: 100%;
     max-width: 350px;
-    height: 35px;
-    background-color: #38B7FF;
+    height: 44px;
+    background-color: var(--color-primary);
     margin-top: 20px;
     color: white;
+    font-size: 15px;
+    font-weight: 700;
+    border-radius: var(--radius-sm);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     border: none;
+    transition: var(--transition-base);
+
+    &:hover {
+        background-color: var(--color-primary-dark);
+    }
 `

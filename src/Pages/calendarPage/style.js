@@ -29,10 +29,10 @@ export const Profile1 = styled.img`
 export const Title1 = styled.div`
     display: inline-block;
     line-height: 50px;
-    font-weight: bold;
-    font-size: 30px;
-    border-bottom: 1px solid #000;
-    border-bottom-width: 2.3px;
+    font-weight: 800;
+    font-size: 28px;
+    color: var(--color-text);
+    border-bottom: 2.3px solid var(--color-primary);
     width: 36%;
     padding: 25px 0 10px 20px;
     margin-bottom: 20px;
@@ -67,9 +67,10 @@ export const IntroTitle = styled.div`
 `
 export const IntroText = styled.div`
     font-size:40px;
+    font-weight: 800;
     font-family: Arial, Helvetica, sans-serif;
     color: ${props => {
-        return props.color === 'true' ? "white" : "black"
+        return props.color === 'true' ? "white" : "var(--color-text)"
     }};
 
 `
@@ -77,7 +78,7 @@ export const IntroText = styled.div`
 export const IntroDate = styled.div`
     font-size: 20px;
     color: ${props => {
-        return props.color === 'true' ? "white" : "black"
+        return props.color === 'true' ? "white" : "var(--color-text-muted)"
     }};
 
 `
@@ -91,7 +92,7 @@ export const IntroNE = styled.div`
 export const IntroName = styled.div`
     font-size: 25px;
     color: ${props => {
-        return props.color === 'true' ? "white" : "black"
+        return props.color === 'true' ? "white" : "var(--color-text)"
     }};
 
 `
@@ -99,7 +100,7 @@ export const IntroName = styled.div`
 export const IntroEmail = styled.div`
     font-size: 19px;
     color: ${props => {
-        return props.color === 'true' ? "white" : "black"
+        return props.color === 'true' ? "white" : "var(--color-text-muted)"
     }};
 
 `
@@ -109,21 +110,27 @@ export const LikeBox = styled.div`
     justify-content: center;
     align-content: center;
     align-items: flex-start;
-    margin-top: 150px;
+    margin-top: 30px;
     height: 25px;
 `
 
 export const Like = styled.button`
     border: none;
     background: ${props => {
-        return props.dibs ? "rgba(0, 150, 100, 0.5)" : "rgba(255, 0, 100, 0.5)"
+        return props.dibs ? "var(--color-success)" : "var(--color-accent)"
     }};
     color: white;
-    border-radius: 10px;
+    font-weight: 700;
+    border-radius: var(--radius-sm);
     margin-left: 15px;
     cursor: pointer;
     width: 80px;
     height: 100%;
+    transition: var(--transition-base);
+
+    &:hover {
+        filter: brightness(0.93);
+    }
  `
 
 export const ShareBtnBox = styled.div`
@@ -181,10 +188,10 @@ export const Menu = styled.div`
 export const Title = styled.div`
     display: inline-block;
     line-height: 50px;
-    font-weight: bold;
-    font-size: 30px;
-    border-bottom: 1px solid #000;
-    border-bottom-width: 2.3px;
+    font-weight: 800;
+    font-size: 28px;
+    color: var(--color-text);
+    border-bottom: 2.3px solid var(--color-primary);
     width: 36%;
     padding: 25px 0 10px 20px;
     margin-bottom: 20px;
@@ -199,23 +206,21 @@ export const Box = styled.div`
     }
 `
 
-export const PlanInfoList = styled.div`    
+export const PlanInfoList = styled.div`
     display: flex;
     overflow-y: auto;
         // 스크롤 디자인
         ::-webkit-scrollbar {   // 스크롤 전체
-            width: 15px;
+            width: 10px;
         }
         ::-webkit-scrollbar-thumb { // 스크롤바
-            background-color: #807E7E;
+            background-color: var(--color-border);
             border-radius: 10px;
             background-clip: padding-box;
             border: 2px solid transparent;
         }
         ::-webkit-scrollbar-track { //스크롤 여백
-            background-color: #CBCBCB;
-            border-radius: 10px;
-            box-shadow: inset 0px 0px 5px white;
+            background-color: transparent;
         }
     flex: 1;
     flex-direction: column;
@@ -223,11 +228,9 @@ export const PlanInfoList = styled.div`
 
 export const DayList = styled.div`
     display: flex;
-    padding: 10px 0 10px 0;
-    border-top: 1px solid #eeeeef;
-    border-bottom: 1px solid #eeeeef;
-    padding: 20px 0 20px 0;
-
+    padding: 20px 0;
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
 `
 
 export const Day = styled.div`
@@ -236,21 +239,21 @@ export const Day = styled.div`
     width: 100px;
     height: 100px;
     line-height: 100px;
-    font-weight: bold;
+    font-weight: 700;
     font-size: 20px;
     text-align: center;
-    color: #000;
+    color: var(--color-primary-dark);
     text-overflow: ellipsis;
     white-space: nowrap;
-    background-color: #D7D7D7;
-    border-radius: 10px;
+    background-color: var(--color-primary-light);
+    border-radius: var(--radius-md);
     margin-right: 10px;
 `
 
 export const PlaceInfo = styled.div`
-    height: 100px;      
+    height: 100px;
     display: flex;
-    border-bottom: 1px solid #eeeeef;
+    border-bottom: 1px solid var(--color-border);
     padding: 0 0 23px 0;
 
 `
@@ -279,13 +282,13 @@ export const PlaceTitle = styled.div`
     overflow: hidden;
     display: inline-block;
     width: 100%;
-    font-weight: bold;
-    font-size: 20px;
-    color: #000;
+    font-weight: 700;
+    font-size: 19px;
+    color: var(--color-text);
     text-overflow: ellipsis;
     white-space: nowrap;
     margin-bottom: 10px;
-    
+
 `
 
 export const Content = styled.div`
@@ -301,9 +304,9 @@ export const Content = styled.div`
     max-height: 48px;
     font-size: 14px;
     font-family: Arial, Helvetica, sans-serif;
-    font-weight: bold;
-    color: #666;
-        
+    font-weight: 500;
+    color: var(--color-text-muted);
+
 `
 
 export const MapBtnBox = styled.button`
@@ -338,13 +341,13 @@ export const Comment = styled.div`
     width: 100%;
     margin-top: 200px;
     flex: 1;
-    
+
 `
 export const CommentBox = styled.div`
-    background-color: #f3f3f3;
+    background-color: var(--color-bg);
     width: 100%;
     height: 100%;
-    border-radius: 20px;
+    border-radius: var(--radius-lg);
     box-sizing: border-box;
     padding: 0 70px 0 70px;
     display: flex;
@@ -361,7 +364,7 @@ export const CommentBox = styled.div`
 export const ReviewBox = styled.div`
     width: 100%;
     display: flex;
-    border-bottom: 1px solid #9ea4aa;
+    border-bottom: 1px solid var(--color-border);
     box-sizing: border-box;
 `
 
@@ -371,9 +374,9 @@ export const Review = styled.div`
     align-self: start;
     flex-direction: column;
     width: 100%;
-    border-bottom: 1px solid black;
+    border-bottom: 1px solid var(--color-border);
     padding: 5px 5px 0 5px;
-    
+
 `
 
 export const RefirstBox = styled.div` 
@@ -386,13 +389,14 @@ export const ReImage = styled.img`
     height: 56px;
     border-radius: 50px;
     margin-top: 20px;
-    box-shadow: 0 3px 6px 0 rgb(29 34 53 / 8%);
+    box-shadow: var(--shadow-card);
 
 `
 
 export const ReName = styled.div`
     left: 70px;
-    font-weight: bold;
+    font-weight: 700;
+    color: var(--color-text);
 `
 
 export const ReContent = styled.div`
@@ -439,20 +443,26 @@ export const InputComment = styled.textarea`
 
 export const InputBtn = styled.button`
     border: none;
-    border-radius: 7px;
+    color: white;
+    border-radius: var(--radius-sm);
     position: absolute;
     display: flex;
     right: 0;
     bottom:0;
     width: 100px;
-    height: 35px;
-    background-color: #587545;
+    height: 40px;
+    background-color: var(--color-primary);
+    transition: var(--transition-base);
 
     cursor: pointer;
-    font-weight: bold;
-    font-size: 20px;
+    font-weight: 700;
+    font-size: 16px;
     font-family: Arial, Helvetica, sans-serif;
     justify-content: center;
     align-items: center;
+
+    &:hover {
+        background-color: var(--color-primary-dark);
+    }
 `
  

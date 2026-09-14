@@ -12,9 +12,9 @@ export const ContentBox = styled.div`
 `
 
 export const LoginText = styled.div`
-    font-size: 60px;
-    font-weight: 500;
-    color: black;
+    font-size: 52px;
+    font-weight: 800;
+    color: var(--color-text);
     margin-bottom: 40px;
 
     @media (max-width: 480px) {
@@ -23,38 +23,45 @@ export const LoginText = styled.div`
 `
 
 export const LoginText2 = styled.div`
-    font-size: 18px;
-    font-weight: 500;
-    color: black;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--color-text-muted);
     margin-bottom: 40px;
 `
 
 export const Input = styled.input`
     margin: 0;
-    border: 0;
+    border: 1px solid var(--color-border);
     outline: none;
     font-size: 15px;
     font-weight: 450;
     display: block;
     width: 100%;
     max-width: 350px;
-    height: 40px;
-    border-radius: 10px;
+    height: 44px;
+    border-radius: var(--radius-sm);
     box-sizing: border-box;
-    padding: 0 0 0 9px;
-    background-color: #F3F3F3;
+    padding: 0 0 0 12px;
+    background-color: var(--color-bg);
     margin-top: 7px;
+    transition: var(--transition-base);
+
+    &:focus {
+        border-color: var(--color-primary);
+        background-color: var(--color-white);
+    }
 `
 
 export const ErrorMessage = styled.label`
     font-size: 14px;
     font-weight: 400;
-    color: red;
+    color: var(--color-accent);
 `
 
 export const WarningMessage = styled.span`
     font-size: 14px;
+    font-weight: 600;
     color: ${props => {
-        return props.check ? "green" : "red"
+        return props.check ? "var(--color-success)" : "var(--color-accent)"
     }}
 `

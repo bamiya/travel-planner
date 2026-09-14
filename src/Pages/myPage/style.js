@@ -25,7 +25,7 @@ export const Box1 = styled.div`
 export const Box = styled.div`
     width: 1200px;
     padding-bottom: 30px;
-    border-bottom: 3px solid #000000 ;
+    border-bottom: 1px solid var(--color-border);
 `
 
 export const Box2 = styled.div`
@@ -40,9 +40,11 @@ export const Profile = styled.img`
     height: 150px;
     border-radius: 100%;
     margin-left: 50px;
-    box-shadow: 1px 1px 5px 2px;
+    box-shadow: var(--shadow-card);
+    border: 3px solid var(--color-white);
+    box-sizing: border-box;
     position:absolute;
-    
+
 `
 
 export const MyProfileBox = styled.div`
@@ -60,19 +62,22 @@ export const SettingsImg= styled.img`
 `
 
 export const Text = styled.div`
-    width: auto; 
+    width: auto;
     text-align: center;
-    font-size: 30px;
-    margin-right: 10px;   
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--color-text);
+    margin-right: 10px;
 `
 
 export const Text1 = styled.div`
-    width: 100%; 
-    font-size: 16px;
-    font-weight: bold;
+    width: 100%;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-text-muted);
     margin-top: 22.5px;
-    
-    
+
+
 `
 
 export const Nav = styled.nav`
@@ -84,96 +89,96 @@ export const Nav = styled.nav`
 `;
   
 export const NavLink = styled(Link)`
-  color: #000000;
+  color: ${props => props.isaction === "myPlan" ? "white" : "var(--color-text-muted)"};
   display: flex;
+  align-items: center;
+  justify-content: center;
   text-decoration: none;
   text-align: center;
-  border-radius: 10px;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
   height: 100%;
   background: ${props => {
-    return props.isaction === "myPlan" ? "#BEBEBE" :"#ECECEC"
+    return props.isaction === "myPlan" ? "var(--color-primary)" :"var(--color-bg)"
   }
   };
   cursor: pointer;
+  transition: var(--transition-base);
   &:hover {
-    background: #BEBEBE;
-    color: #808080;
-    &.active {
-    color: ${props => props.theme.orange };
-    background: #BEBEBE;
-  }
+    background: ${props => props.isaction === "myPlan" ? "var(--color-primary-dark)" : "var(--color-primary-light)"};
+    color: ${props => props.isaction === "myPlan" ? "white" : "var(--color-primary-dark)"};
   }
 `;
 
 export const NavLink1 = styled(Link)`
-  color: #000000;
+  color: ${props => props.isaction === "myComment" ? "white" : "var(--color-text-muted)"};
   display: flex;
+  align-items: center;
+  justify-content: center;
   text-decoration: none;
   text-align: center;
-  border-radius: 10px;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
   height: 100%;
   background: ${props => {
-    return props.isaction === "myComment" ? "#BEBEBE" :"#ECECEC"
+    return props.isaction === "myComment" ? "var(--color-primary)" :"var(--color-bg)"
   }
   };
   cursor: pointer;
+  transition: var(--transition-base);
   &:hover {
-    background: #BEBEBE;
-    color: #808080;
-    &.active {
-    color: ${props => props.theme.orange };
-    background: #BEBEBE;
-  }
+    background: ${props => props.isaction === "myComment" ? "var(--color-primary-dark)" : "var(--color-primary-light)"};
+    color: ${props => props.isaction === "myComment" ? "white" : "var(--color-primary-dark)"};
   }
 `;
 
 export const NavLink2 = styled(Link)`
-  color: #000000;
+  color: ${props => props.isaction === "sharedPlan" ? "white" : "var(--color-text-muted)"};
   display: flex;
+  align-items: center;
+  justify-content: center;
   text-decoration: none;
   text-align: center;
-  border-radius: 10px;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
   height: 100%;
   background: ${props => {
-    return props.isaction === "sharedPlan" ? "#BEBEBE" :"#ECECEC"
+    return props.isaction === "sharedPlan" ? "var(--color-primary)" :"var(--color-bg)"
   }
   };
   cursor: pointer;
+  transition: var(--transition-base);
   &:hover {
-    background: #BEBEBE;
-    color: #808080;
-    &.active {
-    color: ${props => props.theme.orange };
-    background: #BEBEBE;
-  }
+    background: ${props => props.isaction === "sharedPlan" ? "var(--color-primary-dark)" : "var(--color-primary-light)"};
+    color: ${props => props.isaction === "sharedPlan" ? "white" : "var(--color-primary-dark)"};
   }
 `;
 
 export const NavLink3 = styled(Link)`
-  color: #000000;
+  color: ${props => props.isaction === "like" ? "white" : "var(--color-text-muted)"};
   display: flex;
+  align-items: center;
+  justify-content: center;
   text-decoration: none;
   text-align: center;
-  border-radius: 10px;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
   height: 100%;
   background: ${props => {
-    return props.isaction === "like" ? "#BEBEBE" :"#ECECEC"
+    return props.isaction === "like" ? "var(--color-primary)" :"var(--color-bg)"
   }
   };
   cursor: pointer;
+  transition: var(--transition-base);
   &:hover {
-    background: #BEBEBE;
-    color: #808080;
-    &.active {
-    color: ${props => props.theme.orange };
-    background: #BEBEBE;
-  }
+    background: ${props => props.isaction === "like" ? "var(--color-primary-dark)" : "var(--color-primary-light)"};
+    color: ${props => props.isaction === "like" ? "white" : "var(--color-primary-dark)"};
   }
 `;
 
 export const NavMenu = styled.div`
   width: 300px;
   align-items: center;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   margin: 0 30px 0 0;
 `;

@@ -50,7 +50,7 @@ export const ColorBar = styled.div`
     position: absolute;
     width: 270px;
     height: 7px;
-    background-color: rgba(91,189,220,0.9);
+    background-color: var(--color-primary);
     top: 1px;
     right: 0;
 
@@ -59,28 +59,27 @@ export const ColorBar = styled.div`
 export const InputBox = styled.div`
     width: 700px;
     max-width: 100%;
-    height: 48px;
-    background-color: white;
-    border-radius: 5px;
+    height: 52px;
+    border-radius: var(--radius-md);
     box-sizing: border-box;
     display: flex;
-    background-color: #F3F3F3;
+    background-color: var(--color-white);
     position: relative;
-    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    box-shadow: var(--shadow-hover);
 `
 
 export const InputPreView = styled.div`
     width: 650px;
     max-width: 100%;
     height: 330px;
-    background-color: #F5F5F5;
+    background-color: var(--color-white);
     position: absolute;
-    top: 60px;
-    border-radius: 5px;
+    top: 62px;
+    border-radius: var(--radius-md);
     padding: 15px 30px 30px 30px;
     box-sizing: border-box;
     overflow-y: scroll;
-    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    box-shadow: var(--shadow-hover);
     display: ${props => {
         return props.display ? "block" : "none"
     }};
@@ -89,13 +88,14 @@ export const InputPreView = styled.div`
 export const InputPreItem = styled.div`
     width: 100%;
     height: 50px;
-    border-bottom: 1px solid black;
+    border-bottom: 1px solid var(--color-border);
     cursor: pointer;
     display: flex;
     align-items: center;
     font-weight: 400;
+    color: var(--color-text);
     :hover{
-        text-decoration: underline;
+        color: var(--color-primary);
     }
 `
 
@@ -107,21 +107,28 @@ export const Input = styled.input`
     outline: none;
     font-size: 18px;
     box-sizing: border-box;
-    padding-left: 9px;
+    padding-left: 12px;
     font-weight: 450;
-    background-color: #F3F3F3;
+    background-color: var(--color-white);
+    border-radius: var(--radius-md) 0 0 var(--radius-md);
     margin-left: 7px;
 `
 
 export const Btn = styled.div`
     width: 48px;
     height: 48px;
-    border-radius: 5px;
-    background-color: rgba(106, 136, 82, 0.6);
+    margin: 2px;
+    border-radius: var(--radius-sm);
+    background-color: var(--color-primary);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: var(--transition-base);
+
+    &:hover {
+        background-color: var(--color-primary-dark);
+    }
 `
 
 export const Img = styled.img`
@@ -160,14 +167,16 @@ export const BottomContentWords = styled.div`
 `
 
 export const BottonContentTitle = styled.div`
-    font-weight: bold;
-    font-size: 30px;
+    font-weight: 800;
+    font-size: 28px;
+    color: var(--color-text);
     margin-bottom: 15px;
 `
 
 export const BottomContentText = styled.div`
     width: 350px;
     max-width: 100%;
+    color: var(--color-text-muted);
     word-break: keep-all;
 `
 
@@ -179,21 +188,29 @@ export const BottomContentSBox = styled.div`
 `
 
 export const BottomContentBtn = styled.div`
-    background-color: #8397FF;
+    background-color: var(--color-primary);
     width: 200px;
-    height: 45px;
-    border-radius: 5px;
-    font-size: 20px;
+    height: 48px;
+    border-radius: var(--radius-sm);
+    font-size: 18px;
+    font-weight: 700;
     color: white;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     margin-top: 60px;
+    transition: var(--transition-base);
+
+    &:hover {
+        background-color: var(--color-primary-dark);
+    }
 `
 
 export const CarouselTitle = styled.div`
-    font-size: 35px;
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--color-text);
     margin-bottom: 25px;
 `
 
@@ -218,22 +235,29 @@ export const SliderImg = styled.img`
     width: 240px;
     height: 200px;
     object-fit: cover;
-    border-radius: 12px;
+    border-radius: var(--radius-md);
 `
 
 export const SliderInfo = styled.div`
     width: 100%;
     height: 140px;
-    border: 0.5px solid black;
-    border-radius: 15px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
     box-sizing: border-box;
     padding: 15px 15px 0;
     display: flex;
     flex-direction: column;
+    transition: var(--transition-base);
+
+    &:hover {
+        box-shadow: var(--shadow-hover);
+    }
 `
 
 export const SliderInfoText = styled.div`
-    font-weight: bold;
+    font-weight: 700;
+    color: var(--color-text);
     font-size: ${props => {
         return props.size ? props.size : "16px"
     }};

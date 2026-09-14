@@ -47,9 +47,10 @@ export const Wrapper = styled.div`
         }else{
             bg = "linear-gradient(180deg, rgba(118, 118, 118,1) 5%,  rgba(255,255,255, 0) 100%)"
         }
-        if(props.scroll) bg = "white"
+        if(props.scroll) bg = "var(--color-white)"
         return bg;
     }};
+    box-shadow: ${props => (props.scroll ? "0 2px 10px rgba(20,20,43,0.06)" : "none")};
 `
 
 export const Header = styled.div`
@@ -70,7 +71,7 @@ export const HamburgerBtn = styled.div`
     font-size: 28px;
     line-height: 1;
     cursor: pointer;
-    color: #393939;
+    color: var(--color-text);
     user-select: none;
 
     @media (max-width: 768px) {
@@ -123,11 +124,16 @@ export const Menu = styled.div`
 `
 
 export const Text = styled.span`
-    font-size: 20px;
-    font-weight: bold;
-    color: #393939;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--color-text);
     margin: 0px 10px;
     cursor: pointer;
+    transition: var(--transition-base);
+
+    &:hover {
+        color: var(--color-primary);
+    }
 `
 
 export const Img = styled.img`
@@ -139,8 +145,14 @@ export const MyProfile = styled.div`
     width: 40px;
     height: 40px;
     border-radius: 20px;
+    border: 2px solid var(--color-primary-light);
     cursor: pointer;
     position: relative;
+    transition: var(--transition-base);
+
+    &:hover {
+        border-color: var(--color-primary);
+    }
 `
 
 export const MyProfileImg = styled.img`
@@ -151,12 +163,13 @@ export const MyProfileImg = styled.img`
 
 export const MyProfileListBox = styled.div`
     position: absolute;
-    width: 140px;
-    background-color: #a9a9a9;
-    top: 50px;
-    left: -50px;
-    border-radius: 5px;
-    padding: 5px 15px;
+    width: 150px;
+    background-color: var(--color-white);
+    top: 52px;
+    left: -60px;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-hover);
+    padding: 8px;
     box-sizing: border-box;
     display: ${props => {
         return props.clicked ? "block" : "none"
@@ -166,14 +179,17 @@ export const MyProfileListBox = styled.div`
 export const MyProfileItem = styled.div`
     width: 100%;
     box-sizing: border-box;
-    padding: 10px 0;
+    padding: 10px 8px;
+    border-radius: var(--radius-sm);
     text-align: center;
-    color: whitesmoke;
-    font-weight: 400;
-    border-bottom: ${props => {
-        return props.last ? "" : "1px solid gray"
-    }};
+    color: var(--color-text);
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: var(--transition-base);
+
     :hover{
-        text-decoration: underline;
+        background-color: var(--color-primary-light);
+        color: var(--color-primary-dark);
     }
 `

@@ -6,20 +6,18 @@ export const TitleBox = styled.div`
     margin-top: 200px;
 `
 export const Title = styled.div`
-    font-size: 30px;
-    font-weight: 500px;
+    font-size: 28px;
     margin-top: 20px;
     margin-bottom: 40px;
     text-align: center;
-    font-weight: bold;
+    font-weight: 800;
+    color: var(--color-text);
 `
-export const TopBar = styled.div` 
+export const TopBar = styled.div`
     width: 100%;
-    height: 3px;
-   // margin-top: 10px;
+    height: 1px;
     margin-bottom: 30px;
-    background-color: grey ;
-    opacity: 0.2;
+    background-color: var(--color-border);
 `
 export const PlanBox = styled.div` //전체박스
     width: 100%;
@@ -46,8 +44,9 @@ export const PlanImg = styled.img`
     width: 300px;
     max-width: 100%;
     height: 200px;
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     cursor: pointer;
+    object-fit: cover;
 `
 export const LikeImg = styled.img`
     width: 25px;
@@ -67,7 +66,8 @@ export const LikefontBox = styled.div`
 export const ContentBox = styled.div`
     font-size: 16px;
     margin-left: 10px;
-    font-weight: bold;
+    font-weight: 700;
+    color: var(--color-text);
     cursor: pointer;
 `
 export const ContentListBox = styled.div`
@@ -75,12 +75,18 @@ export const ContentListBox = styled.div`
     max-width: 100%;
     height: 140px;
     margin-top: 10px;
-    border: 0.5px solid black;
-    border-radius: 15px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
     box-sizing: border-box;
     padding: 15px 15px 0;
     display: flex;
     flex-direction: column;
+    transition: var(--transition-base);
+
+    &:hover {
+        box-shadow: var(--shadow-hover);
+    }
 `
 export const LatestpopularBox =styled.div`
     //background-color: white;
@@ -97,20 +103,26 @@ export const LatestpopularBox =styled.div`
 export const LatestBtn = styled.button`
     border: none;
     cursor: pointer;
-    background-color: white;
+    background-color: transparent;
+    font-size: 14px;
+    color: ${props => props.click ? "var(--color-primary-dark)" : "var(--color-text-muted)"};
     font-weight: ${props => {
-        if(props.click) return "bold" 
-        else return "none"
+        if(props.click) return "700"
+        else return "500"
     }};
+    transition: var(--transition-base);
 `
 export const PopularBtn = styled.button`
     border: none;
     cursor: pointer;
-    background-color: white;
+    background-color: transparent;
+    font-size: 14px;
+    color: ${props => props.click ? "var(--color-primary-dark)" : "var(--color-text-muted)"};
     font-weight: ${props => {
-        if(props.click) return "bold" 
-        else return "none"
+        if(props.click) return "700"
+        else return "500"
     }};
+    transition: var(--transition-base);
 `
 export const Sign = styled.div`
 
@@ -118,6 +130,7 @@ export const Sign = styled.div`
 
 export const PlanLodingText = styled.div`
     margin-top: 10px;
-    font-weight: bold;
-    font-size: 20px;
+    font-weight: 700;
+    color: var(--color-text-muted);
+    font-size: 18px;
 `
