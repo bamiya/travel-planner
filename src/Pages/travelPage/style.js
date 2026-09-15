@@ -1,21 +1,42 @@
 import styled from "styled-components";
+
 export const ContentBox = styled.div`
     width: 100%;
     display: flex;
+    justify-content: center;
 `
-export const ContentBox1 = styled.div`
-    width: 1200px;
-    max-width: 100%;
+
+export const SearchHeader = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 150px 0 40px;
+
+    @media (max-width: 768px) {
+        margin: 100px 0 30px;
+    }
 `
+
+export const SearchTitle = styled.div`
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--color-text);
+    margin-bottom: 24px;
+
+    @media (max-width: 480px) {
+        font-size: 22px;
+    }
+`
+
 export const CategoryTabBox = styled.div`
     display: flex;
     gap: 10px;
-    margin: 20px 10px 0;
+    margin-top: 18px;
 `
 export const CategoryTab = styled.button`
     border: 0;
     padding: 9px 22px;
-    border-radius: var(--radius-lg);
+    border-radius: 999px;
     font-size: 15px;
     font-weight: 700;
     cursor: pointer;
@@ -28,24 +49,44 @@ export const CategoryTab = styled.button`
     }
 `
 export const InputBox = styled.div`
-    width: 75%;
-    height: 52px;
+    width: 600px;
+    max-width: 100%;
+    height: 56px;
     background-color: var(--color-white);
     box-sizing: border-box;
-    padding: 0 20px;
+    padding: 0 6px 0 24px;
     display: flex;
-    margin-top: 250px;
-    border-radius: var(--radius-lg);
+    align-items: center;
+    border-radius: 999px;
     border: 1px solid var(--color-border);
     box-shadow: var(--shadow-card);
 `
+export const SearchBtn = styled.div`
+    width: 44px;
+    height: 44px;
+    margin-left: 8px;
+    border-radius: 999px;
+    background-color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: var(--transition-base);
+
+    &:hover {
+        background-color: var(--color-primary-dark);
+    }
+`
 export const ListSumBox = styled.div`
-    width: 100%;
+    width: 900px;
+    max-width: 100%;
+    margin: 0 auto;
     box-sizing: border-box;
     padding: 0 10px;
     display: flex;
-    font-size: 26px;
-    margin: 20px 0 10px;
+    font-size: 22px;
+    margin-bottom: 16px;
     font-weight: 800;
     color: var(--color-text);
 `
@@ -55,9 +96,8 @@ export const Input = styled.input`
     border: 0;
     flex: 1;
     outline: none;
-    font-size: 20px;
+    font-size: 16px;
     box-sizing: border-box;
-    padding-left: 9px;
     font-weight: 500;
     color: var(--color-text);
 
@@ -66,52 +106,12 @@ export const Input = styled.input`
     }
 `
 export const TravelListBox = styled.div`
-    width: 100%;
-`
-export const TravelFilterTag = styled.div`
-    width: 330px;
-    max-width: 90%;
-    height: 590px;
-    background: rgba(0, 150, 100, 0.5);
-    margin: 20px auto 0 auto;
-    border-radius: 20px;
-    padding: 30px 0 30px 0;
-
-`
-export const GridTagBoxItem = styled.div`
-    grid-column : 1;
-    grid-row: 1;
-    background-color: white;
-    margin: 10px 10px 10px 10px;
-    border-radius: 20px;
-`
-export const FilterBoxSticky = styled.div`
-    position: sticky;
-    top: 90px;
-    margin-left: 40px;
-    margin-bottom: 20px;
-`
-export const TravelFilterBox = styled.div`
-    display: flex;
-    width: 70%;
-    margin-top: 15px;   
-`
-export const TravelFilterTagBox = styled.div`
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(9, minmax(60px, auto));
-    grid-gap: 20px;
-   
-`
-export const SteamListButtonBox = styled.div`
-    width: 1200px;
-    max-width: 100%;
-    height: 100px;
-    text-align: end;
-
-`
-export const TravelWrapper = styled.div`
     width: 900px;
+    max-width: 100%;
+`
+
+export const TravelWrapper = styled.div`
+    width: 100%;
     max-width: 100%;
     padding: 18px;
     display: flex;
@@ -147,18 +147,6 @@ export const Image = styled.img`
         height: 100px;
     }
 `
-export const Title = styled.div`
-    overflow: hidden;
-    display: inline-block;
-    width: 100%;
-    font-weight: bold;
-    font-size: 20px;
-    color: #000;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    margin-bottom: 10px;
-    
-`
 export const Txt = styled.div`
     display: flex;
     flex: 1;
@@ -178,12 +166,6 @@ export const PlaceTitle = styled.div`
     margin-bottom: 6px;
     cursor: pointer;
 `
-export const Text = styled.div`
-    width: 100%;
-    font-size: 30px;
-    text-align: center;
-    font-weight: bold
- `
  export const Address = styled.div`
     margin-top: 4px;
     font-size: 14px;
@@ -196,23 +178,15 @@ export const Text = styled.div`
     color: var(--color-text-muted);
  `
 
- export const SteamListButtonImg = styled.img`
-    width: 150px;
-    height: 150px;
-    cursor: pointer;
-    position: sticky;
-    top: 80%;
-    left: 100%;
-`
 export const Like = styled.button`
     border: none;
     background: ${props => (props.dibs ? "var(--color-success)" : "var(--color-bg)")};
     color: ${props => (props.dibs ? "white" : "var(--color-text-muted)")};
-    border-radius: var(--radius-sm);
+    border-radius: 999px;
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
-    padding: 8px 14px;
+    padding: 8px 16px;
     white-space: nowrap;
     transition: var(--transition-base);
 
@@ -227,3 +201,39 @@ export const Like = styled.button`
      gap: 8px;
      flex-shrink: 0;
  `
+
+export const FabButton = styled.div`
+    position: fixed;
+    right: 32px;
+    bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 22px;
+    background-color: var(--color-primary);
+    color: white;
+    font-size: 15px;
+    font-weight: 700;
+    border-radius: 999px;
+    box-shadow: var(--shadow-hover);
+    cursor: pointer;
+    z-index: 20;
+    transition: var(--transition-base);
+
+    &:hover {
+        background-color: var(--color-primary-dark);
+        transform: translateY(-2px);
+    }
+
+    svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    @media (max-width: 480px) {
+        right: 16px;
+        bottom: 16px;
+        padding: 12px 18px;
+        font-size: 13px;
+    }
+`

@@ -34,6 +34,29 @@ const InformationPage = () => {
 
   }, [infoData]);
 
+  // 관광지 사진 갤러리 (detailCommon2는 대표 이미지 1장만 주기 때문에
+  // 여러 장을 보여주려면 별도의 위치기반X 이미지 조회 API가 필요하다)
+  const [gallery, setGallery] = useState([]);
+  const [activeImg, setActiveImg] = useState(0);
+  useEffect(() => {
+    if (!infoData?.contentid) return;
+    setActiveImg(0);
+    const getGallery = async () => {
+      try {
+        const response = await fetch(
+          `https://apis.data.go.kr/B551011/KorService2/detailImage2?serviceKey=${process.env.VITE_TOUR_API_KEY}&contentId=${infoData.contentid}&imageYN=Y&MobileOS=ETC&MobileApp=AppTest&_type=json`
+        );
+        const json = await response.json();
+        const items = json.response?.body?.items?.item ?? [];
+        setGallery(items.map((img) => img.originimgurl).filter(Boolean));
+      } catch (e) {
+        // 무료 공개 API라 실패해도 조용히 무시하고 대표 이미지만 보여준다.
+        setGallery([]);
+      }
+    };
+    getGallery();
+  }, [infoData?.contentid]);
+
   // 선택한 관광지 주변 맛집/명소 추천 (TourAPI 위치기반 조회)
   const [nearby, setNearby] = useState([]);
   useEffect(() => {
@@ -159,78 +182,97 @@ const InformationPage = () => {
     return <Spinner text="관광지 정보를 불러오는 중입니다..." padding="150px 0" />;
   }
 
+  const images = gallery.length > 0 ? gallery : infoData?.firstimage ? [infoData.firstimage] : ["assets/logo.png"];
+  const categoryLabel = { 12: "관광지", 14: "문화시설", 15: "축제/행사", 25: "여행코스", 28: "레포츠", 32: "숙박", 38: "쇼핑", 39: "음식점" }[infoData?.contenttypeid] || "여행지";
+
   return (
     <MarginTopWrapper margin>
       <Styles.TitleBox>
-        <Styles.Title>{infoData?.title}</Styles.Title>
-      </Styles.TitleBox>
-      <Styles.LikeBox>
-        <Styles.Img1></Styles.Img1>
-        <Styles.HeartBox>
-          {like.filter((e) => e.id === location.search.split("=")[1]).length ? (
-            <HeartFilled style={{ color: "red", fontSize: "30px" }} onClick={() => addLikes(location.search.split("=")[1])} />
-          ) : (
-            <HeartOutlined style={{ fontSize: "30px" }} onClick={() => addLikes(location.search.split("=")[1])} />
-          )}
-          <Styles.LikeCount>{infoData?.likeCount}</Styles.LikeCount>
-        </Styles.HeartBox>
-        <Styles.Like
-          onClick={onDibs}
-          dibs={
-            sessionStorage.getItem("dibs")
+        <Styles.TitleGroup>
+          <Styles.CategoryChip>{categoryLabel}</Styles.CategoryChip>
+          <Styles.Title>{infoData?.title}</Styles.Title>
+          <Styles.AddressLine>{infoData?.addr1}{infoData?.addr2 ? ` ${infoData.addr2}` : ""}</Styles.AddressLine>
+        </Styles.TitleGroup>
+        <Styles.LikeBox>
+          <Styles.HeartBox>
+            {like.filter((e) => e.id === location.search.split("=")[1]).length ? (
+              <HeartFilled style={{ color: "var(--color-accent)", fontSize: "26px" }} onClick={() => addLikes(location.search.split("=")[1])} />
+            ) : (
+              <HeartOutlined style={{ color: "var(--color-text-muted)", fontSize: "26px" }} onClick={() => addLikes(location.search.split("=")[1])} />
+            )}
+            <Styles.LikeCount>{infoData?.likeCount}</Styles.LikeCount>
+          </Styles.HeartBox>
+          <Styles.Like
+            onClick={onDibs}
+            dibs={
+              sessionStorage.getItem("dibs")
+                ? sessionStorage
+                    .getItem("dibs")
+                    .split(" ")
+                    .filter((id) => id === location.search.split("=")[1]).length === 0
+                  ? true
+                  : false
+                : true
+            }>
+            {sessionStorage.getItem("dibs")
               ? sessionStorage
                   .getItem("dibs")
                   .split(" ")
                   .filter((id) => id === location.search.split("=")[1]).length === 0
-                ? true
-                : false
-              : true
-          }>
-          {sessionStorage.getItem("dibs")
-            ? sessionStorage
-                .getItem("dibs")
-                .split(" ")
-                .filter((id) => id === location.search.split("=")[1]).length === 0
-              ? "+찜하기"
-              : "-찜 취소"
-            : "+찜하기"}
-        </Styles.Like>
-      </Styles.LikeBox>
-      <Styles.TopBar />
-      <Styles.TitleImgBox>
-        <Styles.Titleimage src={infoData?.firstimage === "" ? "assets/logo.png" : infoData?.firstimage} />
-      </Styles.TitleImgBox>
+                ? "+찜하기"
+                : "-찜 취소"
+              : "+찜하기"}
+          </Styles.Like>
+        </Styles.LikeBox>
+      </Styles.TitleBox>
+      <Styles.Gallery>
+        <Styles.GalleryMain src={images[activeImg]} />
+        {images.length > 1 && (
+          <Styles.GalleryThumbRow>
+            {images.map((img, idx) => (
+              <Styles.GalleryThumb key={idx} src={img} active={idx === activeImg} onClick={() => setActiveImg(idx)} />
+            ))}
+          </Styles.GalleryThumbRow>
+        )}
+      </Styles.Gallery>
       <Styles.InformationBox>
-        <Styles.InformationTitle>상세정보</Styles.InformationTitle>
-        <Styles.InformationBar />
-        <Styles.InformationContnet>
-          <div dangerouslySetInnerHTML={{ __html: infoData?.overview }}></div>
-        </Styles.InformationContnet>
-        <Styles.Map>
-          <Map lon={infoData?.mapx} lat={infoData?.mapy} />
-        </Styles.Map>
-        <Styles.DetailedInforBox>
-          <Styles.DetaBox>
-            <Styles.DetaFontBox>
-              <Styles.DetaFont>● 전화번호</Styles.DetaFont>
-              <Styles.DetainforMation>{infoData?.tel === "" ? "조회하지 못함" : infoData?.tel}</Styles.DetainforMation>
-            </Styles.DetaFontBox>
-            <Styles.DetaFontBox>
-              <Styles.DetaFont>● 주소</Styles.DetaFont>
-              <Styles.DetainforMation>{infoData?.addr1 + " " + infoData?.addr2}</Styles.DetainforMation>
-            </Styles.DetaFontBox>
-            <Styles.DetaFontBox>
-              <Styles.DetaFont>● 우편주소</Styles.DetaFont>
-              <Styles.DetainforMation>{infoData?.zipcode}</Styles.DetainforMation>
-            </Styles.DetaFontBox>
-            <Styles.DetaFontBox>
-              <Styles.DetaFont>● 홈페이지</Styles.DetaFont>
-              <Styles.DetainfoRight>
-                <div dangerouslySetInnerHTML={{ __html: infoData?.homepage }}></div>
-              </Styles.DetainfoRight>
-            </Styles.DetaFontBox>
-          </Styles.DetaBox>
-        </Styles.DetailedInforBox>
+        <Styles.InfoCard>
+          <Styles.InformationTitle>상세정보</Styles.InformationTitle>
+          <Styles.InformationContnet>
+            <div dangerouslySetInnerHTML={{ __html: infoData?.overview }}></div>
+          </Styles.InformationContnet>
+        </Styles.InfoCard>
+        <Styles.InfoCard>
+          <Styles.InformationTitle>위치</Styles.InformationTitle>
+          <Styles.Map>
+            <Map lon={infoData?.mapx} lat={infoData?.mapy} />
+          </Styles.Map>
+        </Styles.InfoCard>
+        <Styles.InfoCard>
+          <Styles.InformationTitle>기본 정보</Styles.InformationTitle>
+          <Styles.DetailedInforBox>
+            <Styles.DetaBox>
+              <Styles.DetaFontBox>
+                <Styles.DetaFont>전화번호</Styles.DetaFont>
+                <Styles.DetainforMation>{infoData?.tel === "" ? "조회하지 못함" : infoData?.tel}</Styles.DetainforMation>
+              </Styles.DetaFontBox>
+              <Styles.DetaFontBox>
+                <Styles.DetaFont>주소</Styles.DetaFont>
+                <Styles.DetainforMation>{infoData?.addr1 + " " + infoData?.addr2}</Styles.DetainforMation>
+              </Styles.DetaFontBox>
+              <Styles.DetaFontBox>
+                <Styles.DetaFont>우편주소</Styles.DetaFont>
+                <Styles.DetainforMation>{infoData?.zipcode}</Styles.DetainforMation>
+              </Styles.DetaFontBox>
+              <Styles.DetaFontBox>
+                <Styles.DetaFont>홈페이지</Styles.DetaFont>
+                <Styles.DetainfoRight>
+                  <div dangerouslySetInnerHTML={{ __html: infoData?.homepage }}></div>
+                </Styles.DetainfoRight>
+              </Styles.DetaFontBox>
+            </Styles.DetaBox>
+          </Styles.DetailedInforBox>
+        </Styles.InfoCard>
       </Styles.InformationBox>
       {nearby.length > 0 && (
         <Styles.NearbyBox>

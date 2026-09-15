@@ -18,6 +18,7 @@ const TravelPage = () => {
   const [storagetours, setStorageTours] = useState([]); // 전체 관광지
   const [searchKeyword, setSearchKeyword] = useState(""); // 키워드
   const pagingHook = useRef(false);
+  const searchInputRef = useRef(null);
   const [dibs, setDibs] = useState(false); // 찜 이벤트를 할때마다 렌더링이 되지 않아 업데이트가 안됨 따라서 생성
   const [like, setLike] = useState([]);
   const [rendering, setRendering] = useState(false);
@@ -152,16 +153,22 @@ const TravelPage = () => {
 
   return (
     <MarginTopWrapper margin>
-      <Styles.InputBox>
-        <Styles.Input placeholder="검색하세요." onKeyUp={handleOnKeyPress} />
-      </Styles.InputBox>
-      <Styles.CategoryTabBox>
-        {categoryTabs.map((tab) => (
-          <Styles.CategoryTab key={tab.id} active={contentType === tab.id} onClick={() => setContentType(tab.id)}>
-            {tab.label}
-          </Styles.CategoryTab>
-        ))}
-      </Styles.CategoryTabBox>
+      <Styles.SearchHeader>
+        <Styles.SearchTitle>어디로 떠나볼까요?</Styles.SearchTitle>
+        <Styles.InputBox>
+          <Styles.Input placeholder="검색하세요." ref={searchInputRef} onKeyUp={handleOnKeyPress} />
+          <Styles.SearchBtn onClick={() => navigate(`/travel?search=${searchInputRef.current?.value ?? ""}`)}>
+            <SearchIcon />
+          </Styles.SearchBtn>
+        </Styles.InputBox>
+        <Styles.CategoryTabBox>
+          {categoryTabs.map((tab) => (
+            <Styles.CategoryTab key={tab.id} active={contentType === tab.id} onClick={() => setContentType(tab.id)}>
+              {tab.label}
+            </Styles.CategoryTab>
+          ))}
+        </Styles.CategoryTabBox>
+      </Styles.SearchHeader>
       <Styles.ListSumBox>{searchKeyword === null || searchKeyword === "" ? "#전체" : `#${searchKeyword}`}</Styles.ListSumBox>
       <Styles.ContentBox>
         <Styles.TravelListBox>
@@ -188,9 +195,9 @@ const TravelPage = () => {
                       </Styles.Txt>
                       <Styles.LikeBox>
                         {like.filter((e) => e.id === tour.contentid).length ? (
-                          <HeartFilled style={{ color: "red", fontSize: "30px" }} onClick={() => addLikes(tour.contentid)} />
+                          <HeartFilled style={{ color: "var(--color-accent)", fontSize: "26px" }} onClick={() => addLikes(tour.contentid)} />
                         ) : (
-                          <HeartOutlined style={{ fontSize: "30px" }} onClick={() => addLikes(tour.contentid)} />
+                          <HeartOutlined style={{ color: "var(--color-text-muted)", fontSize: "26px" }} onClick={() => addLikes(tour.contentid)} />
                         )}
                         <Styles.Like
                           onClick={() => onDibs(tour)}
@@ -220,29 +227,30 @@ const TravelPage = () => {
               })
           )}
         </Styles.TravelListBox>
-        <Styles.TravelFilterBox>
-          <Styles.FilterBoxSticky>
-            {!rendering ? null : sessionStorage.getItem("dibs") ? (
-              !sessionStorage.getItem("access_token") ? (
-                <>
-                  <Styles.SteamListButtonImg src={"assets/SteamListButton.png"} onClick={goCreatePlanPage} />
-                </>
-              ) : (
-                <>
-                  <Styles.SteamListButtonImg
-                    src={"assets/SteamListButton.png"}
-                    onClick={() => {
-                      navigate("/CreatePlanPage");
-                    }}
-                  />
-                </>
-              )
-            ) : null}
-          </Styles.FilterBoxSticky>
-        </Styles.TravelFilterBox>
       </Styles.ContentBox>
       <Paging page={page} count={totalItemsCount} setPage={setPage} itemsCount={itemsCount} />
+      {rendering && sessionStorage.getItem("dibs") && (
+        <Styles.FabButton onClick={() => (sessionStorage.getItem("access_token") ? navigate("/CreatePlanPage") : goCreatePlanPage())}>
+          <SuitcaseIcon /> 찜한 여행지로 플랜 만들기
+        </Styles.FabButton>
+      )}
     </MarginTopWrapper>
   );
 };
+
+const SearchIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+    <circle cx="11" cy="11" r="7" stroke="white" strokeWidth="2.2" />
+    <path d="M21 21l-4.3-4.3" stroke="white" strokeWidth="2.2" strokeLinecap="round" />
+  </svg>
+);
+
+const SuitcaseIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none">
+    <rect x="3" y="7" width="18" height="13" rx="2" stroke="currentColor" strokeWidth="2" />
+    <path d="M8 7V5.5A1.5 1.5 0 019.5 4h5A1.5 1.5 0 0116 5.5V7" stroke="currentColor" strokeWidth="2" />
+    <path d="M3 12h18" stroke="currentColor" strokeWidth="2" />
+  </svg>
+);
+
 export default TravelPage;

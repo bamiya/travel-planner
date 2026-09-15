@@ -46,7 +46,7 @@ export const Btn = styled.div`
     box-sizing: border-box;
     padding: 9px 18px;
     height: 38px;
-    border-radius: var(--radius-sm);
+    border-radius: 999px;
     font-size: 13px;
     font-weight: 700;
     align-items: center;
@@ -186,7 +186,7 @@ export const Wrapper = styled.div`
 export const Map = styled.div`
     width: 100%;
     height: 100vh;
-    background-color: green;
+    background-color: var(--color-bg);
     position: relative;
 `
 
@@ -325,7 +325,7 @@ export const DayItem = styled.div`
     padding: 8px;
     display: flex;
     align-items: center;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-md);
     border: 1px solid var(--color-border);
     margin-bottom: 8px;
     transition: var(--transition-base);
@@ -375,10 +375,6 @@ export const DayItemText = styled.div`
     flex: 1;
 `
 
-export const DayItemRemove = styled.div`
-    color: red;
-`
-
 export const PlanAddBtnBox = styled.div`
     width: 100%;
     display: flex;
@@ -387,9 +383,11 @@ export const PlanAddBtnBox = styled.div`
 `
 
 export const PlanAddBtn = styled.div`
-    width: 100px;
-    height: 30px;
-    border-radius: var(--radius-sm);
+    width: 104px;
+    height: 32px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
     background-color: ${props => {
         return props.updated ? "var(--color-accent)" : "var(--color-success)"
     }};
@@ -400,6 +398,11 @@ export const PlanAddBtn = styled.div`
     color: white;
     margin-top: 20px;
     cursor: pointer;
+    transition: var(--transition-base);
+
+    &:hover {
+        filter: brightness(0.94);
+    }
 `
 
 export const CloseBtn = styled.div`
@@ -458,28 +461,39 @@ export const TravelInput = styled.input`
     width: 100%;
     height: 40px;
     flex: 1;
-    border: 0;
+    border: 1px solid var(--color-border);
     outline: 0;
-    font-size: 17px;
+    font-size: 15px;
     box-sizing: border-box;
-    padding-left: 10px;
-    border-radius: 5px;
-    background-color: #e8e8e8;
+    padding-left: 14px;
+    border-radius: 999px 0 0 999px;
+    border-right: 0;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    transition: var(--transition-base);
+
+    &:focus {
+        background-color: var(--color-white);
+        border-color: var(--color-primary);
+    }
+
+    &::placeholder {
+        color: var(--color-text-muted);
+    }
 `
 
 export const TravelInputBtn = styled.div`
-    width: 70px;
-    height: 100%;
+    width: 60px;
+    height: 40px;
     background-color: var(--color-primary);
-    margin-left: 10px;
-    border-radius: var(--radius-sm);
+    border-radius: 0 999px 999px 0;
     display: flex;
     cursor: pointer;
     transition: var(--transition-base);
     align-items: center;
     justify-content: center;
-    font-size: 17px;
-    font-weight: 500;
+    font-size: 14px;
+    font-weight: 700;
     color: white;
 
     &:hover {
@@ -505,15 +519,17 @@ export const ScrollBox = styled.div`
 
 export const ListTitleBox = styled.div`
     display: flex;
-    border-bottom: 2px solid gray;
+    align-items: center;
+    border-bottom: 2px solid var(--color-border);
     box-sizing: border-box;
     padding-bottom: 10px;
 `
 
 export const ListTitle = styled.div`
     width: 100%;
-    font-size: 25px;
-    font-weight: 550;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--color-text);
 `
 
 export const ListFilter = styled.div`
@@ -545,7 +561,7 @@ export const ItemBox = styled.div`
 export const ItemBtn = styled.button`
     width: 60px;
     height: 25px;
-    border-radius: var(--radius-sm);
+    border-radius: 999px;
     background-color: ${props => {
         return props.remove ? "var(--color-accent)" : "var(--color-success)"
     }};
@@ -639,7 +655,7 @@ export const PlanApplyBtn = styled.button`
     bottom: 50px;
     left: 50%;
     margin-left: -90px;
-    border-radius: var(--radius-lg);
+    border-radius: 999px;
     display: flex;
     align-items: center;
     justify-content: center;
