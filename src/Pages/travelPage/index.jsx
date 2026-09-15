@@ -7,6 +7,7 @@ import { HeartOutlined, HeartFilled } from "@ant-design/icons";
 import { toast } from "react-toastify";
 import Spinner from "../../Common/Spinner";
 import axios from "axios";
+import { searchNearbyFallback } from "../../utils/nearbySearch";
 
 
 const TravelPage = () => {
@@ -75,7 +76,18 @@ const TravelPage = () => {
           `https://apis.data.go.kr/B551011/KorService2/${endpoint}?serviceKey=${process.env.VITE_TOUR_API_KEY}&numOfRows=100000&MobileOS=ETC&MobileApp=AppTest&_type=json&contentTypeId=${contentType}${keywordParam}`
         );
         const json = await response.json();
-        const tourItems = json.response?.body?.items?.item ?? []; // 검색 결과가 없으면 items가 빈 문자열로 온다
+        let tourItems = json.response?.body?.items?.item ?? []; // 검색 결과가 없으면 items가 빈 문자열로 온다
+
+        if (isSearch && tourItems.length === 0) {
+          // "용산역"처럼 관광지/음식점 이름과 정확히 일치하지 않는 검색어는 결과가 0건이 된다.
+          // 좌표로 변환해서 그 주변 결과라도 보여준다.
+          const { items, usedFallback } = await searchNearbyFallback(search, contentType);
+          tourItems = items;
+          if (usedFallback) {
+            toast.info(`"${search}"와 일치하는 결과가 없어 주변 결과를 보여드려요.`);
+          }
+        }
+
         setStorageTours(tourItems);
         setPage(1);
         setTours(tourItems);

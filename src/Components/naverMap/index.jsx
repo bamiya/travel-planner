@@ -5,6 +5,8 @@ import './map.css'
 const Map = (props) => {
   const lat = props.lat == null ? 35.87572504970846 : props.lat;
   const lon = props.lon == null ? 128.68151215551117 : props.lon;
+  const path = props.path; // 이동 경로선을 그릴 [lat,lon] 좌표 배열 (선택)
+  const markers = props.markers; // 방문 순서 번호 마커를 여러 개 찍을 [{lat,lon}] 배열 (선택)
   const [mapFailed, setMapFailed] = useState(false);
 
   useEffect(() => {
@@ -22,11 +24,51 @@ const Map = (props) => {
       zoom: 15,
     });
 
-    new naver.maps.Marker({
-      position: new naver.maps.LatLng(lat, lon),
-      map,
-    });
-  }, [lat, lon]);
+    const overlays = [];
+
+    if (markers && markers.length > 0) {
+      // 하루 일정에 추가한 장소들을 방문 순서 번호로 표시 (동선 자동계산 경로선과 함께 사용)
+      markers.forEach((m, idx) => {
+        overlays.push(
+          new naver.maps.Marker({
+            position: new naver.maps.LatLng(m.lat, m.lon),
+            map,
+            icon: {
+              content: `<div class="map_num_marker">${idx + 1}</div>`,
+              anchor: new naver.maps.Point(14, 14),
+            },
+          })
+        );
+      });
+    } else {
+      overlays.push(
+        new naver.maps.Marker({
+          position: new naver.maps.LatLng(lat, lon),
+          map,
+        })
+      );
+    }
+
+    if (path && path.length > 1) {
+      overlays.push(
+        new naver.maps.Polyline({
+          map,
+          path: path.map(([plat, plon]) => new naver.maps.LatLng(plat, plon)),
+          strokeColor: "#2F9BFF",
+          strokeWeight: 4,
+          strokeOpacity: 0.85,
+        })
+      );
+
+      const bounds = new naver.maps.LatLngBounds();
+      path.forEach(([plat, plon]) => bounds.extend(new naver.maps.LatLng(plat, plon)));
+      map.fitBounds(bounds, { top: 60, right: 40, bottom: 60, left: 40 });
+    }
+
+    return () => {
+      overlays.forEach((o) => o.setMap(null));
+    };
+  }, [lat, lon, path, markers]);
 
   if (mapFailed) {
     return (

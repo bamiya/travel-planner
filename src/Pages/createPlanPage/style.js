@@ -181,6 +181,17 @@ export const CalendarCustom = styled(Calendar)`
             background-color: var(--color-primary) !important;
             color: var(--color-white) !important;
             font-weight: 800;
+        }
+
+        /* 당일(하루) 선택 - 아직 도착일을 고르지 않았거나 출발일=도착일이면 둥근 사각형 */
+        .react-calendar__tile--active:not(.react-calendar__tile--rangeStart):not(.react-calendar__tile--rangeEnd),
+        .react-calendar__tile--rangeBothEnds {
+            border-radius: var(--radius-md) !important;
+        }
+
+        /* 여러 날 여행의 출발일/도착일은 원형으로 구분 */
+        .react-calendar__tile--rangeStart:not(.react-calendar__tile--rangeBothEnds),
+        .react-calendar__tile--rangeEnd:not(.react-calendar__tile--rangeBothEnds) {
             border-radius: 999px !important;
         }
 
@@ -292,22 +303,63 @@ export const OpenBtn = styled.div`
 `
 
 export const DateBox = styled.div`
-    width: 100%;
+    width: fit-content;
     display: flex;
     align-items: center;
-    justify-content: flex-start;
-    margin-bottom: 30px;
+    gap: 8px;
+    margin-bottom: 24px;
+    padding: 10px 14px;
+    box-sizing: border-box;
+    background-color: var(--color-primary-light);
+    border-radius: var(--radius-md);
 `
 
 export const TravelDate = styled.div`
     font-size: 14px;
+    font-weight: 700;
+    color: var(--color-primary-dark);
+    white-space: nowrap;
+`
+
+export const AutoPlanBtn = styled.div`
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    box-sizing: border-box;
+    padding: 10px 16px;
+    margin-bottom: 20px;
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color-white);
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+    cursor: pointer;
+    transition: var(--transition-base);
+
+    &:hover {
+        filter: brightness(1.08);
+        box-shadow: var(--shadow-hover);
+    }
+`
+
+export const AutoPlanDesc = styled.div`
+    font-size: 13px;
+    color: var(--color-text-muted);
+    line-height: 1.5;
+    margin-bottom: 16px;
 `
 
 export const TravelCalendar = styled.img`
-    width: 20px;
-    height: 20px;
-    margin-left: 10px;
+    width: 18px;
+    height: 18px;
     cursor: pointer;
+    opacity: 0.7;
+    flex-shrink: 0;
+    transition: var(--transition-base);
+
+    &:hover {
+        opacity: 1;
+    }
 `
 
 export const FestivalBox = styled.div`
@@ -412,11 +464,12 @@ export const DayItem = styled.div`
     align-items: center;
     border-radius: var(--radius-md);
     border: 1px solid var(--color-border);
+    background-color: var(--color-white);
     margin-bottom: 8px;
     transition: var(--transition-base);
 
     &:hover {
-        background-color: var(--color-bg);
+        background-color: var(--color-primary-light);
         border-color: var(--color-primary);
     }
 `
@@ -464,7 +517,6 @@ export const PlanAddBtnBox = styled.div`
     width: 100%;
     display: flex;
     justify-content: center;
-    margin-bottom: 40px;
 `
 
 export const PlanAddBtn = styled.div`
@@ -588,9 +640,7 @@ export const TravelInputBtn = styled.div`
 
 export const ListBox = styled.div`
     width: 100%;
-    height: 650px;
-    /* background-color: azure; */
-    margin-bottom: 50px;
+    margin-bottom: 30px;
     box-sizing: border-box;
     padding: 5px 10px;
     display: flex;
@@ -668,6 +718,13 @@ export const ItemBtn = styled.button`
 `
 
 export const ListItemBox = styled.div`
+    width: 100%;
+    box-sizing: border-box;
+    padding: 20px 16px 16px;
+    margin-bottom: 16px;
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
 `
 
 export const FilterItemBox = styled.div`

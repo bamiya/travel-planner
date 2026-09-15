@@ -1,6 +1,6 @@
 import moment from "moment/moment";
 import "react-calendar/dist/Calendar.css";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import * as Styles from "./style";
 import Map from "../../Components/naverMap";
 import Paging from "../../Components/paging";
@@ -8,18 +8,28 @@ import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Spinner from "../../Common/Spinner";
+import { searchNearbyFallback, fetchNearbyTours } from "../../utils/nearbySearch";
+import { generateAutoPlan } from "../../utils/autoPlanner";
 
 const CreatePlanCalendar = ({ open, setOpen, setDateList }) => {
   // 팝업
   const [value, onChange] = useState(new Date());
 
+  // react-calendar는 selectRange일 때 allowPartialRange가 없으면 "출발일만 고른"
+  // 첫 클릭 상태를 내부 state로만 들고 있고 onChange(우리 value)를 호출하지 않는다.
+  // 그래서 범위를 다 고른 뒤 새로 날짜를 찍으면 화면(달력)은 바뀌는데 우리 value는
+  // 그대로라 상단 요약문이 이전 값으로 멈춰있는 버그가 있었다. allowPartialRange로
+  // 첫 클릭도 [date] 배열로 onChange가 오게 해서 우리 value와 항상 동기화되게 한다.
+  const isRangeComplete = Array.isArray(value) && value.length === 2;
+  const startDate = Array.isArray(value) ? value[0] : value;
+
   // 지금 고른 범위를 사람이 읽기 쉬운 문장으로 보여준다 (반응성/가독성 개선)
   const renderSelectionSummary = () => {
-    if (Array.isArray(value)) {
+    if (isRangeComplete) {
       const nights = moment(value[1]).diff(moment(value[0]), "days");
       return `${moment(value[0]).format("M월 D일(ddd)")} ~ ${moment(value[1]).format("M월 D일(ddd)")} · ${nights}박 ${nights + 1}일`;
     }
-    return `출발일 ${moment(value).format("M월 D일(ddd)")} 선택됨 — 도착일을 선택해주세요`;
+    return `출발일 ${moment(startDate).format("M월 D일(ddd)")} 선택됨 — 도착일을 선택해주세요`;
   };
 
   // 이전 버튼을 눌렀을 때
@@ -29,8 +39,8 @@ const CreatePlanCalendar = ({ open, setOpen, setDateList }) => {
 
   const getApply = () => {
     // 클릭을 안했을때 (당일로 여행을 가서 바로 적용을 눌렀을때)
-    if (!Array.isArray(value)) {
-      setDateList([value]);
+    if (!isRangeComplete) {
+      setDateList([startDate]);
       setOpen(false);
       return;
     }
@@ -65,8 +75,8 @@ const CreatePlanCalendar = ({ open, setOpen, setDateList }) => {
   return (
     <Styles.ModalCustom isOpen={open} style={{ overlay: { zIndex: "1", backgroundColor: "rgba(20, 20, 30, 0.5)" } }} ariaHideApp={false}>
       <Styles.ModalTitle>여행 날짜를 선택해주세요</Styles.ModalTitle>
-      <Styles.SelectionSummary complete={Array.isArray(value)}>{renderSelectionSummary()}</Styles.SelectionSummary>
-      <Styles.CalendarCustom onChange={onChange} value={value} selectRange />
+      <Styles.SelectionSummary complete={isRangeComplete}>{renderSelectionSummary()}</Styles.SelectionSummary>
+      <Styles.CalendarCustom onChange={onChange} value={value} selectRange allowPartialRange />
       <Styles.BtnBox>
         <Styles.Btn onClick={onBack}>이전</Styles.Btn>
         <Styles.Btn primary onClick={() => getApply()}>적용하기</Styles.Btn>
@@ -81,6 +91,37 @@ const CreatePlanPage = () => {
 
   const [isModelOpen, setIsModelOpen] = useState(true); //날짜 모달
   const [dateList, setDateList] = useState();
+
+  // AI 자동 플래너 (목적지 키워드만 주면 TourAPI 데이터로 일정을 규칙 기반으로 채워준다)
+  const [autoPlanOpen, setAutoPlanOpen] = useState(false);
+  const [autoPlanKeyword, setAutoPlanKeyword] = useState("");
+  const [autoPlanLoading, setAutoPlanLoading] = useState(false);
+
+  const runAutoPlan = async () => {
+    if (!autoPlanKeyword.trim()) {
+      toast.error("여행지를 입력해주세요.");
+      return;
+    }
+    const hasExistingStops = dayList?.some((day) => day[1].length > 0);
+    if (hasExistingStops && !window.confirm("기존에 담아둔 일정이 모두 새 일정으로 교체됩니다. 계속할까요?")) {
+      return;
+    }
+    setAutoPlanLoading(true);
+    try {
+      const result = await generateAutoPlan({ keyword: autoPlanKeyword.trim(), numDays: dateList.length });
+      if (!result) {
+        toast.error(`"${autoPlanKeyword}" 주변에서 추천할 장소를 찾지 못했어요.`);
+        return;
+      }
+      setDayList(result);
+      setAutoPlanOpen(false);
+      setAutoPlanKeyword("");
+    } catch (e) {
+      toast.error("자동 일정 생성에 실패했습니다.");
+    } finally {
+      setAutoPlanLoading(false);
+    }
+  };
 
   //박스를 움직이게 하는 state
   const [controlOpen, setControlOpen] = useState(false); // Control
@@ -139,6 +180,29 @@ const CreatePlanPage = () => {
   const [cart, setCart] = useState([]); // 찜
   const [tourSelect, setTourSelect] = useState([]); // 필요없는데 필요함..? 렌더링안됨
   const [dayList, setDayList] = useState(); // 총 일정목록
+
+  // 방금 추가한 장소 근처의 다른 가볼만한 곳 추천 (TourAPI 위치기반 조회, tourInfoPage
+  // "주변 추천"과 동일한 방식) - 관광지를 하나 추가할 때마다 그 장소를 기준으로 갱신된다.
+  const [nearbyAnchor, setNearbyAnchor] = useState(null);
+  const [nearbyPlaces, setNearbyPlaces] = useState([]);
+  const [nearbyLoading, setNearbyLoading] = useState(false);
+  useEffect(() => {
+    if (!nearbyAnchor) {
+      setNearbyPlaces([]);
+      return;
+    }
+    setNearbyLoading(true);
+    fetchNearbyTours(nearbyAnchor.mapy, nearbyAnchor.mapx, undefined, 5000)
+      .then((items) => {
+        // 자기 자신과, 이미 이 DAY에 추가된 곳은 추천에서 뺀다.
+        const alreadyAdded = new Set((dayList?.[update - 1]?.[1] ?? []).map((s) => s.contentid));
+        alreadyAdded.add(nearbyAnchor.contentid);
+        setNearbyPlaces(items.filter((it) => !alreadyAdded.has(it.contentid)).slice(0, 10));
+      })
+      .catch(() => setNearbyPlaces([]))
+      .finally(() => setNearbyLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nearbyAnchor]);
 
   const [isUpdate, setIsUpdate] = useState(false);
   const [rendering, setRendering] = useState(false); // 찜 로딩
@@ -208,30 +272,44 @@ const CreatePlanPage = () => {
     }
   }, [dateList]);
 
-  // 하루 일정에 추가한 장소 사이의 이동거리/시간 안내 (OSRM 무료 라우팅 API)
+  // 하루 일정에 추가한 장소 사이의 이동거리/시간 안내 + 지도에 그릴 이동 경로선 (OSRM 무료 라우팅 API)
   const [routeLegs, setRouteLegs] = useState([]);
+  const [routePath, setRoutePath] = useState([]); // 지도에 그릴 실제 경로 좌표([lat,lon] 배열)
   useEffect(() => {
     const getRouteLegs = async () => {
       if (!update || !dayList || !dayList[update - 1]) {
         setRouteLegs([]);
+        setRoutePath([]);
         return;
       }
       const stops = dayList[update - 1][1];
       if (stops.length < 2) {
         setRouteLegs([]);
+        setRoutePath([]);
         return;
       }
       try {
         const coords = stops.map((s) => `${s.mapx},${s.mapy}`).join(";");
-        const response = await fetch(`https://router.project-osrm.org/route/v1/driving/${coords}?overview=false`);
+        const response = await fetch(`https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson`);
         const json = await response.json();
         setRouteLegs(json.routes?.[0]?.legs ?? []);
+        // OSRM geometry는 [lon, lat] 순서라 지도(naver maps)가 쓰는 [lat, lon]으로 뒤집는다.
+        setRoutePath((json.routes?.[0]?.geometry?.coordinates ?? []).map(([lon, lat]) => [lat, lon]));
       } catch (e) {
         // 무료 공개 데모 서버라 실패해도 조용히 무시하고 안내를 숨긴다.
         setRouteLegs([]);
+        setRoutePath([]);
       }
     };
     getRouteLegs();
+  }, [dayList, update]);
+
+  // 지도에 표시할 현재 DAY의 방문 순서 번호 마커 (경로선과 함께 보여줄 때만 사용)
+  const dayRouteMarkers = useMemo(() => {
+    if (!update || !dayList || !dayList[update - 1]) return null;
+    const stops = dayList[update - 1][1];
+    if (stops.length < 2) return null;
+    return stops.map((s) => ({ lat: s.mapy, lon: s.mapx }));
   }, [dayList, update]);
 
   // Day별 날씨 안내 (무료 공개 API, 키 발급 불필요)
@@ -252,6 +330,9 @@ const CreatePlanPage = () => {
           if (!stops || stops.length === 0 || !date || date < today || date > maxDate) return;
           const dateStr = moment(date).format("YYYY-MM-DD");
           const { mapy: lat, mapx: lon } = stops[0];
+          // "서울특별시 용산구 ..." 형태의 주소에서 시/군/구만 뽑아 날씨 옆에 어느 지역인지 표시한다.
+          const addrParts = stops[0].addr1 ? stops[0].addr1.split(" ") : [];
+          const region = addrParts[1] || addrParts[0] || "";
           try {
             const response = await fetch(
               `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=Asia%2FSeoul&start_date=${dateStr}&end_date=${dateStr}`
@@ -259,6 +340,7 @@ const CreatePlanPage = () => {
             const json = await response.json();
             if (json.daily?.time?.length) {
               results[idx] = {
+                region,
                 code: json.daily.weathercode[0],
                 tmax: Math.round(json.daily.temperature_2m_max[0]),
                 tmin: Math.round(json.daily.temperature_2m_min[0]),
@@ -399,23 +481,35 @@ const CreatePlanPage = () => {
     }
   };
 
+  const cancelDayEdit = (idx) => {
+    setTourSelect([]);
+    setUpdate(null);
+    settravelOpen(false);
+    setTourMakerSelect0(Array(dayList[idx - 1][1].length).fill(false)); // 취소 시 마커 초기화
+    setNearbyAnchor(null); // 다른 DAY의 추천이 남아있지 않도록 초기화
+  };
+
   const onUpdate = (idx) => {
     if (update == null) {
       setUpdate(idx);
       settravelOpen(true);
+      setNearbyAnchor(null);
+      // addTour를 한 번도 안 거치고 바로 여러 개가 채워진 DAY(자동 플래너로 채운 경우 등)를
+      // 처음 열 때, 마커 표시용 배열이 초기화 안 돼 있으면 렌더링이 깨진다.
+      setTourMakerSelect0(Array(dayList[idx - 1][1].length).fill(false));
     } else if ((update !== null) & (update !== idx)) {
       toast.error("현재 수정하고 있는 DAY가 있습니다.");
     } else {
-      setTourSelect([]);
-      setUpdate(null);
-      settravelOpen(false);
-      setTourMakerSelect0(Array(dayList[idx - 1][1].length).fill(false)); // 취소 클릭 시 마커 초기화
+      cancelDayEdit(idx);
     }
   };
 
+  // 편집 중에 X(닫기)를 누르면 경고만 띄우고 막던 것을, 편집을 취소하고 바로
+  // DAY 목록으로 돌아가도록 바꿔서 뒤로가기가 한 번에 되게 한다.
   const onClose = () => {
     if (update !== null) {
-      return toast.error("아직 작업중인 DAY가 있습니다.");
+      cancelDayEdit(update);
+      return;
     }
     setControlOpen(!controlOpen);
   };
@@ -501,7 +595,18 @@ const CreatePlanPage = () => {
         `https://apis.data.go.kr/B551011/KorService2/searchKeyword2?serviceKey=${process.env.VITE_TOUR_API_KEY}&numOfRows=100000&MobileOS=ETC&MobileApp=AppTest&_type=json&contentTypeId=${overrideType ?? contentType}&keyword=${encodeURIComponent(keyword)}`
       );
       const json = await response.json();
-      const tourItems = json.response?.body?.items?.item ?? []; // 검색 결과가 없으면 items가 빈 문자열로 온다
+      let tourItems = json.response?.body?.items?.item ?? []; // 검색 결과가 없으면 items가 빈 문자열로 온다
+
+      if (tourItems.length === 0) {
+        // "용산역"처럼 관광지/음식점 이름과 정확히 일치하지 않는 검색어는 결과가 0건이 된다.
+        // 좌표로 변환해서 그 주변 결과라도 보여준다.
+        const { items, usedFallback } = await searchNearbyFallback(keyword, overrideType ?? contentType);
+        tourItems = items;
+        if (usedFallback) {
+          toast.info(`"${keyword}"와 일치하는 결과가 없어 주변 결과를 보여드려요.`);
+        }
+      }
+
       setTours(tourItems);
       setStotalItemCount1(tourItems.length);
       setTourMakerSelect1(Array(tourItems.length).fill(false));
@@ -573,6 +678,7 @@ const CreatePlanPage = () => {
     setDayList(newDayList);
     setTourMakerSelect0(Array(newStops.length).fill(false));
     setTourSelect([...tourSelect, el]);
+    setNearbyAnchor(el); // 방금 추가한 장소 기준으로 "근처 가볼만한 곳" 갱신
   };
 
   const removeTour = (idx, idx2) => {
@@ -638,6 +744,22 @@ const CreatePlanPage = () => {
   return (
     <>
       {!isUpdate && <CreatePlanCalendar open={isModelOpen} setOpen={setIsModelOpen} setDateList={setDateList} />}
+      <Styles.ModalCustom isOpen={autoPlanOpen} onRequestClose={() => setAutoPlanOpen(false)} style={{ overlay: { zIndex: "4", backgroundColor: "rgba(20, 20, 30, 0.5)" } }} ariaHideApp={false}>
+        <Styles.ModalTitle>✨ 어디로 여행 가시나요?</Styles.ModalTitle>
+        <Styles.AutoPlanDesc>목적지만 입력하면 근처 관광지·맛집으로 {dateList?.length ?? 0}일 일정을 자동으로 채워드려요.</Styles.AutoPlanDesc>
+        <Styles.TravelInputBox>
+          <Styles.TravelInput
+            placeholder="예: 부산, 강릉, 전주한옥마을"
+            value={autoPlanKeyword}
+            onChange={(e) => setAutoPlanKeyword(e.target.value)}
+            onKeyUp={(e) => e.key === "Enter" && runAutoPlan()}
+          />
+          <Styles.TravelInputBtn onClick={runAutoPlan}>{autoPlanLoading ? "생성중..." : "생성"}</Styles.TravelInputBtn>
+        </Styles.TravelInputBox>
+        <Styles.BtnBox>
+          <Styles.Btn onClick={() => setAutoPlanOpen(false)}>닫기</Styles.Btn>
+        </Styles.BtnBox>
+      </Styles.ModalCustom>
       {isModelOpen ? null : (
         <Styles.Wrapper>
           <Styles.PlanApplyBtn onClick={checkTitle}>적용하기</Styles.PlanApplyBtn>
@@ -664,6 +786,9 @@ const CreatePlanPage = () => {
                 )}`}</Styles.TravelDate>
                 {!isUpdate && <Styles.TravelCalendar onClick={() => window.location.reload()} src="assets/calendar.png" />}
               </Styles.DateBox>
+              {!isUpdate && (
+                <Styles.AutoPlanBtn onClick={() => setAutoPlanOpen(true)}>✨ AI로 자동 채우기</Styles.AutoPlanBtn>
+              )}
               {festivals.length > 0 && (
                 <Styles.FestivalBox>
                   <Styles.FestivalTitle>🎉 여행 기간 중 이 지역 축제·행사</Styles.FestivalTitle>
@@ -690,7 +815,8 @@ const CreatePlanPage = () => {
                         <Styles.DayTitle>DAY {idx + 1}</Styles.DayTitle>
                         {dayWeather[idx]?.code !== undefined && (
                           <Styles.DayWeather>
-                            {weatherIcon(dayWeather[idx].code)} {dayWeather[idx].tmin}° / {dayWeather[idx].tmax}°
+                            {weatherIcon(dayWeather[idx].code)} {dayWeather[idx].region ? `${dayWeather[idx].region} ` : ""}
+                            {dayWeather[idx].tmin}° / {dayWeather[idx].tmax}°
                           </Styles.DayWeather>
                         )}
                         {dayWeather[idx]?.pm25 !== undefined && (
@@ -746,7 +872,7 @@ const CreatePlanPage = () => {
             </Styles.ContentBox>
           </Styles.ControlBox>
           <Styles.Map>
-            <Map lon={coordinate.lon} lat={coordinate.lat} />
+            <Map lon={coordinate.lon} lat={coordinate.lat} path={routePath} markers={dayRouteMarkers} />
           </Styles.Map>
           <Styles.TravelBox open={travelOpen}>
             <Styles.ContentBox>
@@ -836,6 +962,46 @@ const CreatePlanPage = () => {
                 </Styles.ScrollBox>
                 {tours === "" ? "" : <Paging page={page1} count={visibleTours.length} setPage={setPage1} itemsCount={itemsCount} />}
               </Styles.ListBox>
+              {nearbyAnchor && (
+                <Styles.ListBox>
+                  <Styles.ListTitleBox>
+                    <Styles.ListTitle>{nearbyAnchor.title} 근처 가볼만한 곳</Styles.ListTitle>
+                  </Styles.ListTitleBox>
+                  <Styles.ScrollBox>
+                    {nearbyLoading ? (
+                      <Spinner text="근처 장소를 찾는 중입니다..." padding="40px 0" size="28px" />
+                    ) : nearbyPlaces.length === 0 ? (
+                      <Styles.DayItem>
+                        <Styles.DayItemTitle>근처에 추천할 만한 곳이 없습니다.</Styles.DayItemTitle>
+                      </Styles.DayItem>
+                    ) : (
+                      nearbyPlaces.map((place, idx) => {
+                        return (
+                          <div key={idx}>
+                            <Styles.DayItem>
+                              <Styles.DayItemImg
+                                src={place.firstimage ? place.firstimage : place.firstimage2 ? place.firstimage2 : "assets/logo.png"}
+                                onClick={() => window.open(`${window.location.origin}${import.meta.env.BASE_URL}information?id=${place.contentid}`)}
+                              />
+                              <Styles.DayItemTextBox notcolumn={true}>
+                                <Styles.DayItemTextBox>
+                                  <Styles.DayItemTitle onClick={() => window.open(`${window.location.origin}${import.meta.env.BASE_URL}information?id=${place.contentid}`)}>
+                                    {place.title}
+                                  </Styles.DayItemTitle>
+                                </Styles.DayItemTextBox>
+                                <Styles.ItemBox>
+                                  <Styles.DayItemText>{place.addr1}</Styles.DayItemText>
+                                  <Styles.ItemBtn onClick={() => addTour(place, update)}>추가하기</Styles.ItemBtn>
+                                </Styles.ItemBox>
+                              </Styles.DayItemTextBox>
+                            </Styles.DayItem>
+                          </div>
+                        );
+                      })
+                    )}
+                  </Styles.ScrollBox>
+                </Styles.ListBox>
+              )}
               <Styles.ListBox>
                 <Styles.ListTitleBox>
                   <Styles.ListTitle>찜한 여행지</Styles.ListTitle>

@@ -46,8 +46,8 @@ const Header = () => {
             />
           </Styles.LogoArea>
 
-          <Styles.HamburgerBtn onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
-            {isMobileMenuOpen ? "✕" : "☰"}
+          <Styles.HamburgerBtn aria-label="메뉴 열기" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+            <Styles.HamburgerBar open={isMobileMenuOpen} />
           </Styles.HamburgerBtn>
 
           <Styles.NavArea open={isMobileMenuOpen}>

@@ -66,17 +66,65 @@ export const LogoArea = styled.div`
     align-items: center;
 `
 
-export const HamburgerBtn = styled.div`
+export const HamburgerBtn = styled.button`
+    position: relative;
     display: none;
-    font-size: 28px;
-    line-height: 1;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: none;
+    background: transparent;
     cursor: pointer;
-    color: var(--color-text);
-    user-select: none;
+    border-radius: var(--radius-sm);
+    transition: var(--transition-base);
+    -webkit-tap-highlight-color: transparent;
+
+    &:hover {
+        background: var(--color-primary-light);
+    }
 
     @media (max-width: 768px) {
         display: block;
     }
+`
+
+export const HamburgerBar = styled.span`
+    position: absolute;
+    left: 10px;
+    top: 19px;
+    width: 20px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--color-text);
+    transition: var(--transition-base);
+
+    &::before,
+    &::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        width: 20px;
+        height: 2px;
+        border-radius: 2px;
+        background: var(--color-text);
+        transition: var(--transition-base);
+    }
+
+    &::before { top: -6px; }
+    &::after { top: 6px; }
+
+    ${props => props.open && `
+        background: transparent;
+
+        &::before {
+            top: 0;
+            transform: rotate(45deg);
+        }
+        &::after {
+            top: 0;
+            transform: rotate(-45deg);
+        }
+    `}
 `
 
 export const NavArea = styled.div`
@@ -86,18 +134,26 @@ export const NavArea = styled.div`
     justify-content: space-between;
 
     @media (max-width: 768px) {
-        display: ${props => props.open ? "flex" : "none"};
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 2px;
         position: absolute;
         top: 80px;
         left: 0;
         width: 100%;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-        background: white;
         box-sizing: border-box;
-        padding: 15px 20px 25px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        padding: 12px 16px 20px;
+        background: var(--color-white);
+        border-top: 1px solid var(--color-border);
+        border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+        box-shadow: var(--shadow-hover);
+        transform-origin: top;
+        transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+        opacity: ${props => (props.open ? 1 : 0)};
+        transform: translateY(${props => (props.open ? "0" : "-8px")});
+        visibility: ${props => (props.open ? "visible" : "hidden")};
+        pointer-events: ${props => (props.open ? "auto" : "none")};
     }
 `
 
@@ -107,8 +163,12 @@ export const LogSign = styled.div`
 
     @media (max-width: 768px) {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: stretch;
         width: 100%;
+        gap: 2px;
+        margin-top: 8px;
+        padding-top: 10px;
+        border-top: 1px solid var(--color-border);
     }
 `
 
@@ -118,8 +178,9 @@ export const Menu = styled.div`
 
     @media (max-width: 768px) {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: stretch;
         width: 100%;
+        gap: 2px;
     }
 `
 
@@ -133,6 +194,20 @@ export const Text = styled.span`
 
     &:hover {
         color: var(--color-primary);
+    }
+
+    @media (max-width: 768px) {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        margin: 0;
+        padding: 12px 14px;
+        border-radius: var(--radius-sm);
+
+        &:hover {
+            background: var(--color-primary-light);
+            color: var(--color-primary-dark);
+        }
     }
 `
 
@@ -153,12 +228,34 @@ export const MyProfile = styled.div`
     &:hover {
         border-color: var(--color-primary);
     }
+
+    @media (max-width: 768px) {
+        width: 100%;
+        height: auto;
+        border: none;
+        border-radius: var(--radius-sm);
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 8px 14px;
+        box-sizing: border-box;
+
+        &:hover {
+            background: var(--color-primary-light);
+        }
+    }
 `
 
 export const MyProfileImg = styled.img`
     width: 100%;
     height: 100%;
     border-radius: 20px;
+
+    @media (max-width: 768px) {
+        width: 32px;
+        height: 32px;
+        flex-shrink: 0;
+    }
 `
 
 export const MyProfileListBox = styled.div`
@@ -174,6 +271,14 @@ export const MyProfileListBox = styled.div`
     display: ${props => {
         return props.clicked ? "block" : "none"
     }};
+
+    @media (max-width: 768px) {
+        position: static;
+        width: 100%;
+        box-shadow: none;
+        padding: 4px 0 0;
+        margin-top: 4px;
+    }
 `
 
 export const MyProfileItem = styled.div`
