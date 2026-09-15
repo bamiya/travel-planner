@@ -264,6 +264,72 @@ export const Title1 = styled.div`
     margin-bottom: 20px;
 `
 
+export const NearbyBox = styled.div`
+    margin-top: 60px;
+`
+
+export const NearbyScroll = styled.div`
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding: 4px 2px 16px;
+`
+
+export const NearbyCard = styled.div`
+    flex-shrink: 0;
+    width: 180px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+    box-sizing: border-box;
+    padding: 10px;
+    cursor: pointer;
+    transition: var(--transition-base);
+
+    &:hover {
+        box-shadow: var(--shadow-hover);
+        transform: translateY(-2px);
+    }
+`
+
+export const NearbyImg = styled.img`
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    background-color: var(--color-bg);
+`
+
+export const NearbyName = styled.div`
+    margin-top: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--color-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+`
+
+export const NearbyAddr = styled.div`
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--color-text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+`
+
+export const NearbyDist = styled.div`
+    display: inline-block;
+    margin-top: 8px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--color-primary-dark);
+    background-color: var(--color-primary-light);
+    border-radius: 999px;
+`
+
 export const Comment1 = styled.div`
     display:flex;
     flex-direction: column;

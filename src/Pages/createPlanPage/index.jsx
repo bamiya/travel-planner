@@ -207,6 +207,56 @@ const CreatePlanPage = () => {
     getRouteLegs();
   }, [dayList, update]);
 
+  // Day별 날씨 안내 (무료 공개 API, 키 발급 불필요)
+  const [dayWeather, setDayWeather] = useState({});
+  useEffect(() => {
+    if (!dayList || !dateList) return;
+    const getDayWeather = async () => {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const maxDate = new Date(today);
+      maxDate.setDate(maxDate.getDate() + 15); // Open-Meteo 무료 예보 범위(약 16일)
+
+      const results = {};
+      await Promise.all(
+        dayList.map(async (day, idx) => {
+          const stops = day[1];
+          const date = dateList[idx];
+          if (!stops || stops.length === 0 || !date || date < today || date > maxDate) return;
+          const dateStr = moment(date).format("YYYY-MM-DD");
+          const { mapy: lat, mapx: lon } = stops[0];
+          try {
+            const response = await fetch(
+              `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=Asia%2FSeoul&start_date=${dateStr}&end_date=${dateStr}`
+            );
+            const json = await response.json();
+            if (json.daily?.time?.length) {
+              results[idx] = {
+                code: json.daily.weathercode[0],
+                tmax: Math.round(json.daily.temperature_2m_max[0]),
+                tmin: Math.round(json.daily.temperature_2m_min[0]),
+              };
+            }
+          } catch (e) {
+            // 무료 공개 API라 실패해도 조용히 무시하고 안내를 숨긴다.
+          }
+        })
+      );
+      setDayWeather(results);
+    };
+    getDayWeather();
+  }, [dayList, dateList]);
+
+  const weatherIcon = (code) => {
+    if (code === 0) return "☀️";
+    if ([1, 2, 3].includes(code)) return "⛅";
+    if ([45, 48].includes(code)) return "🌫️";
+    if ([51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82].includes(code)) return "🌧️";
+    if ([71, 73, 75, 77, 85, 86].includes(code)) return "🌨️";
+    if ([95, 96, 99].includes(code)) return "⛈️";
+    return "🌡️";
+  };
+
   useEffect(() => {
     if (pagingHook.current) {
       setTourMakerSelect1(Array(totalItemsCount1).fill(false));
@@ -537,14 +587,21 @@ const CreatePlanPage = () => {
                 return (
                   <div key={idx}>
                     <Styles.ListItemBox key={idx}>
-                      <Styles.DayTitle>DAY {idx + 1}</Styles.DayTitle>
+                      <Styles.DayTitleRow>
+                        <Styles.DayTitle>DAY {idx + 1}</Styles.DayTitle>
+                        {dayWeather[idx] && (
+                          <Styles.DayWeather>
+                            {weatherIcon(dayWeather[idx].code)} {dayWeather[idx].tmin}° / {dayWeather[idx].tmax}°
+                          </Styles.DayWeather>
+                        )}
+                      </Styles.DayTitleRow>
                       {update === idx + 1
                         ? dayList[idx][1].map((e, id) => {
                             return (
                               <div key={id}>
                                 <Styles.DayItem>
                                   <Styles.DayItemImg
-                                    src={e.firstimage2 === "" ? "assets/logo.png" : e.firstimage2}
+                                    src={e.firstimage ? e.firstimage : e.firstimage2 ? e.firstimage2 : "assets/logo.png"}
                                     onClick={() => window.open(`${window.location.origin}${import.meta.env.BASE_URL}information?id=${e.contentid}`)}
                                   />
                                   <Styles.DayItemTextBox notcolumn={true}>
@@ -647,7 +704,7 @@ const CreatePlanPage = () => {
                           <div key={id}>
                             <Styles.DayItem>
                               <Styles.DayItemImg
-                                src={tour.firstimage2 === "" ? "assets/logo.png" : tour.firstimage2}
+                                src={tour.firstimage ? tour.firstimage : tour.firstimage2 ? tour.firstimage2 : "assets/logo.png"}
                                 onClick={() => window.open(`${window.location.origin}${import.meta.env.BASE_URL}information?id=${tour.contentid}`)}
                               />
                               <Styles.DayItemTextBox notcolumn={true}>
@@ -691,7 +748,7 @@ const CreatePlanPage = () => {
                           <div key={idx}>
                             <Styles.DayItem>
                               <Styles.DayItemImg
-                                src={el.firstimage2 === "" ? "assets/logo.png" : el.firstimage2}
+                                src={el.firstimage ? el.firstimage : el.firstimage2 ? el.firstimage2 : "assets/logo.png"}
                                 onClick={() => window.open(`${window.location.origin}${import.meta.env.BASE_URL}information?id=${el.contentid}`)}
                               />
                               <Styles.DayItemTextBox notcolumn={true}>
