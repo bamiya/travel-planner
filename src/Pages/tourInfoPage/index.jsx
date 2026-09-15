@@ -5,9 +5,11 @@ import Map from "../../Components/kakaoMap";
 import { HeartOutlined, HeartFilled } from "@ant-design/icons";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 import Spinner from "../../Common/Spinner";
 
 const InformationPage = () => {
+  const navigate = useNavigate();
   const [infoData, setInfoData] = useState();
   useEffect(() => {
     if (location.search === "") {
@@ -26,6 +28,26 @@ const InformationPage = () => {
   useEffect(() => {
 
   }, [infoData]);
+
+  // 선택한 관광지 주변 맛집/명소 추천 (TourAPI 위치기반 조회)
+  const [nearby, setNearby] = useState([]);
+  useEffect(() => {
+    if (!infoData?.mapx || !infoData?.mapy) return;
+    const getNearby = async () => {
+      try {
+        const response = await fetch(
+          `https://apis.data.go.kr/B551011/KorService2/locationBasedList2?serviceKey=${process.env.VITE_TOUR_API_KEY}&numOfRows=15&MobileOS=ETC&MobileApp=AppTest&_type=json&mapX=${infoData.mapx}&mapY=${infoData.mapy}&radius=5000&arrange=E`
+        );
+        const json = await response.json();
+        const items = json.response?.body?.items?.item ?? [];
+        setNearby(items.filter((e) => e.contentid !== infoData.contentid).slice(0, 8));
+      } catch (e) {
+        // 무료 공개 API라 실패해도 조용히 무시하고 안내를 숨긴다.
+        setNearby([]);
+      }
+    };
+    getNearby();
+  }, [infoData?.contentid]);
 
   const getTravelInfo = async (id) => {
     try {
@@ -205,6 +227,21 @@ const InformationPage = () => {
           </Styles.DetaBox>
         </Styles.DetailedInforBox>
       </Styles.InformationBox>
+      {nearby.length > 0 && (
+        <Styles.NearbyBox>
+          <Styles.Title1>주변 추천</Styles.Title1>
+          <Styles.NearbyScroll>
+            {nearby.map((place) => (
+              <Styles.NearbyCard key={place.contentid} onClick={() => navigate(`/information?id=${place.contentid}`)}>
+                <Styles.NearbyImg src={place.firstimage ? place.firstimage : place.firstimage2 ? place.firstimage2 : "assets/logo.png"} />
+                <Styles.NearbyName>{place.title}</Styles.NearbyName>
+                <Styles.NearbyAddr>{place.addr1}</Styles.NearbyAddr>
+                {place.dist && <Styles.NearbyDist>{(place.dist / 1000).toFixed(1)}km</Styles.NearbyDist>}
+              </Styles.NearbyCard>
+            ))}
+          </Styles.NearbyScroll>
+        </Styles.NearbyBox>
+      )}
       <Styles.Comment1>
         <Styles.Title1>톡톡</Styles.Title1>
         <Styles.CommentBox>

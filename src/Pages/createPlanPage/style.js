@@ -275,12 +275,32 @@ export const TravelCalendar = styled.img`
     cursor: pointer;
 `
 
-export const DayTitle = styled.div`
+export const DayTitleRow = styled.div`
     width: 100%;
-    font-size: 30px;
-    font-weight: 400;
-    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
     margin-bottom: 15px;
+`
+
+export const DayTitle = styled.div`
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--color-text);
+`
+
+export const DayWeather = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 12px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color-primary-dark);
+    background-color: var(--color-primary-light);
+    border-radius: 999px;
+    white-space: nowrap;
 `
 
 export const RouteInfo = styled.div`
