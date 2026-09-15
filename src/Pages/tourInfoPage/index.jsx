@@ -172,11 +172,12 @@ const InformationPage = () => {
 
   //좋아요 불러오기
   const getLikes = async () => {
-    const data = await axios.post("http://localhost:8080/getLikes");
-    if (data === undefined) {
-      getLikes();
-    } else {
+    try {
+      const data = await axios.post("http://localhost:8080/getLikes");
       setLike(data.data.data.filter((e) => e.type === "T"));
+    } catch (e) {
+      // 로그인 전이거나 토큰이 유효하지 않으면 좋아요 표시 없이 진행한다.
+      setLike([]);
     }
   };
 

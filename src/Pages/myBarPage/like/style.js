@@ -10,17 +10,16 @@ export const BigBox = styled.div`
 `
 
 export const Box = styled.div`
-    width: 130px;
-    height: 40px;
-    background-color: var(--color-bg);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 16px;
+    background-color: var(--color-primary-light);
+    border-radius: 999px;
     margin-left: 35px;
-    margin-top: 60px;
+    margin-top: 32px;
 
     @media (max-width: 768px) {
         margin-left: 15px;
-        margin-top: 100px;
     }
 `
 
@@ -40,19 +39,28 @@ export const Box2 = styled.div`
 
 export const SmallBox = styled.div`
     width: 100%;
+    box-sizing: border-box;
+    background-color: var(--color-bg);
+    border-radius: var(--radius-lg);
+    margin-top: 14px;
+    padding: 4px;
 `
 export const SmallBox2 = styled.div`
     width: 1100px;
-    border-radius: var(--radius-md);
+    max-width: 100%;
+    box-sizing: border-box;
+    background-color: var(--color-bg);
+    border-radius: var(--radius-lg);
     margin-bottom: 30px;
     margin-left: 35px;
     margin-right: 35px;
+    margin-top: 14px;
+    padding: 4px;
 
     @media (max-width: 768px) {
         width: 100%;
         margin-left: 15px;
         margin-right: 15px;
-        box-sizing: border-box;
     }
 `
 
@@ -114,7 +122,15 @@ export const NameBox = styled.div`
     }
 `
 export const HeartSumText = styled.div`
-    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    min-height: 60px;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 10px;
+    color: var(--color-text-muted);
+    font-size: 14px;
+    font-weight: 600;
 `
 
 export const KeepDeleteBox = styled.div`
@@ -194,12 +210,9 @@ export const Imgheart = styled.div`
 `
 
 export const Text = styled.div`
-    width: 130px;
-    font-size: 16px;
-    text-align: center;
-    padding-top: 10px;
+    font-size: 13px;
     font-weight: 700;
-    color: var(--color-text-muted);
+    color: var(--color-primary-dark);
 `
 
 export const ContentText = styled.div`
@@ -218,23 +231,23 @@ export const ContentText = styled.div`
 `
 
 export const LikeText = styled.div`
-    width: 200px;
-    height: 50px;
-    padding-top: 20px;
-    font-size: 20px;
-    text-align: center;
+    font-size: 22px;
     font-weight: 800;
     color: var(--color-text);
-    background-color: var(--color-primary-light);
-    border-radius: var(--radius-md);
     margin-left: 40px;
-    margin-top: 120px;
+    margin-top: 100px;
+
+    &:first-of-type {
+        margin-top: 150px;
+    }
 
     @media (max-width: 768px) {
-        width: auto;
         margin-left: 15px;
-        margin-right: 15px;
-        margin-top: 100px;
+        margin-top: 60px;
+
+        &:first-of-type {
+            margin-top: 110px;
+        }
     }
 `
 

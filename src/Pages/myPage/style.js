@@ -1,201 +1,116 @@
 import styled from "styled-components";
-
 import { NavLink as Link } from 'react-router-dom';
 
-
-
-export const ProfileBox = styled.div`
-    width: 1200px;
-    text-align: center;
-    margin: 150px 0 50px 0; 
-`
-
-export const SettingBox = styled.div`
-    width: 400px;
-    text-align:center;
-    margin-left: 400px;
-    margin-top: 50px;
-    position:relative;
-`
-
-export const Box1 = styled.div`
-    width: 100%;
-    display: flex;
-`
 export const Box = styled.div`
-    width: 1200px;
-    padding-bottom: 30px;
-    border-bottom: 1px solid var(--color-border);
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto 40px;
+    box-sizing: border-box;
+    padding: 0 20px;
 `
 
-export const Box2 = styled.div`
-    width: auto;
-    text-align: center;
+export const ProfileCard = styled.div`
+    width: 100%;
+    background-color: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    box-sizing: border-box;
+    padding: 48px 32px 36px;
+    margin-top: 150px;
+    margin-bottom: 24px;
     display: flex;
-    justify-content : center;
+    flex-direction: column;
+    align-items: center;
+
+    @media (max-width: 768px) {
+        margin-top: 110px;
+        padding: 36px 20px 28px;
+    }
+`
+
+export const AvatarWrap = styled.div`
+    position: relative;
+    width: 116px;
+    height: 116px;
+    margin-bottom: 18px;
 `
 
 export const Profile = styled.img`
-    width: 150px;
-    height: 150px;
-    border-radius: 100%;
-    margin-left: 50px;
+    width: 116px;
+    height: 116px;
+    border-radius: 50%;
+    object-fit: cover;
     box-shadow: var(--shadow-card);
     border: 3px solid var(--color-white);
     box-sizing: border-box;
-    position:absolute;
-
 `
 
-export const MyProfileBox = styled.div`
-    width: 150px;
-    height: 150px;
-    margin-bottom: 20px;
-`
 export const SettingsBtn = styled.div`
+    position: absolute;
+    right: -2px;
+    bottom: -2px;
     width: 34px;
     height: 34px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    background-color: var(--color-white);
-    color: var(--color-text-muted);
+    background-color: var(--color-primary);
+    color: white;
     box-shadow: var(--shadow-hover);
-    margin-top: 122px;
-    margin-left: 165px;
-    position: absolute;
     cursor: pointer;
     transition: var(--transition-base);
 
     &:hover {
-        color: var(--color-primary);
+        background-color: var(--color-primary-dark);
     }
 
     svg {
-        width: 18px;
-        height: 18px;
+        width: 16px;
+        height: 16px;
     }
 `
 
-export const Text = styled.div`
-    width: auto;
-    text-align: center;
-    font-size: 26px;
+export const Name = styled.div`
+    font-size: 22px;
     font-weight: 800;
     color: var(--color-text);
-    margin-right: 10px;
 `
 
-export const Text1 = styled.div`
-    width: 100%;
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--color-text-muted);
-    margin-top: 22.5px;
-
-
+export const TabRow = styled.nav`
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 6px;
+    background-color: var(--color-bg);
+    border-radius: 999px;
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 auto;
 `
 
-export const Nav = styled.nav`
-  width: 980px;
-  height: 70px;
-  display: flex;
-  
-  margin-left: 120px; 
-`;
-  
-export const NavLink = styled(Link)`
-  color: ${props => props.isaction === "myPlan" ? "white" : "var(--color-text-muted)"};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  text-align: center;
-  font-weight: 700;
-  border-radius: var(--radius-sm);
-  height: 100%;
-  background: ${props => {
-    return props.isaction === "myPlan" ? "var(--color-primary)" :"var(--color-bg)"
-  }
-  };
-  cursor: pointer;
-  transition: var(--transition-base);
-  &:hover {
-    background: ${props => props.isaction === "myPlan" ? "var(--color-primary-dark)" : "var(--color-primary-light)"};
-    color: ${props => props.isaction === "myPlan" ? "white" : "var(--color-primary-dark)"};
-  }
-`;
+export const Tab = styled(Link)`
+    padding: 10px 22px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    text-align: center;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: var(--transition-base);
+    color: ${props => (props.$active ? "white" : "var(--color-text-muted)")};
+    background: ${props => (props.$active ? "var(--color-primary)" : "transparent")};
 
-export const NavLink1 = styled(Link)`
-  color: ${props => props.isaction === "myComment" ? "white" : "var(--color-text-muted)"};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  text-align: center;
-  font-weight: 700;
-  border-radius: var(--radius-sm);
-  height: 100%;
-  background: ${props => {
-    return props.isaction === "myComment" ? "var(--color-primary)" :"var(--color-bg)"
-  }
-  };
-  cursor: pointer;
-  transition: var(--transition-base);
-  &:hover {
-    background: ${props => props.isaction === "myComment" ? "var(--color-primary-dark)" : "var(--color-primary-light)"};
-    color: ${props => props.isaction === "myComment" ? "white" : "var(--color-primary-dark)"};
-  }
-`;
+    &:hover {
+        background: ${props => (props.$active ? "var(--color-primary-dark)" : "var(--color-primary-light)")};
+        color: ${props => (props.$active ? "white" : "var(--color-primary-dark)")};
+    }
 
-export const NavLink2 = styled(Link)`
-  color: ${props => props.isaction === "sharedPlan" ? "white" : "var(--color-text-muted)"};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  text-align: center;
-  font-weight: 700;
-  border-radius: var(--radius-sm);
-  height: 100%;
-  background: ${props => {
-    return props.isaction === "sharedPlan" ? "var(--color-primary)" :"var(--color-bg)"
-  }
-  };
-  cursor: pointer;
-  transition: var(--transition-base);
-  &:hover {
-    background: ${props => props.isaction === "sharedPlan" ? "var(--color-primary-dark)" : "var(--color-primary-light)"};
-    color: ${props => props.isaction === "sharedPlan" ? "white" : "var(--color-primary-dark)"};
-  }
-`;
-
-export const NavLink3 = styled(Link)`
-  color: ${props => props.isaction === "like" ? "white" : "var(--color-text-muted)"};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  text-align: center;
-  font-weight: 700;
-  border-radius: var(--radius-sm);
-  height: 100%;
-  background: ${props => {
-    return props.isaction === "like" ? "var(--color-primary)" :"var(--color-bg)"
-  }
-  };
-  cursor: pointer;
-  transition: var(--transition-base);
-  &:hover {
-    background: ${props => props.isaction === "like" ? "var(--color-primary-dark)" : "var(--color-primary-light)"};
-    color: ${props => props.isaction === "like" ? "white" : "var(--color-primary-dark)"};
-  }
-`;
-
-export const NavMenu = styled.div`
-  width: 300px;
-  align-items: center;
-  border-radius: var(--radius-sm);
-  margin: 0 30px 0 0;
-`;
+    @media (max-width: 480px) {
+        padding: 9px 16px;
+        font-size: 13px;
+    }
+`

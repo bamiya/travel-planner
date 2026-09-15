@@ -27,7 +27,7 @@ export default ({ mode }) => {
     ],
     server: {
       open: true,
-      port: 3000,
+      port: 5174,
     },
     define: {
       "process.env": { ...env, ...loadEnv(mode, process.cwd()) },

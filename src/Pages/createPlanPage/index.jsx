@@ -13,6 +13,15 @@ const CreatePlanCalendar = ({ open, setOpen, setDateList }) => {
   // 팝업
   const [value, onChange] = useState(new Date());
 
+  // 지금 고른 범위를 사람이 읽기 쉬운 문장으로 보여준다 (반응성/가독성 개선)
+  const renderSelectionSummary = () => {
+    if (Array.isArray(value)) {
+      const nights = moment(value[1]).diff(moment(value[0]), "days");
+      return `${moment(value[0]).format("M월 D일(ddd)")} ~ ${moment(value[1]).format("M월 D일(ddd)")} · ${nights}박 ${nights + 1}일`;
+    }
+    return `출발일 ${moment(value).format("M월 D일(ddd)")} 선택됨 — 도착일을 선택해주세요`;
+  };
+
   // 이전 버튼을 눌렀을 때
   const onBack = () => {
     window.history.back();
@@ -55,6 +64,8 @@ const CreatePlanCalendar = ({ open, setOpen, setDateList }) => {
 
   return (
     <Styles.ModalCustom isOpen={open} style={{ overlay: { zIndex: "1", backgroundColor: "rgba(20, 20, 30, 0.5)" } }} ariaHideApp={false}>
+      <Styles.ModalTitle>여행 날짜를 선택해주세요</Styles.ModalTitle>
+      <Styles.SelectionSummary complete={Array.isArray(value)}>{renderSelectionSummary()}</Styles.SelectionSummary>
       <Styles.CalendarCustom onChange={onChange} value={value} selectRange />
       <Styles.BtnBox>
         <Styles.Btn onClick={onBack}>이전</Styles.Btn>
@@ -160,15 +171,30 @@ const CreatePlanPage = () => {
     }
   }, []);
 
-  useEffect(() => {
-    // 찜 목록 불러오는 event
+  const loadDibsData = () => {
+    // 찜 목록 불러오는 함수
     if (sessionStorage.getItem("dibs")) {
       const dibs = sessionStorage.getItem("dibs").split(" ");
       dibs.pop(); // 쓰레기 값 제거
       tourData2(dibs).then((value) => setCart(value));
     } else {
+      setCart([]);
       setRendering(true);
     }
+  };
+
+  useEffect(() => {
+    loadDibsData();
+    // 관광지 상세페이지는 새 탭(window.open)으로 열리기 때문에, 거기서 찜하기를
+    // 눌러도 이 탭은 리마운트되지 않아 찜 목록이 그대로 안 바뀐다.
+    // 탭이 다시 보일 때(다른 탭에서 돌아왔을 때) 찜 목록을 다시 불러온다.
+    const onVisible = () => {
+      if (document.visibilityState === "visible") {
+        loadDibsData();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
   }, []);
 
   useEffect(() => {
@@ -178,6 +204,7 @@ const CreatePlanPage = () => {
         arr[i] = [i + 1, []];
       }
       setDayList(arr);
+      setControlOpen(true); // 날짜 선택이 끝나면 바로 일정 패널을 열어준다
     }
   }, [dateList]);
 
@@ -457,8 +484,10 @@ const CreatePlanPage = () => {
     }
   };
 
-  const searchTours = async (keyword) => {
+  const searchTours = async (keyword, overrideType) => {
     // 키워드 검색 함수 (이름 기반 TourAPI 검색 사용, 없으면 전체 목록으로 복귀)
+    // overrideType: 카테고리 탭을 바꾸는 것과 동시에 재검색할 때, setContentType 직후라
+    // contentType state가 아직 리렌더 전이라 옛 값을 참조하게 된다. 그래서 새 값을 직접 받는다.
     if (!keyword) {
       setTours(tourStorage);
       setStotalItemCount1(tourStorage.length);
@@ -469,7 +498,7 @@ const CreatePlanPage = () => {
     setRendering2(false);
     try {
       const response = await fetch(
-        `https://apis.data.go.kr/B551011/KorService2/searchKeyword2?serviceKey=${process.env.VITE_TOUR_API_KEY}&numOfRows=100000&MobileOS=ETC&MobileApp=AppTest&_type=json&contentTypeId=${contentType}&keyword=${encodeURIComponent(keyword)}`
+        `https://apis.data.go.kr/B551011/KorService2/searchKeyword2?serviceKey=${process.env.VITE_TOUR_API_KEY}&numOfRows=100000&MobileOS=ETC&MobileApp=AppTest&_type=json&contentTypeId=${overrideType ?? contentType}&keyword=${encodeURIComponent(keyword)}`
       );
       const json = await response.json();
       const tourItems = json.response?.body?.items?.item ?? []; // 검색 결과가 없으면 items가 빈 문자열로 온다
@@ -732,8 +761,13 @@ const CreatePlanPage = () => {
                     active={contentType === tab.id}
                     onClick={() => {
                       setContentType(tab.id);
-                      setSearchKeyword("");
-                      tourData(tab.id);
+                      const keyword = travelInputRef.current?.value ?? "";
+                      if (keyword) {
+                        searchTours(keyword, tab.id);
+                      } else {
+                        setSearchKeyword("");
+                        tourData(tab.id);
+                      }
                     }}>
                     {tab.label}
                   </Styles.CategoryTab>

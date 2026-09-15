@@ -29,6 +29,26 @@ export const ModalCustom = styled(Modal)`
     }}
 `
 
+export const ModalTitle = styled.div`
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--color-text);
+    margin-bottom: 12px;
+`
+
+export const SelectionSummary = styled.div`
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 16px;
+    margin-bottom: 18px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+    transition: var(--transition-base);
+    background-color: ${props => (props.complete ? "var(--color-primary-light)" : "var(--color-bg)")};
+    color: ${props => (props.complete ? "var(--color-primary-dark)" : "var(--color-text-muted)")};
+`
+
 export const BtnBox = styled.div`
     width: 100%;
     border-top: 1px solid var(--color-border);
@@ -140,11 +160,18 @@ export const CalendarCustom = styled(Calendar)`
             font-weight: 800;
         }
 
-        /* 선택 범위 안 */
+        /* 선택 범위 안 - 하나로 이어진 막대처럼 보이도록 양 끝만 둥글게 */
         .react-calendar__tile--range {
             background-color: var(--color-primary-light);
             color: var(--color-primary-dark);
+            font-weight: 700;
             border-radius: 0;
+        }
+        .react-calendar__tile--rangeStart {
+            border-radius: 999px 0 0 999px;
+        }
+        .react-calendar__tile--rangeEnd {
+            border-radius: 0 999px 999px 0;
         }
 
         /* 범위의 시작/끝(실제 선택한 날짜) */
@@ -154,7 +181,15 @@ export const CalendarCustom = styled(Calendar)`
             background-color: var(--color-primary) !important;
             color: var(--color-white) !important;
             font-weight: 800;
-            border-radius: var(--radius-sm);
+            border-radius: 999px !important;
+        }
+
+        /* 주말은 한눈에 구분되도록 색을 살짝 다르게 */
+        .react-calendar__tile:nth-child(7n-1):not(.react-calendar__tile--active):not(.react-calendar__tile--range) {
+            color: #3B82F6;
+        }
+        .react-calendar__tile:nth-child(7n):not(.react-calendar__tile--active):not(.react-calendar__tile--range) {
+            color: var(--color-accent);
         }
 
         .react-calendar__month-view__days__day--neighboringMonth {

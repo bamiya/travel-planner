@@ -107,11 +107,11 @@ const MainPage = () => {
   };
 
   const getLikes = async () => {
-    const data = await axios.post("http://localhost:8080/getLikes");
-    if (data === undefined) {
-      getLikes();
-    } else {
+    try {
+      const data = await axios.post("http://localhost:8080/getLikes");
       setLike(data.data.data.filter((e) => e.type === "P"));
+    } catch (e) {
+      setLike([]);
     }
   };
   const addLikes = async (id) => {
