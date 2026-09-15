@@ -440,6 +440,49 @@ export const DayWeather = styled.div`
     white-space: nowrap;
 `
 
+export const HeatTooltip = styled.div`
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    margin-bottom: 10px;
+    padding: 8px 12px;
+    background-color: var(--color-text);
+    color: var(--color-white);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.4;
+    white-space: nowrap;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-hover);
+    opacity: 0;
+    visibility: hidden;
+    transition: var(--transition-base);
+    pointer-events: none;
+    z-index: 5;
+
+    &::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 5px solid transparent;
+        border-top-color: var(--color-text);
+    }
+`
+
+export const HeatBadgeWrap = styled.div`
+    position: relative;
+    display: inline-flex;
+
+    &:hover ${HeatTooltip} {
+        opacity: 1;
+        visibility: visible;
+        transform: translate(-50%, -4px);
+    }
+`
+
 export const RouteInfo = styled.div`
     display: flex;
     align-items: center;

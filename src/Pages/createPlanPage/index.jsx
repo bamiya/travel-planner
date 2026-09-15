@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import Spinner from "../../Common/Spinner";
 import { searchNearbyFallback, fetchNearbyTours } from "../../utils/nearbySearch";
 import { generateAutoPlan } from "../../utils/autoPlanner";
+import { fetchVisitorDemand, getHeatTier } from "../../utils/visitorDemand";
 
 const CreatePlanCalendar = ({ open, setOpen, setDateList }) => {
   // 팝업
@@ -186,7 +187,10 @@ const CreatePlanPage = () => {
   const [nearbyAnchor, setNearbyAnchor] = useState(null);
   const [nearbyPlaces, setNearbyPlaces] = useState([]);
   const [nearbyLoading, setNearbyLoading] = useState(false);
+  const [nearbyPage, setNearbyPage] = useState(1);
+  const [nearbyItemsCount] = useState(6);
   useEffect(() => {
+    setNearbyPage(1); // 기준 장소가 바뀌면 페이지도 1페이지로 초기화
     if (!nearbyAnchor) {
       setNearbyPlaces([]);
       return;
@@ -197,7 +201,8 @@ const CreatePlanPage = () => {
         // 자기 자신과, 이미 이 DAY에 추가된 곳은 추천에서 뺀다.
         const alreadyAdded = new Set((dayList?.[update - 1]?.[1] ?? []).map((s) => s.contentid));
         alreadyAdded.add(nearbyAnchor.contentid);
-        setNearbyPlaces(items.filter((it) => !alreadyAdded.has(it.contentid)).slice(0, 10));
+        // 너무 많으면 페이지 수가 끝없이 늘어나니 최대 60개(10페이지)까지만 보여준다.
+        setNearbyPlaces(items.filter((it) => !alreadyAdded.has(it.contentid)).slice(0, 60));
       })
       .catch(() => setNearbyPlaces([]))
       .finally(() => setNearbyLoading(false));
@@ -326,13 +331,23 @@ const CreatePlanPage = () => {
       await Promise.all(
         dayList.map(async (day, idx) => {
           const stops = day[1];
-          const date = dateList[idx];
-          if (!stops || stops.length === 0 || !date || date < today || date > maxDate) return;
-          const dateStr = moment(date).format("YYYY-MM-DD");
+          if (!stops || stops.length === 0) return;
           const { mapy: lat, mapx: lon } = stops[0];
           // "서울특별시 용산구 ..." 형태의 주소에서 시/군/구만 뽑아 날씨 옆에 어느 지역인지 표시한다.
           const addrParts = stops[0].addr1 ? stops[0].addr1.split(" ") : [];
           const region = addrParts[1] || addrParts[0] || "";
+          results[idx] = { region };
+
+          // 이 지역이 최근(통신사 데이터 집계 특성상 약 3~4주 전 기준) 얼마나 붐볐는지 -
+          // "핫플레이스" 표시용. 여행 날짜(미래/과거)와 무관하게 항상 조회한다.
+          const demand = await fetchVisitorDemand(stops[0].lDongRegnCd, stops[0].lDongSignguCd);
+          if (demand?.visitor != null) {
+            results[idx] = { ...results[idx], demand };
+          }
+
+          const date = dateList[idx];
+          if (!date || date < today || date > maxDate) return;
+          const dateStr = moment(date).format("YYYY-MM-DD");
           try {
             const response = await fetch(
               `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=Asia%2FSeoul&start_date=${dateStr}&end_date=${dateStr}`
@@ -340,7 +355,7 @@ const CreatePlanPage = () => {
             const json = await response.json();
             if (json.daily?.time?.length) {
               results[idx] = {
-                region,
+                ...results[idx],
                 code: json.daily.weathercode[0],
                 tmax: Math.round(json.daily.temperature_2m_max[0]),
                 tmin: Math.round(json.daily.temperature_2m_min[0]),
@@ -824,6 +839,24 @@ const CreatePlanPage = () => {
                             {pm25Grade(dayWeather[idx].pm25).icon} 미세먼지 {pm25Grade(dayWeather[idx].pm25).label}
                           </Styles.DayWeather>
                         )}
+                        {(() => {
+                          const demand = dayWeather[idx]?.demand;
+                          const tier = getHeatTier(demand?.visitor);
+                          if (!tier) return null;
+                          const dateLabel = demand.date ? `${demand.date.slice(0, 4)}-${demand.date.slice(4, 6)}-${demand.date.slice(6, 8)}` : "";
+                          return (
+                            <Styles.HeatBadgeWrap>
+                              <Styles.DayWeather>
+                                {tier.icon} {tier.label}
+                              </Styles.DayWeather>
+                              <Styles.HeatTooltip>
+                                {dateLabel} 기준
+                                <br />
+                                현지인 {demand.local?.toLocaleString() ?? "-"}명 · 외지인 {demand.visitor.toLocaleString()}명
+                              </Styles.HeatTooltip>
+                            </Styles.HeatBadgeWrap>
+                          );
+                        })()}
                       </Styles.DayTitleRow>
                       {update === idx + 1
                         ? dayList[idx][1].map((e, id) => {
@@ -975,31 +1008,36 @@ const CreatePlanPage = () => {
                         <Styles.DayItemTitle>근처에 추천할 만한 곳이 없습니다.</Styles.DayItemTitle>
                       </Styles.DayItem>
                     ) : (
-                      nearbyPlaces.map((place, idx) => {
-                        return (
-                          <div key={idx}>
-                            <Styles.DayItem>
-                              <Styles.DayItemImg
-                                src={place.firstimage ? place.firstimage : place.firstimage2 ? place.firstimage2 : "assets/logo.png"}
-                                onClick={() => window.open(`${window.location.origin}${import.meta.env.BASE_URL}information?id=${place.contentid}`)}
-                              />
-                              <Styles.DayItemTextBox notcolumn={true}>
-                                <Styles.DayItemTextBox>
-                                  <Styles.DayItemTitle onClick={() => window.open(`${window.location.origin}${import.meta.env.BASE_URL}information?id=${place.contentid}`)}>
-                                    {place.title}
-                                  </Styles.DayItemTitle>
+                      nearbyPlaces
+                        .filter((_, idx) => idx >= (nearbyPage - 1) * nearbyItemsCount && idx < nearbyPage * nearbyItemsCount)
+                        .map((place, idx) => {
+                          return (
+                            <div key={idx}>
+                              <Styles.DayItem>
+                                <Styles.DayItemImg
+                                  src={place.firstimage ? place.firstimage : place.firstimage2 ? place.firstimage2 : "assets/logo.png"}
+                                  onClick={() => window.open(`${window.location.origin}${import.meta.env.BASE_URL}information?id=${place.contentid}`)}
+                                />
+                                <Styles.DayItemTextBox notcolumn={true}>
+                                  <Styles.DayItemTextBox>
+                                    <Styles.DayItemTitle onClick={() => window.open(`${window.location.origin}${import.meta.env.BASE_URL}information?id=${place.contentid}`)}>
+                                      {place.title}
+                                    </Styles.DayItemTitle>
+                                  </Styles.DayItemTextBox>
+                                  <Styles.ItemBox>
+                                    <Styles.DayItemText>{place.addr1}</Styles.DayItemText>
+                                    <Styles.ItemBtn onClick={() => addTour(place, update)}>추가하기</Styles.ItemBtn>
+                                  </Styles.ItemBox>
                                 </Styles.DayItemTextBox>
-                                <Styles.ItemBox>
-                                  <Styles.DayItemText>{place.addr1}</Styles.DayItemText>
-                                  <Styles.ItemBtn onClick={() => addTour(place, update)}>추가하기</Styles.ItemBtn>
-                                </Styles.ItemBox>
-                              </Styles.DayItemTextBox>
-                            </Styles.DayItem>
-                          </div>
-                        );
-                      })
+                              </Styles.DayItem>
+                            </div>
+                          );
+                        })
                     )}
                   </Styles.ScrollBox>
+                  {nearbyPlaces.length === 0 ? null : (
+                    <Paging page={nearbyPage} count={nearbyPlaces.length} setPage={setNearbyPage} itemsCount={nearbyItemsCount} />
+                  )}
                 </Styles.ListBox>
               )}
               <Styles.ListBox>
