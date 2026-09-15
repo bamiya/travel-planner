@@ -5,20 +5,25 @@ import Map from "../../Components/kakaoMap";
 import { HeartOutlined, HeartFilled } from "@ant-design/icons";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Spinner from "../../Common/Spinner";
 
 const InformationPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [infoData, setInfoData] = useState();
   useEffect(() => {
+    // location.search에 의존해야, 이 페이지에서 다른 관광지로 바로 이동(주변 추천
+    // 클릭 등)할 때도 새로고침 없이 다시 데이터를 불러온다. 같은 라우트라
+    // 컴포넌트가 리마운트되지 않기 때문에 []로만 두면 첫 진입 후 다시 안 불린다.
     if (location.search === "") {
       toast.error("url이 잘못되었습니다.");
       history.back();
     } else {
+      window.scrollTo(0, 0);
       getTravelInfo(location.search.split("=")[1]);
     }
-  }, []);
+  }, [location.search]);
 
   const [content, setContent] = useState("");
   const [comments, setComments] = useState([]);
@@ -95,7 +100,7 @@ const InformationPage = () => {
   useEffect(() => {
     getcontent();
     getLikes();
-  }, []);
+  }, [location.search]);
 
   const getcontent = async () => {
     const data = await axios.get(`http://localhost:8080/getComment?id=${location.search.split("=")[1]}`);
