@@ -25,7 +25,7 @@ export const Button = styled(Link)`
     width: 120px;
     height: 44px;
     background-color: var(--color-primary);
-    border-radius: var(--radius-sm);
+    border-radius: 999px;
     border: 0;
     color: white;
     font-weight: 700;

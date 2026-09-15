@@ -255,7 +255,15 @@ export const EditmemberPage = () => {
               </Styles.BasicInformationEamilBox>
             </Styles.BasicInformationBox>
             <Styles.LabelBox htmlFor="ex_file">
-              <Styles.ProfileImgChange src={"assets/카메라.png"}></Styles.ProfileImgChange>
+              <svg viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M4 8a2 2 0 012-2h1.2l.7-1.4A1 1 0 018.8 4h6.4a1 1 0 01.9.6L16.8 6H18a2 2 0 012 2v9a2 2 0 01-2 2H6a2 2 0 01-2-2V8z"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinejoin="round"
+                />
+                <circle cx="12" cy="13" r="3.2" stroke="currentColor" strokeWidth="2" />
+              </svg>
               <Styles.ProfileImgInput type="file" id="ex_file" accept="image/jpg, image/png, image/jpeg" onChange={onSaveFiles} />
             </Styles.LabelBox>
 

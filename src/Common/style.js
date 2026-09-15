@@ -22,7 +22,7 @@ export const UserBlueBtn = styled.button`
     color: white;
     font-size: 15px;
     font-weight: 700;
-    border-radius: var(--radius-sm);
+    border-radius: 999px;
     display: flex;
     align-items: center;
     justify-content: center;

@@ -43,7 +43,17 @@ const MyPage = ({ myPlanAction, sharedPlanAction, likeAction }) => {
                     : "assets/defaultProfile.png"
                 }
               />
-              <Styles.SettingsImg src={`assets/settings.png`} onClick={moveEditMember} />
+              <Styles.SettingsBtn onClick={moveEditMember}>
+                <svg viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" />
+                  <path
+                    d="M19.4 13a7.6 7.6 0 000-2l2-1.5-2-3.4-2.3.9a7.7 7.7 0 00-1.7-1l-.4-2.4H10.9l-.4 2.4a7.7 7.7 0 00-1.7 1l-2.3-.9-2 3.4L6.6 11a7.6 7.6 0 000 2l-2 1.5 2 3.4 2.3-.9a7.7 7.7 0 001.7 1l.4 2.4h2.1l.4-2.4a7.7 7.7 0 001.7-1l2.3.9 2-3.4-2-1.5z"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </Styles.SettingsBtn>
             </Styles.MyProfileBox>
             <Styles.Box2>
               <Styles.Text>{name}</Styles.Text>

@@ -88,23 +88,22 @@ export const ContentListBox = styled.div`
         box-shadow: var(--shadow-hover);
     }
 `
-export const LatestpopularBox =styled.div`
-    //background-color: white;
-    width: 115px;
-    margin-left: 1050px;
+export const LatestpopularBox = styled.div`
+    display: inline-flex;
+    margin-left: auto;
     margin-bottom: 10px;
-    display: flex;
-
-    @media (max-width: 1200px) {
-        margin-left: auto;
-        margin-right: 15px;
-    }
+    padding: 4px;
+    background-color: var(--color-bg);
+    border-radius: 999px;
 `
 export const LatestBtn = styled.button`
     border: none;
     cursor: pointer;
-    background-color: transparent;
-    font-size: 14px;
+    padding: 6px 16px;
+    border-radius: 999px;
+    font-size: 13px;
+    background-color: ${props => props.click ? "var(--color-white)" : "transparent"};
+    box-shadow: ${props => props.click ? "var(--shadow-card)" : "none"};
     color: ${props => props.click ? "var(--color-primary-dark)" : "var(--color-text-muted)"};
     font-weight: ${props => {
         if(props.click) return "700"
@@ -115,8 +114,11 @@ export const LatestBtn = styled.button`
 export const PopularBtn = styled.button`
     border: none;
     cursor: pointer;
-    background-color: transparent;
-    font-size: 14px;
+    padding: 6px 16px;
+    border-radius: 999px;
+    font-size: 13px;
+    background-color: ${props => props.click ? "var(--color-white)" : "transparent"};
+    box-shadow: ${props => props.click ? "var(--shadow-card)" : "none"};
     color: ${props => props.click ? "var(--color-primary-dark)" : "var(--color-text-muted)"};
     font-weight: ${props => {
         if(props.click) return "700"
@@ -125,7 +127,7 @@ export const PopularBtn = styled.button`
     transition: var(--transition-base);
 `
 export const Sign = styled.div`
-
+    display: none;
 `
 
 export const PlanLodingText = styled.div`

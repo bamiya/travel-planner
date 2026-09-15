@@ -37,27 +37,29 @@ const FindPassPage = () => {
 
   return (
     <Styles.Wrapper>
-      <Styles.ContentBox>
-        <Styles.LoginText>비밀번호 찾기</Styles.LoginText>
+      <Styles.AuthCard>
+        <Styles.ContentBox>
+          <Styles.LoginText>비밀번호 찾기</Styles.LoginText>
 
-        {step === "email" ? (
-          <>
-            <Styles.LoginText2>
-              이메일
-              <Styles.Input placeholder="이메일을 입력하세요" onChange={(e) => setEmail(e.target.value)} onKeyPress={onKeyPress}></Styles.Input>
-            </Styles.LoginText2>
-            <UserBlueBtn onClick={sendCode}>인증코드 받기</UserBlueBtn>
-          </>
-        ) : (
-          <>
-            <Styles.LoginText2>
-              인증코드
-              <Styles.Input placeholder="이메일로 받은 인증코드를 입력하세요" onChange={(e) => setCode(e.target.value)} onKeyPress={onKeyPress}></Styles.Input>
-            </Styles.LoginText2>
-            <UserBlueBtn onClick={verifyCode}>인증코드 확인</UserBlueBtn>
-          </>
-        )}
-      </Styles.ContentBox>
+          {step === "email" ? (
+            <>
+              <Styles.LoginText2>
+                이메일
+                <Styles.Input placeholder="이메일을 입력하세요" onChange={(e) => setEmail(e.target.value)} onKeyPress={onKeyPress}></Styles.Input>
+              </Styles.LoginText2>
+              <UserBlueBtn onClick={sendCode}>인증코드 받기</UserBlueBtn>
+            </>
+          ) : (
+            <>
+              <Styles.LoginText2>
+                인증코드
+                <Styles.Input placeholder="이메일로 받은 인증코드를 입력하세요" onChange={(e) => setCode(e.target.value)} onKeyPress={onKeyPress}></Styles.Input>
+              </Styles.LoginText2>
+              <UserBlueBtn onClick={verifyCode}>인증코드 확인</UserBlueBtn>
+            </>
+          )}
+        </Styles.ContentBox>
+      </Styles.AuthCard>
     </Styles.Wrapper>
   );
 };

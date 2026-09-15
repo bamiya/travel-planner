@@ -2,7 +2,28 @@ import styled from "styled-components";
 
 export const Wrapper = styled.div`
     width: 100%;
-    margin: 150px 0;
+    box-sizing: border-box;
+    padding: 150px 20px 80px;
+    display: flex;
+    justify-content: center;
+
+    @media (max-width: 480px) {
+        padding: 110px 16px 60px;
+    }
+`
+export const AuthCard = styled.div`
+    width: 100%;
+    max-width: 440px;
+    background-color: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    box-sizing: border-box;
+    padding: 48px 36px;
+
+    @media (max-width: 480px) {
+        padding: 36px 24px;
+    }
 `
 export const ContentBox = styled.div`
     display: flex;
@@ -11,21 +32,23 @@ export const ContentBox = styled.div`
 `
 
 export const SignText = styled.div`
-    font-size: 52px;
+    font-size: 32px;
     font-weight: 800;
     color: var(--color-text);
-    margin-bottom: 40px;
+    margin-bottom: 32px;
 
     @media (max-width: 480px) {
-        font-size: 36px;
+        font-size: 26px;
     }
 `
 
 export const SignText2 = styled.label`
     font-size: 15px;
     font-weight: 700;
-    margin-bottom: 30px;
+    margin-bottom: 22px;
     color: var(--color-text-muted);
+    width: 100%;
+    max-width: 350px;
 `
 
 export const ErrorMessage = styled.label`
@@ -58,12 +81,14 @@ export const Input = styled.input`
 `
 
 export const UserGreenBtn = styled.button`
-    width: 150px;
-    height: 40px;
+    width: 100%;
+    max-width: 350px;
+    height: 44px;
     background-color: var(--color-success);
-    border-radius: var(--radius-sm);
-    margin-top: 20px;
+    border-radius: 999px;
+    margin-top: 12px;
     color: white;
+    font-size: 15px;
     font-weight: 700;
     display: flex;
     align-items: center;
@@ -77,26 +102,12 @@ export const UserGreenBtn = styled.button`
     }
 `
 
-export const RadioWrap = styled.div`
-    margin: 0 130px 100px;
-    display: flex;
-
-    @media (max-width: 480px) {
-        margin: 0 20px 40px;
-    }
-`
-
-export const RadioBtn = styled.input`
-
-`
-
-export const RadioLabel = styled.label`
-    
-`
-
 export const WarningMessage = styled.span`
-    font-size: 14px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 6px;
+    display: inline-block;
     color: ${props => {
-        return props.check ? "green" : "red"
+        return props.check ? "var(--color-success)" : "var(--color-accent)"
     }}
 `

@@ -67,28 +67,30 @@ const ChangePassPage = () => {
 
   return (
     <Styles.Wrapper>
-      <Styles.ContentBox>
-        <Styles.LoginText>비밀번호 변경</Styles.LoginText>
+      <Styles.AuthCard>
+        <Styles.ContentBox>
+          <Styles.LoginText>비밀번호 변경</Styles.LoginText>
 
-        <Styles.LoginText2>
-          새 비밀번호
-          <Styles.Input type="password" placeholder="새로운 비밀번호를 입력하세요" onChange={(e) => onPassword(e)} value={pw || ""}></Styles.Input>
-          <Styles.WarningMessage check={isPassword}>{passwordMessage}</Styles.WarningMessage>
-        </Styles.LoginText2>
+          <Styles.LoginText2>
+            새 비밀번호
+            <Styles.Input type="password" placeholder="새로운 비밀번호를 입력하세요" onChange={(e) => onPassword(e)} value={pw || ""}></Styles.Input>
+            <Styles.WarningMessage check={isPassword}>{passwordMessage}</Styles.WarningMessage>
+          </Styles.LoginText2>
 
-        <Styles.LoginText2>
-          비밀번호 확인
-          <Styles.Input
-            type="password"
-            placeholder="비밀번호를 다시 입력하세요"
-            onChange={(e) => onPasswordConfirm(e)}
-            value={pwCheck || ""}
-            onKeyPress={onKeyPress}></Styles.Input>
-          <Styles.WarningMessage check={isPasswordConfirm}>{passwordConfirmMessage}</Styles.WarningMessage>
-        </Styles.LoginText2>
+          <Styles.LoginText2>
+            비밀번호 확인
+            <Styles.Input
+              type="password"
+              placeholder="비밀번호를 다시 입력하세요"
+              onChange={(e) => onPasswordConfirm(e)}
+              value={pwCheck || ""}
+              onKeyPress={onKeyPress}></Styles.Input>
+            <Styles.WarningMessage check={isPasswordConfirm}>{passwordConfirmMessage}</Styles.WarningMessage>
+          </Styles.LoginText2>
 
-        <UserBlueBtn onClick={PasswordChange}>비밀번호 변경</UserBlueBtn>
-      </Styles.ContentBox>
+          <UserBlueBtn onClick={PasswordChange}>비밀번호 변경</UserBlueBtn>
+        </Styles.ContentBox>
+      </Styles.AuthCard>
     </Styles.Wrapper>
   );
 };

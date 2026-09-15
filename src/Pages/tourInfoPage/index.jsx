@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import * as Styles from "./style";
 import { MarginTopWrapper } from "../../Common/style";
-import Map from "../../Components/kakaoMap";
+import Map from "../../Components/naverMap";
 import { HeartOutlined, HeartFilled } from "@ant-design/icons";
 import axios from "axios";
 import { toast } from "react-toastify";

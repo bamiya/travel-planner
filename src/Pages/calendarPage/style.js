@@ -105,34 +105,6 @@ export const IntroEmail = styled.div`
 
 `
 
-export const LikeBox = styled.div`
-    display: flex;
-    justify-content: center;
-    align-content: center;
-    align-items: flex-start;
-    margin-top: 30px;
-    height: 25px;
-`
-
-export const Like = styled.button`
-    border: none;
-    background: ${props => {
-        return props.dibs ? "var(--color-success)" : "var(--color-accent)"
-    }};
-    color: white;
-    font-weight: 700;
-    border-radius: var(--radius-sm);
-    margin-left: 15px;
-    cursor: pointer;
-    width: 80px;
-    height: 100%;
-    transition: var(--transition-base);
-
-    &:hover {
-        filter: brightness(0.93);
-    }
- `
-
 export const ShareBtnBox = styled.div`
     display: flex;
     width: 100%;
@@ -444,7 +416,7 @@ export const InputComment = styled.textarea`
 export const InputBtn = styled.button`
     border: none;
     color: white;
-    border-radius: var(--radius-sm);
+    border-radius: 999px;
     position: absolute;
     display: flex;
     right: 0;

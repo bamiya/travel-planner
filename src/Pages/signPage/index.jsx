@@ -145,6 +145,7 @@ const SignPage = () => {
 
   return (
     <Styles.Wrapper>
+      <Styles.AuthCard>
       <Styles.ContentBox>
         <Styles.SignText>SIGN UP</Styles.SignText>
         <Styles.SignText2 htmlFor="email">
@@ -185,6 +186,7 @@ const SignPage = () => {
 
         <Styles.UserGreenBtn onClick={() => signUp()}>가입하기</Styles.UserGreenBtn>
       </Styles.ContentBox>
+      </Styles.AuthCard>
     </Styles.Wrapper>
   );
 };

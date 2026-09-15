@@ -2,7 +2,7 @@ import moment from "moment/moment";
 import "react-calendar/dist/Calendar.css";
 import React, { useState, useEffect, useRef } from "react";
 import * as Styles from "./style";
-import Map from "../../Components/kakaoMap";
+import Map from "../../Components/naverMap";
 import Paging from "../../Components/paging";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";

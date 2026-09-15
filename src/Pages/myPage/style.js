@@ -52,13 +52,30 @@ export const MyProfileBox = styled.div`
     height: 150px;
     margin-bottom: 20px;
 `
-export const SettingsImg= styled.img`
-    width: 40px;
-    height: 40px;
-    margin-top: 130px;
+export const SettingsBtn = styled.div`
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: var(--color-white);
+    color: var(--color-text-muted);
+    box-shadow: var(--shadow-hover);
+    margin-top: 122px;
     margin-left: 165px;
-    position:absolute;
+    position: absolute;
     cursor: pointer;
+    transition: var(--transition-base);
+
+    &:hover {
+        color: var(--color-primary);
+    }
+
+    svg {
+        width: 18px;
+        height: 18px;
+    }
 `
 
 export const Text = styled.div`

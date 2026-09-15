@@ -3,23 +3,63 @@ import Modal from 'react-modal';
 
 export const Wrapper = styled.div`
     width: 100%;
-    margin: 150px 0;
+    box-sizing: border-box;
+    padding: 150px 20px 80px;
+    display: flex;
+    justify-content: center;
+
+    @media (max-width: 480px) {
+        padding: 110px 16px 60px;
+    }
+`
+export const AuthCard = styled.div`
+    width: 100%;
+    max-width: 420px;
+    background-color: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    box-sizing: border-box;
+    padding: 48px 36px;
+
+    @media (max-width: 480px) {
+        padding: 36px 24px;
+    }
 `
 export const ContentBox = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 40px;
 `
 
 export const LoginText = styled.div`
-    font-size: 52px;
+    font-size: 32px;
     font-weight: 800;
     color: var(--color-text);
-    margin-bottom: 40px;
+    margin-bottom: 32px;
 
     @media (max-width: 480px) {
-        font-size: 36px;
+        font-size: 26px;
+    }
+`
+
+export const OrDivider = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    max-width: 350px;
+    margin: 4px 0 16px;
+    color: var(--color-text-muted);
+    font-size: 12px;
+    font-weight: 600;
+
+    &::before,
+    &::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background-color: var(--color-border);
     }
 `
 
@@ -27,7 +67,9 @@ export const LoginText2 = styled.div`
     font-size: 15px;
     font-weight: 700;
     color: var(--color-text-muted);
-    margin-bottom: 40px;
+    margin-bottom: 24px;
+    width: 100%;
+    max-width: 350px;
 `
 
 export const KakaoBtn = styled.div`
@@ -35,7 +77,7 @@ export const KakaoBtn = styled.div`
     max-width: 350px;
     height: 44px;
     background-color: #FEE500;
-    border-radius: var(--radius-sm);
+    border-radius: 999px;
     margin-top: 10px;
     margin-bottom: 10px;
     color: rgba(0, 0, 0, 0.85);

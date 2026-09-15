@@ -197,14 +197,14 @@ export const Content = styled.input`
 `
 export const EditBtn = styled.button`
     border: 0;
-    width: 100px;
-    height: 40px;
+    width: 120px;
+    height: 42px;
     margin: 45px 150px;
     font-size: 15px;
     font-weight: 700;
     background: var(--color-primary);
     color: white;
-    border-radius: var(--radius-sm);
+    border-radius: 999px;
     cursor: pointer;
     transition: var(--transition-base);
 
@@ -219,14 +219,14 @@ export const EditBtn = styled.button`
 `
 export const BasicInfoBtn = styled.button`
     border: 0;
-    width: 100px;
-    height: 40px;
+    width: 120px;
+    height: 42px;
     margin: 85px 150px ;
     font-size: 15px;
     font-weight: 700;
     background: var(--color-primary);
     color: white;
-    border-radius: var(--radius-sm);
+    border-radius: 999px;
     cursor: pointer;
     transition: var(--transition-base);
 
@@ -267,19 +267,32 @@ export const BasicInforContentBox = styled.div`
     margin: 20px 0 0;
     padding: 20px 30px 0;
 `
-export const ProfileImgChange = styled.img`
-    width: 15px;
-    height: 15px;
-    border-radius: 50px;
-`
 export const ProfileImgInput = styled.input`
     display: none ;
 `
 export const LabelBox = styled.label`
-    display:inline-block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: var(--color-primary);
+    color: white;
+    box-shadow: var(--shadow-card);
     cursor: pointer;
     margin-top: 5px;
     margin-left: 70px;
+    transition: var(--transition-base);
+
+    &:hover {
+        background-color: var(--color-primary-dark);
+    }
+
+    svg {
+        width: 15px;
+        height: 15px;
+    }
 `
 
 export const ErrorMessage = styled.label`
