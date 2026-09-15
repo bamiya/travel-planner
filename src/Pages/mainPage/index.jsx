@@ -117,7 +117,7 @@ const MainPage = () => {
   const addLikes = async (id) => {
     try {
       if (like.filter((e) => Number(e.id) === Number(id)).length) {
-        await axios.delete(`http://localhost:8080/removeLikes/${id}`);
+        await axios.delete(`http://localhost:8080/removeLikes/${id}?type=P`);
       } else {
         await axios.post("http://localhost:8080/addLikes", {
           id: id,

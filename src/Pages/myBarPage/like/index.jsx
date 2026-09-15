@@ -88,7 +88,7 @@ const Like = () => {
   // 좋아요 제거 함수
   const likeCancel = async (id, type) => {
     try {
-      await axios.delete(`http://localhost:8080/removeLikes/${id}`);
+      await axios.delete(`http://localhost:8080/removeLikes/${id}?type=${type}`);
       if (type === "P") {
         const planData = planInfo;
         setPlanInfo(planData.filter((e) => e.id !== id));

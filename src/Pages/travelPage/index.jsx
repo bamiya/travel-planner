@@ -136,7 +136,7 @@ const TravelPage = () => {
     try {
       if (like.filter((e) => e.id === id).length) {
         // 있으면
-        await axios.delete(`http://localhost:8080/removeLikes/${id}`);
+        await axios.delete(`http://localhost:8080/removeLikes/${id}?type=T`);
       } else {
         await axios.post("http://localhost:8080/addLikes", { id: id, type: "T" });
       }

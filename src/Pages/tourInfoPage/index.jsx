@@ -146,7 +146,7 @@ const InformationPage = () => {
   }, [location.search]);
 
   const getcontent = async () => {
-    const data = await axios.get(`http://localhost:8080/getComment?id=${location.search.split("=")[1]}`);
+    const data = await axios.get(`http://localhost:8080/getComment?id=${location.search.split("=")[1]}&type=T`);
     setComments(data.data.data.filter((e) => e.type === "T"));
   };
 
@@ -185,7 +185,7 @@ const InformationPage = () => {
     try {
       if (like.filter((e) => e.id === id).length) {
         // 있으면
-        await axios.delete(`http://localhost:8080/removeLikes/${id}`);
+        await axios.delete(`http://localhost:8080/removeLikes/${id}?type=T`);
         setInfoData({ ...infoData, likeCount: infoData.likeCount - 1 });
       } else {
         await axios.post("http://localhost:8080/addLikes", { id: id, type: "T" });

@@ -45,7 +45,7 @@ const CalendarPage = () => {
   };
 
   const getcontent = async () => {
-    const data = await axios.get(`http://localhost:8080/getComment?id=${location.search.split("=")[1]}`);
+    const data = await axios.get(`http://localhost:8080/getComment?id=${location.search.split("=")[1]}&type=P`);
     setComments(data.data.data.filter((e) => e.type === "P"));
   };
 
@@ -122,7 +122,7 @@ const CalendarPage = () => {
     try {
       if (like.filter((e) => e.id == id).length) {
         // 있으면
-        await axios.delete(`http://localhost:8080/removeLikes/${id}`);
+        await axios.delete(`http://localhost:8080/removeLikes/${id}?type=P`);
         setDateList({ ...dateList, likeCount: dateList.likeCount - 1 });
       } else {
         await axios.post("http://localhost:8080/addLikes", { id: id, type: "P" });
