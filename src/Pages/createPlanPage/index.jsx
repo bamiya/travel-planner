@@ -240,6 +240,20 @@ const CreatePlanPage = () => {
           } catch (e) {
             // 무료 공개 API라 실패해도 조용히 무시하고 안내를 숨긴다.
           }
+          // 미세먼지(PM2.5) 정보도 같은 좌표/날짜로 조회 (Open-Meteo 대기질 API, 무료·키 불필요)
+          try {
+            const aqResponse = await fetch(
+              `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&hourly=pm2_5&timezone=Asia%2FSeoul&start_date=${dateStr}&end_date=${dateStr}`
+            );
+            const aqJson = await aqResponse.json();
+            const pm25List = (aqJson.hourly?.pm2_5 ?? []).filter((v) => v != null);
+            if (pm25List.length > 0) {
+              const avgPm25 = pm25List.reduce((a, b) => a + b, 0) / pm25List.length;
+              results[idx] = { ...(results[idx] ?? {}), pm25: Math.round(avgPm25) };
+            }
+          } catch (e) {
+            // 무료 공개 API라 실패해도 조용히 무시하고 안내를 숨긴다.
+          }
         })
       );
       setDayWeather(results);
@@ -256,6 +270,44 @@ const CreatePlanPage = () => {
     if ([95, 96, 99].includes(code)) return "⛈️";
     return "🌡️";
   };
+
+  // 대기질 등급 (한국 환경부 PM2.5 기준: 좋음/보통/나쁨/매우나쁨)
+  const pm25Grade = (pm25) => {
+    if (pm25 <= 15) return { label: "좋음", icon: "🟢" };
+    if (pm25 <= 35) return { label: "보통", icon: "🟡" };
+    if (pm25 <= 75) return { label: "나쁨", icon: "🟠" };
+    return { label: "매우나쁨", icon: "🔴" };
+  };
+
+  // 여행 기간 중 방문 지역의 축제/행사 추천 (TourAPI 축제공연행사 정보 조회)
+  const [festivals, setFestivals] = useState([]);
+  useEffect(() => {
+    if (!dayList || !dateList) {
+      setFestivals([]);
+      return;
+    }
+    // 어느 Day든 상관없이 먼저 추가된 장소 하나를 "여행 지역" 기준으로 삼는다.
+    const anyStop = dayList.map((day) => day[1][0]).find(Boolean);
+    if (!anyStop?.areacode) {
+      setFestivals([]);
+      return;
+    }
+    const getFestivals = async () => {
+      try {
+        const start = moment(dateList[0]).format("YYYYMMDD");
+        const end = moment(dateList[dateList.length - 1]).format("YYYYMMDD");
+        const response = await fetch(
+          `https://apis.data.go.kr/B551011/KorService2/searchFestival2?serviceKey=${process.env.VITE_TOUR_API_KEY}&numOfRows=10&MobileOS=ETC&MobileApp=AppTest&_type=json&eventStartDate=${start}&eventEndDate=${end}&areaCode=${anyStop.areacode}&arrange=A`
+        );
+        const json = await response.json();
+        setFestivals(json.response?.body?.items?.item ?? []);
+      } catch (e) {
+        // 무료 공개 API라 실패해도 조용히 무시하고 안내를 숨긴다.
+        setFestivals([]);
+      }
+    };
+    getFestivals();
+  }, [dayList, dateList]);
 
   useEffect(() => {
     if (pagingHook.current) {
@@ -583,15 +635,38 @@ const CreatePlanPage = () => {
                 )}`}</Styles.TravelDate>
                 {!isUpdate && <Styles.TravelCalendar onClick={() => window.location.reload()} src="assets/calendar.png" />}
               </Styles.DateBox>
+              {festivals.length > 0 && (
+                <Styles.FestivalBox>
+                  <Styles.FestivalTitle>🎉 여행 기간 중 이 지역 축제·행사</Styles.FestivalTitle>
+                  <Styles.FestivalScroll>
+                    {festivals.map((fes) => (
+                      <Styles.FestivalCard
+                        key={fes.contentid}
+                        onClick={() => window.open(`${window.location.origin}${import.meta.env.BASE_URL}information?id=${fes.contentid}`)}>
+                        <Styles.FestivalImg src={fes.firstimage ? fes.firstimage : fes.firstimage2 ? fes.firstimage2 : "assets/logo.png"} />
+                        <Styles.FestivalName>{fes.title}</Styles.FestivalName>
+                        <Styles.FestivalDate>
+                          {fes.eventstartdate?.slice(4, 6)}.{fes.eventstartdate?.slice(6, 8)} ~ {fes.eventenddate?.slice(4, 6)}.{fes.eventenddate?.slice(6, 8)}
+                        </Styles.FestivalDate>
+                      </Styles.FestivalCard>
+                    ))}
+                  </Styles.FestivalScroll>
+                </Styles.FestivalBox>
+              )}
               {dateList.map((el, idx) => {
                 return (
                   <div key={idx}>
                     <Styles.ListItemBox key={idx}>
                       <Styles.DayTitleRow>
                         <Styles.DayTitle>DAY {idx + 1}</Styles.DayTitle>
-                        {dayWeather[idx] && (
+                        {dayWeather[idx]?.code !== undefined && (
                           <Styles.DayWeather>
                             {weatherIcon(dayWeather[idx].code)} {dayWeather[idx].tmin}° / {dayWeather[idx].tmax}°
+                          </Styles.DayWeather>
+                        )}
+                        {dayWeather[idx]?.pm25 !== undefined && (
+                          <Styles.DayWeather>
+                            {pm25Grade(dayWeather[idx].pm25).icon} 미세먼지 {pm25Grade(dayWeather[idx].pm25).label}
                           </Styles.DayWeather>
                         )}
                       </Styles.DayTitleRow>

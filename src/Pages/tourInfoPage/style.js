@@ -29,6 +29,19 @@ export const CategoryChip = styled.div`
     background-color: var(--color-primary-light);
     border-radius: 999px;
     margin-bottom: 12px;
+    margin-right: 8px;
+`
+
+export const PetChip = styled.div`
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--color-success-dark);
+    background-color: #E8F7EE;
+    border-radius: 999px;
+    margin-bottom: 12px;
 `
 
 export const Title = styled.div`

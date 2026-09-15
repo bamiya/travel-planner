@@ -275,12 +275,62 @@ export const TravelCalendar = styled.img`
     cursor: pointer;
 `
 
+export const FestivalBox = styled.div`
+    width: 100%;
+    margin-bottom: 24px;
+`
+
+export const FestivalTitle = styled.div`
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 10px;
+`
+
+export const FestivalScroll = styled.div`
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+`
+
+export const FestivalCard = styled.div`
+    flex-shrink: 0;
+    width: 120px;
+    cursor: pointer;
+`
+
+export const FestivalImg = styled.img`
+    width: 120px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    background-color: var(--color-bg);
+`
+
+export const FestivalName = styled.div`
+    margin-top: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--color-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+`
+
+export const FestivalDate = styled.div`
+    margin-top: 2px;
+    font-size: 11px;
+    color: var(--color-text-muted);
+`
+
 export const DayTitleRow = styled.div`
     width: 100%;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
     margin-bottom: 15px;
 `
 

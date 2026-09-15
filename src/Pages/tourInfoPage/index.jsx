@@ -34,6 +34,26 @@ const InformationPage = () => {
 
   }, [infoData]);
 
+  // 반려동물 동반 가능 여부 (TourAPI 반려동물 동반여행 정보 조회)
+  const [petFriendly, setPetFriendly] = useState(false);
+  useEffect(() => {
+    if (!infoData?.contentid) return;
+    const getPetInfo = async () => {
+      try {
+        const response = await fetch(
+          `https://apis.data.go.kr/B551011/KorService2/detailPetTour2?serviceKey=${process.env.VITE_TOUR_API_KEY}&contentId=${infoData.contentid}&MobileOS=ETC&MobileApp=AppTest&_type=json`
+        );
+        const json = await response.json();
+        const items = json.response?.body?.items?.item ?? [];
+        setPetFriendly(items.length > 0);
+      } catch (e) {
+        // 무료 공개 API라 실패해도 조용히 무시하고 안내를 숨긴다.
+        setPetFriendly(false);
+      }
+    };
+    getPetInfo();
+  }, [infoData?.contentid]);
+
   // 관광지 사진 갤러리 (detailCommon2는 대표 이미지 1장만 주기 때문에
   // 여러 장을 보여주려면 별도의 위치기반X 이미지 조회 API가 필요하다)
   const [gallery, setGallery] = useState([]);
@@ -190,6 +210,7 @@ const InformationPage = () => {
       <Styles.TitleBox>
         <Styles.TitleGroup>
           <Styles.CategoryChip>{categoryLabel}</Styles.CategoryChip>
+          {petFriendly && <Styles.PetChip>🐾 반려동물 동반 가능</Styles.PetChip>}
           <Styles.Title>{infoData?.title}</Styles.Title>
           <Styles.AddressLine>{infoData?.addr1}{infoData?.addr2 ? ` ${infoData.addr2}` : ""}</Styles.AddressLine>
         </Styles.TitleGroup>
