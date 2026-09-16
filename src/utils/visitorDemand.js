@@ -42,6 +42,49 @@ export const fetchVisitorDemand = async (lDongRegnCd, lDongSignguCd) => {
   }
 };
 
+// fetchVisitorDemand과 동일한 데이터를 한 번의 호출로 모든 시군구에 대해 가져와
+// signguCode → {date, local, visitor} 맵으로 정리한다. 목록 화면처럼 여러 지역의
+// 데이터가 한꺼번에 필요할 때, 지역마다 API를 따로 호출하지 않기 위한 용도.
+export const fetchVisitorDemandMap = async () => {
+  const pad = (n) => String(n).padStart(2, "0");
+  const fmt = (d) => `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}`;
+  const today = new Date();
+  const end = new Date(today);
+  end.setDate(end.getDate() - 18);
+  const start = new Date(today);
+  start.setDate(start.getDate() - 35);
+
+  try {
+    const response = await fetch(
+      `https://apis.data.go.kr/B551011/DataLabService/locgoRegnVisitrDDList?serviceKey=${process.env.VITE_TOUR_API_KEY}&numOfRows=10000&pageNo=1&MobileOS=ETC&MobileApp=AppTest&_type=json&startYmd=${fmt(start)}&endYmd=${fmt(end)}`
+    );
+    const json = await response.json();
+    const raw = json.response?.body?.items?.item;
+    const list = Array.isArray(raw) ? raw : raw ? [raw] : [];
+
+    const latestYmdBySignguCode = new Map();
+    list.forEach((it) => {
+      const current = latestYmdBySignguCode.get(it.signguCode);
+      if (!current || it.baseYmd > current) {
+        latestYmdBySignguCode.set(it.signguCode, it.baseYmd);
+      }
+    });
+
+    const map = new Map();
+    list.forEach((it) => {
+      if (it.baseYmd !== latestYmdBySignguCode.get(it.signguCode)) return;
+      const entry = map.get(it.signguCode) ?? { date: it.baseYmd, local: null, visitor: null };
+      if (it.touDivCd === "1") entry.local = Math.round(Number(it.touNum));
+      if (it.touDivCd === "2") entry.visitor = Math.round(Number(it.touNum));
+      map.set(it.signguCode, entry);
+    });
+    return map;
+  } catch (e) {
+    // 무료 공공데이터 API라 실패해도 조용히 무시한다.
+    return new Map();
+  }
+};
+
 // 전국 시군구 외지인 방문자수 분포(중앙값 약 11만, 상위 10% 약 26만, 최댓값 약 69만 -
 // 2026년 8월 기준 실측)를 참고해 대략 잡은 등급. 절대적인 "정답" 기준은 아니고,
 // 핫플레이스 표시를 위한 대략적인 감이다.

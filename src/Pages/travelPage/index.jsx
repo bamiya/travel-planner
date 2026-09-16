@@ -9,6 +9,7 @@ import Spinner from "../../Common/Spinner";
 import axios from "axios";
 import { searchNearbyFallback } from "../../utils/nearbySearch";
 import { useLikes } from "../../hooks/useLikes";
+import { fetchVisitorDemandMap, getHeatTier } from "../../utils/visitorDemand";
 
 
 const TravelPage = () => {
@@ -26,6 +27,21 @@ const TravelPage = () => {
   const [rendering, setRendering] = useState(false);
   const location = useLocation(); //mainPage 받아온 키워드 값
   const { state } = location;
+
+  // 지역별 방문자수(핫플레이스) 맵. 카테고리 탭을 바꿀 때마다 다시 받아오지 않도록
+  // 프로미스를 캐싱해서 재사용한다.
+  const [demandMap, setDemandMap] = useState(new Map());
+  const demandMapPromiseRef = useRef(null);
+  const getVisitorDemandMap = () => {
+    if (!demandMapPromiseRef.current) {
+      demandMapPromiseRef.current = fetchVisitorDemandMap().then((map) => {
+        setDemandMap(map);
+        return map;
+      });
+    }
+    return demandMapPromiseRef.current;
+  };
+  const visitorCountOf = (tour) => demandMap.get(`${tour.lDongRegnCd}${tour.lDongSignguCd}`)?.visitor;
 
   // TourAPI contentTypeId: 12 관광지 / 39 음식점 / 32 숙박
   const [contentType, setContentType] = useState("12");
@@ -87,6 +103,17 @@ const TravelPage = () => {
           if (usedFallback) {
             toast.info(`"${search}"와 일치하는 결과가 없어 주변 결과를 보여드려요.`);
           }
+        }
+
+        if (!isSearch) {
+          // 기본 목록(검색 전)에서는 가나다순 대신 핫플레이스(방문자수 많은 지역)가
+          // 위로 오도록 정렬한다. 검색 결과는 TourAPI 자체의 연관도 정렬을 그대로 둔다.
+          const map = await getVisitorDemandMap();
+          tourItems = [...tourItems].sort((a, b) => {
+            const aVisitor = map.get(`${a.lDongRegnCd}${a.lDongSignguCd}`)?.visitor ?? -1;
+            const bVisitor = map.get(`${b.lDongRegnCd}${b.lDongSignguCd}`)?.visitor ?? -1;
+            return bVisitor - aVisitor;
+          });
         }
 
         setStorageTours(tourItems);
@@ -174,11 +201,17 @@ const TravelPage = () => {
                 if (index >= (page - 1) * itemsCount && index < page * itemsCount) return e;
               })
               .map((tour, idx) => {
+                const heatTier = getHeatTier(visitorCountOf(tour));
                 return (
                   <div key={idx}>
                     <Styles.TravelWrapper>
                       <Styles.Image src={tour.firstimage ? tour.firstimage : tour.firstimage2 ? tour.firstimage2 : "assets/logo.png"} onClick={() => infoMove(tour.contentid)} />
                       <Styles.Txt>
+                        {heatTier && (
+                          <Styles.HeatBadge>
+                            {heatTier.icon} {heatTier.label}
+                          </Styles.HeatBadge>
+                        )}
                         <Styles.PlaceTitle onClick={() => infoMove(tour.contentid)}>{tour.title}</Styles.PlaceTitle>
                         <Styles.Address>{tour.addr1}</Styles.Address>
                         <Styles.Tel>{tour.tel}</Styles.Tel>

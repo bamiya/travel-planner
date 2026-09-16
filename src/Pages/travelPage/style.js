@@ -166,6 +166,21 @@ export const PlaceTitle = styled.div`
     margin-bottom: 6px;
     cursor: pointer;
 `
+export const HeatBadge = styled.div`
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--color-primary-dark);
+    background-color: var(--color-primary-light);
+    border-radius: 999px;
+    white-space: nowrap;
+    width: fit-content;
+`
+
  export const Address = styled.div`
     margin-top: 4px;
     font-size: 14px;
