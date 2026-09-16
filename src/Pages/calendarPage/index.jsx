@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import * as Styles from "./style";
 import { MarginTopWrapper } from "../../Common/style";
 import Map from "../../Components/naverMap";
@@ -10,13 +10,12 @@ import Spinner from "../../Common/Spinner";
 import { useLikes } from "../../hooks/useLikes";
 import { getProfileImageUrl } from "../../utils/profileImage";
 import { getErrorMessage } from "../../utils/errorMessage";
+import { getPlanThumbnail } from "../../utils/planThumbnail";
 
 const CalendarPage = () => {
   const navigate = useNavigate();
   const [dateList, setDateList] = useState();
-  const [coordinate, setCoordinate] = useState([]);
-  const [mapMarker, setMapMarker] = useState([]); // 지도 of/off
-  const [tourCount, setTourCount] = useState();
+  const [selectedStop, setSelectedStop] = useState(null); // 특정 장소를 클릭해 지도에서 단일 조회 중이면 그 좌표
   const [comments, setComments] = useState([]);
   const [content, setContent] = useState("");
   const [email, setEmail] = useState();
@@ -54,29 +53,21 @@ const CalendarPage = () => {
     try {
       const data = await axios.get(`/getPlansById/${id}`);
       setDateList(data.data.data);
-      let count = 0;
-      let newArr = [];
-      for (let i = 0; i < JSON.parse(data.data.data.plan).length; i++) {
-        count += JSON.parse(data.data.data.plan)[i].list.length;
-        newArr[i] = JSON.parse(data.data.data.plan)[i].list.length + (newArr[i - 1] !== undefined ? newArr[i - 1] : 0);
-      }
-      setTourCount(newArr);
-      setMapMarker(Array(count).fill(false));
     } catch (e) {
       toast.error("플랜 정보를 불러오지 못했습니다.");
     }
   };
 
-  const moveMapLocation = (e, id) => {
-    const coor = e.target.value.split(",");
-    const newCoor = {
-      lat: coor[0],
-      lon: coor[1],
-    };
-    const newArr = mapMarker.map(() => false);
-    newArr[id] = true;
-    setCoordinate(newCoor);
-    setMapMarker(newArr);
+  // 플랜 전체 동선: 모든 DAY의 장소를 순서대로 이어서 지도에 번호 마커+경로선으로 보여준다.
+  const allStops = useMemo(() => {
+    if (!dateList) return [];
+    return JSON.parse(dateList.plan).flatMap((day) => day.list);
+  }, [dateList]);
+  const routeMarkers = useMemo(() => allStops.map((s) => ({ lat: Number(s.mapy), lon: Number(s.mapx) })), [allStops]);
+  const routePath = useMemo(() => routeMarkers.map((m) => [m.lat, m.lon]), [routeMarkers]);
+
+  const moveMapLocation = (stop) => {
+    setSelectedStop((prev) => (prev?.contentid === stop.contentid ? null : { contentid: stop.contentid, lat: Number(stop.mapy), lon: Number(stop.mapx) }));
   };
 
   const writing = async (id) => {
@@ -134,8 +125,8 @@ const CalendarPage = () => {
       ) : (
         <>
           <Styles.ImageBox>
-            <Styles.Image src={JSON.parse(dateList.plan)[0].list[0].firstimage !== "" ? JSON.parse(dateList.plan)[0].list[0].firstimage : "assets/logo.png"} />
-            {JSON.parse(dateList.plan)[0].list[0].firstimage !== "" ? (
+            <Styles.Image src={getPlanThumbnail(dateList.plan, "firstimage")} />
+            {getPlanThumbnail(dateList.plan, "firstimage", "") !== "" ? (
               <>
                 <Styles.IntroTitle>
                   <Styles.IntroText color={"true"}>{dateList.title}</Styles.IntroText>
@@ -215,11 +206,7 @@ const CalendarPage = () => {
                                             </Styles.PlaceTitle>
                                             <Styles.Content>{day.addr1} </Styles.Content>
                                           </Styles.Text>
-                                          <Styles.MapBtnBox
-                                            open={mapMarker[tourCount[idx - 1] !== undefined ? tourCount[idx - 1] + id : id]}
-                                            value={[day.mapy, day.mapx]}
-                                            onClick={(e) => moveMapLocation(e, tourCount[idx - 1] !== undefined ? tourCount[idx - 1] + id : id)}
-                                          />
+                                          <Styles.MapBtnBox open={selectedStop?.contentid === day.contentid} onClick={() => moveMapLocation(day)} />
                                         </Styles.PlaceInfo>
                                       </div>
                                     );
@@ -232,7 +219,11 @@ const CalendarPage = () => {
                       })}
                     </Styles.PlanInfoList>
                     <Styles.MapBox>
-                      <Map lon={coordinate.lon} lat={coordinate.lat} />
+                      {selectedStop ? (
+                        <Map lat={selectedStop.lat} lon={selectedStop.lon} />
+                      ) : (
+                        <Map markers={routeMarkers} path={routePath} />
+                      )}
                     </Styles.MapBox>
                   </Styles.Box>
                 </Styles.Menu>

@@ -656,6 +656,30 @@ export const CategoryTab = styled.button.attrs({ type: "button" })`
     }
 `
 
+export const ModalInput = styled.input`
+    width: 100%;
+    height: 46px;
+    border: 1px solid var(--color-border);
+    outline: 0;
+    font-size: 15px;
+    box-sizing: border-box;
+    padding: 0 14px;
+    border-radius: var(--radius-sm);
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    transition: var(--transition-base);
+    margin-bottom: 24px;
+
+    &:focus {
+        background-color: var(--color-white);
+        border-color: var(--color-primary);
+    }
+
+    &::placeholder {
+        color: var(--color-text-muted);
+    }
+`
+
 export const TravelInput = styled.input`
     width: 100%;
     height: 40px;
@@ -865,7 +889,9 @@ export const PlanApplyBtn = styled.button.attrs({ type: "button" })`
     background-color: var(--color-primary);
     color: white;
     position: absolute;
-    z-index: 2;
+    /* ControlBox(좌측 패널)가 같은 z-index(2)라 DOM 순서상 이 버튼 위를 덮어서,
+       좁은 화면에서는 버튼 중앙이 패널의 클릭 영역에 가려 눌리지 않았다. */
+    z-index: 3;
     bottom: 50px;
     left: 50%;
     margin-left: -90px;

@@ -5,6 +5,7 @@ import { MarginTopWrapper } from "../../../Common/style";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Spinner from "../../../Common/Spinner";
+import { getPlanThumbnail } from "../../../utils/planThumbnail";
 
 const MyPlan = () => {
   const navigate = useNavigate();
@@ -42,57 +43,38 @@ const MyPlan = () => {
     }
   };
 
+
   return (
     <>
       <MyPage myPlanAction="myPlan" />
       <MarginTopWrapper>
         <Styles.BigBox>
-          <Styles.Box>
-            <Styles.Text>나의 플랜</Styles.Text>
-          </Styles.Box>
+          <Styles.SectionTitle>나의 플랜</Styles.SectionTitle>
           {plan === undefined ? (
             <Spinner text="플랜을 불러오는 중입니다..." />
           ) : plan.length === 0 ? (
-            "등록된 플랜이 없습니다."
+            <Styles.EmptyText>등록된 플랜이 없습니다.</Styles.EmptyText>
           ) : (
-            plan.map((el, idx) => {
-                return (
-                  <div key={idx}>
-                    <Styles.SmallBox>
-                      <Styles.LineBox>
-                        <Styles.ImgBox
-                          src={JSON.parse(el[1].plan)[0].list[0].firstimage2 === "" ? "assets/logo.png" : JSON.parse(el[1].plan)[0].list[0].firstimage2}
-                          onClick={() => {
-                            infoMove(el[1]);
-                          }}
-                        />
-                        <Styles.ContentBox>
-                          <Styles.ContentBox2>
-                            <Styles.ContentText>{el[1].title}</Styles.ContentText>
-                            <Styles.DayBox>{el[1].date}</Styles.DayBox>
-                          </Styles.ContentBox2>
-                          <Styles.ContentBox2>
-                            <Styles.ModifyDeleteBox
-                              onClick={() => {
-                                infoMove(el[1]);
-                              }}>
-                              일정 보기
-                            </Styles.ModifyDeleteBox>
-                            <Styles.ModifyDeleteBox onClick={() => onPlanEdit(el)}>일정 수정</Styles.ModifyDeleteBox>
-                            <Styles.ModifyDeleteBox
-                              onClick={() => {
-                                deleteUserPlan(el[1].id);
-                              }}>
-                              일정 삭제
-                            </Styles.ModifyDeleteBox>
-                            <Styles.NameBox>{el[1].name}</Styles.NameBox>
-                          </Styles.ContentBox2>
-                        </Styles.ContentBox>
-                      </Styles.LineBox>
-                    </Styles.SmallBox>
-                  </div>
-                );
-              })
+            <Styles.PlanGrid>
+              {plan.map((el, idx) => (
+                <Styles.PlanCard key={idx}>
+                  <Styles.ImgBox src={getPlanThumbnail(el[1].plan)} onClick={() => infoMove(el[1])} />
+                  <Styles.CardBody>
+                    <Styles.ContentText onClick={() => infoMove(el[1])}>{el[1].title}</Styles.ContentText>
+                    <Styles.DayBox>{el[1].date}</Styles.DayBox>
+                    <Styles.ActionRow>
+                      <Styles.ModifyDeleteBox primary onClick={() => infoMove(el[1])}>
+                        보기
+                      </Styles.ModifyDeleteBox>
+                      <Styles.ModifyDeleteBox onClick={() => onPlanEdit(el)}>수정</Styles.ModifyDeleteBox>
+                      <Styles.ModifyDeleteBox danger onClick={() => deleteUserPlan(el[1].id)}>
+                        삭제
+                      </Styles.ModifyDeleteBox>
+                    </Styles.ActionRow>
+                  </Styles.CardBody>
+                </Styles.PlanCard>
+              ))}
+            </Styles.PlanGrid>
           )}
         </Styles.BigBox>
       </MarginTopWrapper>

@@ -1,16 +1,31 @@
 import styled from "styled-components";
 
 
-export const EditTitle = styled.div`
-    font-size: 28px;
-    margin: 150px 150px 20px;
-    font-weight: 800;
-    color: var(--color-text);
+export const HeroBanner = styled.div`
+    margin: 90px 150px 32px;
+    padding: 36px 40px;
+    border-radius: var(--radius-lg);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    color: var(--color-white);
+    box-shadow: var(--shadow-hover);
 
     @media (max-width: 768px) {
-        margin: 60px 20px 20px;
+        margin: 70px 16px 24px;
+        padding: 28px 24px;
+    }
+`
+export const HeroTitle = styled.div`
+    font-size: 26px;
+    font-weight: 800;
+
+    @media (max-width: 480px) {
         font-size: 22px;
     }
+`
+export const HeroSubtitle = styled.div`
+    margin-top: 6px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.85);
 `
 export const TitleBar = styled.div`
     width: 170px;
@@ -31,6 +46,8 @@ export const ProfileBox = styled.div`
         flex-direction: column;
         width: 100%;
         margin: 0 0 60px;
+        padding: 0 16px;
+        box-sizing: border-box;
     }
 `
 export const LeftProfileBox = styled.div`
@@ -39,7 +56,7 @@ export const LeftProfileBox = styled.div`
     box-sizing: border-box;
     padding: 44px 20px 28px;
     background: linear-gradient(180deg, var(--color-primary-light) 0%, var(--color-white) 100%);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-lg);
     border: 1px solid var(--color-border);
     box-shadow: var(--shadow-card);
     display: flex;
@@ -85,7 +102,7 @@ export const MyProfileBox = styled.div`
     flex: 1;
     min-width: 0;
     padding: 32px 36px 36px;
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-lg);
     box-shadow: var(--shadow-hover);
     border: 1px solid var(--color-border);
     background-color: var(--color-white);

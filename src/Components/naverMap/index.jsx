@@ -63,6 +63,17 @@ const Map = (props) => {
       const bounds = new naver.maps.LatLngBounds();
       path.forEach(([plat, plon]) => bounds.extend(new naver.maps.LatLng(plat, plon)));
       map.fitBounds(bounds, { top: 60, right: 40, bottom: 60, left: 40 });
+    } else if (markers && markers.length > 0) {
+      // path가 없어도(마커가 1개뿐이거나 동선 계산 전이어도) lat/lon prop을 안 주는
+      // 호출부가 있어서, 그 경우 지도가 기본 좌표(대구)에 머물러 마커가 화면 밖으로
+      // 벗어나 있었다. markers만 있어도 그 위치(들)로 중심을 맞춘다.
+      if (markers.length > 1) {
+        const bounds = new naver.maps.LatLngBounds();
+        markers.forEach((m) => bounds.extend(new naver.maps.LatLng(m.lat, m.lon)));
+        map.fitBounds(bounds, { top: 60, right: 40, bottom: 60, left: 40 });
+      } else {
+        map.setCenter(new naver.maps.LatLng(markers[0].lat, markers[0].lon));
+      }
     }
 
     return () => {

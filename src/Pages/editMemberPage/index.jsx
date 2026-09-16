@@ -20,6 +20,7 @@ export const EditmemberPage = () => {
   const [phone, setPhone] = useState("");
   const [showName, setShowName] = useState("");
   const [birth, setBirth] = useState("");
+  const [profileImg, setProfileImg] = useState(sessionStorage.getItem("profileImg"));
 
   //유효성 검사
   const [isPassword, setIsPassword] = useState(true);
@@ -167,10 +168,15 @@ export const EditmemberPage = () => {
     });
 
     try {
-      await axios.post("/uploadFile", formData, {
+      const data = await axios.post("/uploadFile", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      toast.info("다시 로그인 후 적용됩니다.");
+      const newFileName = data.data.data;
+      if (newFileName) {
+        sessionStorage.setItem("profileImg", newFileName);
+        setProfileImg(newFileName);
+      }
+      toast.success("프로필 사진이 변경되었습니다.");
     } catch (e) {
       toast.error("파일 업로드에 실패했습니다.");
     }
@@ -178,11 +184,14 @@ export const EditmemberPage = () => {
 
   return (
     <MarginTopWrapper margin>
-      <Styles.EditTitle>나의 정보 관리</Styles.EditTitle>
+      <Styles.HeroBanner>
+        <Styles.HeroTitle>나의 정보 관리</Styles.HeroTitle>
+        <Styles.HeroSubtitle>프로필, 연락처, 비밀번호를 관리하세요</Styles.HeroSubtitle>
+      </Styles.HeroBanner>
       <Styles.ProfileBox>
         <Styles.LeftProfileBox>
           <Styles.AvatarWrap>
-            <Styles.ProfileImg src={getProfileImageUrl(sessionStorage.getItem("profileImg"))} />
+            <Styles.ProfileImg src={getProfileImageUrl(profileImg)} />
             <Styles.PhotoEditLabel htmlFor="ex_file">
               <svg viewBox="0 0 24 24" fill="none">
                 <path

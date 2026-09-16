@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Spinner from "../../Common/Spinner";
 import { useLikes } from "../../hooks/useLikes";
+import { getPlanThumbnail } from "../../utils/planThumbnail";
 
 const SharedPlanPage = () => {
   const [clicked, setClicked] = useState("Latest");
@@ -104,7 +105,7 @@ const SharedPlanPage = () => {
                       onClick={() => {
                         infoMove(el);
                       }}
-                      src={JSON.parse(el.plan)[0].list[0].firstimage2 === "" ? "assets/logo.png" : JSON.parse(el.plan)[0].list[0].firstimage2}></Styles.PlanImg>
+                      src={getPlanThumbnail(el.plan)}></Styles.PlanImg>
                     <Styles.ContentListBox>
                       <Styles.ContentBox
                         onClick={() => {

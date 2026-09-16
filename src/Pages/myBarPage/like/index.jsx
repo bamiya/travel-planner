@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Spinner from "../../../Common/Spinner";
 import { getTourDetailUrl } from "../../../utils/tourApi";
+import { getPlanThumbnail } from "../../../utils/planThumbnail";
 
 const Like = () => {
   const navigate = useNavigate();
@@ -63,7 +64,7 @@ const Like = () => {
               title: data.data.data.title,
               author: `${data.data.data.email.name}(${data.data.data.email.email})`,
               date: data.data.data.date,
-              img: JSON.parse(data.data.data.plan)[0].list[0].firstimage2,
+              img: getPlanThumbnail(data.data.data.plan),
               id: data.data.data.id,
             },
           ]);

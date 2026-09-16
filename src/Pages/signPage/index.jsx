@@ -126,14 +126,19 @@ const SignPage = () => {
   };
 
   const onBirth = (e) => {
+    // 사용자는 숫자만 입력하고, 하이픈은 자동으로 붙여준다 (전화번호 입력과 같은 방식).
+    const digits = e.target.value.replace(/[^0-9]/g, "").slice(0, 8);
+    let formatted = digits;
+    if (digits.length > 6) formatted = `${digits.slice(0, 4)}-${digits.slice(4, 6)}-${digits.slice(6)}`;
+    else if (digits.length > 4) formatted = `${digits.slice(0, 4)}-${digits.slice(4)}`;
+    setBirth(formatted);
+
     const birthRegex = /^(19[0-9][0-9]|20\d{2})-(0[0-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/;
-    const birthCurrent = e.target.value;
-    setBirth(e.target.value);
-    if (birthRegex.test(birthCurrent)) {
+    if (birthRegex.test(formatted)) {
       setbirthMessage("올바른 생일 형식입니다.");
       setIsBirth(true);
     } else {
-      setbirthMessage("ex) 1999-09-12");
+      setbirthMessage("생년월일 8자리를 숫자만 입력해주세요. (예: 19990912)");
       setIsBirth(false);
     }
   };
@@ -181,7 +186,7 @@ const SignPage = () => {
 
         <Styles.SignText2>
           생년월일
-          <Styles.Input placeholder="ex)1999-09-09" onKeyPress={handleOnKeyPress} onChange={(e) => onBirth(e)} value={birth || ""} />
+          <Styles.Input placeholder="예: 19990909" onKeyPress={handleOnKeyPress} onChange={(e) => onBirth(e)} value={birth || ""} maxLength={10} />
           <Styles.WarningMessage check={isBirth}>{birthMessage}</Styles.WarningMessage>
         </Styles.SignText2>
 

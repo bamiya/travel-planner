@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Spinner from "../../../Common/Spinner";
+import { getPlanThumbnail } from "../../../utils/planThumbnail";
 
 const SharedPlan = () => {
   const navigate = useNavigate();
@@ -57,7 +58,7 @@ const SharedPlan = () => {
                   <Styles.SmallBox key={idx}>
                     <Styles.LineBox>
                       <Styles.ImgBox
-                        src={JSON.parse(el[1].plan)[0].list[0].firstimage2 === "" ? "assets/logo.png" : JSON.parse(el[1].plan)[0].list[0].firstimage2}
+                        src={getPlanThumbnail(el[1].plan)}
                         onClick={() => infoMove(el)}
                       />
                       <Styles.ContentBox>

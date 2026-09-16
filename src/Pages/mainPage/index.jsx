@@ -8,6 +8,7 @@ import { HeartOutlined, HeartFilled } from "@ant-design/icons";
 import { toast } from "react-toastify";
 import Spinner from "../../Common/Spinner";
 import { useLikes } from "../../hooks/useLikes";
+import { getPlanThumbnail } from "../../utils/planThumbnail";
 
 const MainPage = () => {
   const navigate = useNavigate();
@@ -222,16 +223,7 @@ const MainPage = () => {
                 : content.map((el, idx) => {
                     return (
                       <Styles.SliderBox key={idx}>
-                        <Styles.SliderImg
-                          src={
-                            JSON.parse(el.plan)[0].list[0].firstimage
-                              ? JSON.parse(el.plan)[0].list[0].firstimage
-                              : JSON.parse(el.plan)[0].list[0].firstimage2
-                              ? JSON.parse(el.plan)[0].list[0].firstimage2
-                              : "assets/logo.png"
-                          }
-                          onClick={() => infoMove(el)}
-                        />
+                        <Styles.SliderImg src={getPlanThumbnail(el.plan, ["firstimage", "firstimage2"])} onClick={() => infoMove(el)} />
                         <Styles.SliderInfo>
                           <Styles.SliderInfoText onClick={() => infoMove(el)}>{el.title}</Styles.SliderInfoText>
                           <Styles.SliderInfoText>{el.date}</Styles.SliderInfoText>

@@ -10,7 +10,7 @@ import { toast } from "react-toastify";
 import Spinner from "../../Common/Spinner";
 import { searchNearbyFallback, fetchNearbyTours } from "../../utils/nearbySearch";
 import { generateAutoPlan } from "../../utils/autoPlanner";
-import { fetchVisitorDemand, getHeatTier } from "../../utils/visitorDemand";
+import { fetchVisitorDemand, fetchVisitorDemandMap, getHeatTier } from "../../utils/visitorDemand";
 import { getTourDetailUrl } from "../../utils/tourApi";
 import { getErrorMessage } from "../../utils/errorMessage";
 
@@ -100,6 +100,10 @@ const CreatePlanPage = () => {
   const [autoPlanKeyword, setAutoPlanKeyword] = useState("");
   const [autoPlanLoading, setAutoPlanLoading] = useState(false);
 
+  // 플랜명 입력 모달 (기존엔 브라우저 기본 prompt()를 썼음)
+  const [planNameOpen, setPlanNameOpen] = useState(false);
+  const [planName, setPlanName] = useState("");
+
   const runAutoPlan = async () => {
     if (!autoPlanKeyword.trim()) {
       toast.error("여행지를 입력해주세요.");
@@ -180,6 +184,21 @@ const CreatePlanPage = () => {
   const [tourStorage, setTourStorage] = useState(); // 전체 관광지
   const [tours, setTours] = useState([]); // 키워드 검색 결과 관광지
   const visibleTours = selectedCats.length === 0 ? tours : tours.filter((t) => selectedCats.includes(t.cat1));
+
+  // 기본 목록(검색 전)을 핫플레이스(지역 방문자수) 순으로 보여주기 위한 캐시.
+  // 카테고리 탭을 바꿀 때마다 다시 조회하지 않도록 프로미스를 재사용한다.
+  const [demandMap, setDemandMap] = useState(new window.Map()); // Map: 이 파일에서 import한 네이버지도 컴포넌트 이름과 겹쳐서 window.Map으로 명시
+  const demandMapPromiseRef = useRef(null);
+  const getVisitorDemandMap = () => {
+    if (!demandMapPromiseRef.current) {
+      demandMapPromiseRef.current = fetchVisitorDemandMap().then((map) => {
+        setDemandMap(map);
+        return map;
+      });
+    }
+    return demandMapPromiseRef.current;
+  };
+  const visitorCountOf = (tour) => demandMap.get(`${tour.lDongRegnCd}${tour.lDongSignguCd}`)?.visitor;
   const [cart, setCart] = useState([]); // 찜
   const [dayList, setDayList] = useState(); // 총 일정목록
 
@@ -481,7 +500,6 @@ const CreatePlanPage = () => {
   };
 
   const cancelDayEdit = (idx) => {
-    setTourSelect([]);
     setUpdate(null);
     setTravelOpen(false);
     setDayMarkerOpen(Array(dayList[idx - 1][1].length).fill(false)); // 취소 시 마커 초기화
@@ -522,7 +540,16 @@ const CreatePlanPage = () => {
           `https://apis.data.go.kr/B551011/KorService2/areaBasedList2?serviceKey=${process.env.VITE_TOUR_API_KEY}&numOfRows=30000&MobileOS=ETC&MobileApp=AppTest&_type=json&contentTypeId=${overrideType ?? contentType}`
         );
         const json = await response.json();
-        const tourItems = json.response?.body?.items?.item ?? [];
+        let tourItems = json.response?.body?.items?.item ?? [];
+
+        // 기본 목록은 가나다순 대신 핫플레이스(방문자수 많은 지역)가 위로 오도록 정렬한다.
+        const demandMap = await getVisitorDemandMap();
+        tourItems = [...tourItems].sort((a, b) => {
+          const aVisitor = demandMap.get(`${a.lDongRegnCd}${a.lDongSignguCd}`)?.visitor ?? -1;
+          const bVisitor = demandMap.get(`${b.lDongRegnCd}${b.lDongSignguCd}`)?.visitor ?? -1;
+          return bVisitor - aVisitor;
+        });
+
         setTotalItemsCount1(tourItems.length);
         setTours(tourItems);
         setTourStorage(tourItems);
@@ -665,6 +692,10 @@ const CreatePlanPage = () => {
 
   const addTour = (el, idx) => {
     // 관광지 추가 함수
+    if (dayList[idx - 1][1].some((stop) => stop.contentid === el.contentid)) {
+      toast.error("이미 해당 날짜에 추가된 관광지입니다.");
+      return;
+    }
     // dayList를 직접 mutate하고 같은 참조로 setDayList를 부르면 React가
     // 참조 비교로 변경을 감지 못해 이 값을 의존하는 effect(동선 계산 등)가
     // 다시 실행되지 않는다. 매번 새 배열을 만들어 넘겨야 한다.
@@ -693,16 +724,21 @@ const CreatePlanPage = () => {
     if (count < 1) {
       return toast.error("플랜생성 시 관광지 하나 이상을 추가하세요");
     } else {
-      let planTitle = prompt("플랜명을 입력하세요", "");
-      if (planTitle === null) {
-        return;
-      }
-      if (planTitle.length === 0 || planTitle.length < 4 || planTitle.length > 15) {
-        return toast.error("플랜명은 최소 4글자에서 최대 15글자 입니다.");
-      } else {
-        createPlan(planTitle);
-      }
+      setPlanName("");
+      setPlanNameOpen(true);
     }
+  };
+
+  const confirmPlanName = () => {
+    const trimmed = planName.trim();
+    if (trimmed.length === 0) {
+      return toast.error("플랜명을 입력해주세요.");
+    }
+    if (trimmed.length > 30) {
+      return toast.error("플랜명은 최대 30글자 입니다.");
+    }
+    setPlanNameOpen(false);
+    createPlan(trimmed);
   };
 
   const createPlan = async (el) => {
@@ -751,6 +787,24 @@ const CreatePlanPage = () => {
         </Styles.TravelInputBox>
         <Styles.BtnBox>
           <Styles.Btn onClick={() => setAutoPlanOpen(false)}>닫기</Styles.Btn>
+        </Styles.BtnBox>
+      </Styles.ModalCustom>
+      <Styles.ModalCustom
+        isOpen={planNameOpen}
+        onRequestClose={() => setPlanNameOpen(false)}
+        style={{ overlay: { zIndex: "4", backgroundColor: "rgba(20, 20, 30, 0.5)" } }}
+        ariaHideApp={false}>
+        <Styles.ModalTitle>플랜명을 입력해주세요</Styles.ModalTitle>
+        <Styles.ModalInput
+          autoFocus
+          placeholder="예: 부산 여행"
+          value={planName}
+          onChange={(e) => setPlanName(e.target.value)}
+          onKeyUp={(e) => e.key === "Enter" && confirmPlanName()}
+        />
+        <Styles.BtnBox>
+          <Styles.Btn onClick={() => setPlanNameOpen(false)}>취소</Styles.Btn>
+          <Styles.Btn primary onClick={confirmPlanName}>확인</Styles.Btn>
         </Styles.BtnBox>
       </Styles.ModalCustom>
       {isModalOpen ? null : (
@@ -946,6 +1000,7 @@ const CreatePlanPage = () => {
                         if (index >= (page1 - 1) * itemsCount && index < page1 * itemsCount) return e;
                       })
                       .map((tour, id) => {
+                        const heatTier = getHeatTier(visitorCountOf(tour));
                         return (
                           <div key={id}>
                             <Styles.DayItem>
@@ -956,6 +1011,7 @@ const CreatePlanPage = () => {
                               <Styles.DayItemTextBox notcolumn={true}>
                                 <Styles.DayItemTextBox>
                                   <Styles.DayItemTitle onClick={() => window.open(`${window.location.origin}${import.meta.env.BASE_URL}information?id=${tour.contentid}`)}>
+                                    {heatTier && <Styles.DayWeather>{heatTier.icon} {heatTier.label}</Styles.DayWeather>}
                                     {tour.title}
                                   </Styles.DayItemTitle>
                                   <Styles.LocationImg open={searchMarkerOpen[id]} value={[tour.mapy, tour.mapx, 1]} onClick={(e) => moveMapLocation(e, id)} />
