@@ -40,7 +40,7 @@ const SignPage = () => {
   }, []);
 
   const signUp = async () => {
-    if (isEmail & isPassword & isPasswordConfirm & isName & isPhone & isBirth) {
+    if (isEmail && isPassword && isPasswordConfirm && isName && isPhone && isBirth) {
       try {
         const createHashedPassword = CryptoJS.SHA256(password).toString(CryptoJS.enc.Base64);
         const createHashedPasswordConfirm = CryptoJS.SHA256(passwordCheck).toString(CryptoJS.enc.Base64);
@@ -102,7 +102,7 @@ const SignPage = () => {
 
   const onName = (e) => {
     setName(e.target.value);
-    if ((e.target.value.length >= 2) & (e.target.value.length <= 4)) {
+    if (e.target.value.length >= 2 && e.target.value.length <= 4) {
       setNameMessage("올바른 이름 형식입니다");
       setIsName(true);
     } else {
@@ -115,7 +115,7 @@ const SignPage = () => {
     const phoneRegex = /^01(?:0|1|[6-9])(?:\d{3}|\d{4})\d{4}$/;
     const phoneCurrent = e.target.value;
     setPhone(e.target.value);
-    if (phoneRegex.test(phoneCurrent) & (phoneCurrent.length === 11)) {
+    if (phoneRegex.test(phoneCurrent) && phoneCurrent.length === 11) {
       setPhoneMessage("올바른 전화번호 형식입니다.");
       setIsPhone(true);
     } else {

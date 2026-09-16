@@ -8,6 +8,7 @@ import { HeartOutlined, HeartFilled } from "@ant-design/icons";
 import { toast } from "react-toastify";
 import Spinner from "../../Common/Spinner";
 import { useLikes } from "../../hooks/useLikes";
+import { getProfileImageUrl } from "../../utils/profileImage";
 
 const CalendarPage = () => {
   const navigate = useNavigate();
@@ -38,11 +39,7 @@ const CalendarPage = () => {
   const getEmail = async () => {
     // DB에 있는 회원데이터를 불러옴
     const data = await axios.get("/getUserInfo");
-    if (!data) {
-      getEmail();
-    } else {
-      setEmail(data.data.data.email);
-    }
+    setEmail(data.data.data.email);
   };
 
   const getcontent = async () => {
@@ -74,7 +71,7 @@ const CalendarPage = () => {
       lat: coor[0],
       lon: coor[1],
     };
-    const newArr = mapMarker.fill(false);
+    const newArr = mapMarker.map(() => false);
     newArr[id] = true;
     setCoordinate(newCoor);
     setMapMarker(newArr);
@@ -118,7 +115,7 @@ const CalendarPage = () => {
 
   const changeName = (author) => {
     const emailIdStr = author.split("@");
-    if (emailIdStr[0] < 4) return author;
+    if (emailIdStr[0].length < 4) return author;
     else {
       const emailIdStrArr = [...emailIdStr[0]];
       emailIdStrArr[1] = "*";
@@ -247,9 +244,7 @@ const CalendarPage = () => {
                         {comments.map((el, idx) => {
                           return (
                             <Styles.ReviewBox key={idx}>
-                              <Styles.ReImage
-                                src={el.email.profileImg === "" ? "assets/defaultProfile.png" : `http://localhost:8080/image/view?value=${el.email.profileImg}`}
-                              />
+                              <Styles.ReImage src={getProfileImageUrl(el.email.profileImg)} />
                               <Styles.RefirstBox>
                                 <Styles.ReName>{el?.email?.name}</Styles.ReName>
                                 <Styles.ReDate>{el?.date}</Styles.ReDate>
@@ -262,13 +257,7 @@ const CalendarPage = () => {
                           <Styles.ReviewTextBox>
                             <Styles.ReviewText>댓글 남기기</Styles.ReviewText>
                           </Styles.ReviewTextBox>
-                          <Styles.Profile1
-                            src={
-                              sessionStorage.getItem("profileImg")
-                                ? `http://localhost:8080/image/view?value=${sessionStorage.getItem("profileImg")}`
-                                : "assets/defaultProfile.png"
-                            }
-                          />
+                          <Styles.Profile1 src={getProfileImageUrl(sessionStorage.getItem("profileImg"))} />
                           <Styles.InputComment placeholder="댓글 입력" onChange={(e) => setContent(e.target.value)} value={content || ""} />
                           <Styles.InputBtn
                             onClick={() => {

@@ -8,6 +8,8 @@ import { toast } from "react-toastify";
 import { useNavigate, useLocation } from "react-router-dom";
 import Spinner from "../../Common/Spinner";
 import { useLikes } from "../../hooks/useLikes";
+import { getProfileImageUrl } from "../../utils/profileImage";
+import { getTourDetailUrl } from "../../utils/tourApi";
 
 const InformationPage = () => {
   const navigate = useNavigate();
@@ -100,9 +102,7 @@ const InformationPage = () => {
 
   const getTravelInfo = async (id) => {
     try {
-      const response = await fetch(
-        `https://apis.data.go.kr/B551011/KorService2/detailCommon2?serviceKey=${process.env.VITE_TOUR_API_KEY}&MobileOS=ETC&MobileApp=AppTest&_type=json&contentId=${id}`
-      );
+      const response = await fetch(getTourDetailUrl(id));
       const json = await response.json();
       const data = json.response?.body?.items?.item ?? [];
       if (data.length === 0) {
@@ -297,9 +297,7 @@ const InformationPage = () => {
           {comments.map((el, idx) => {
             return (
               <Styles.ReviewBox key={idx}>
-                <Styles.ReImage
-                  src={el.email.profileImg === "" ? "assets/defaultProfile.png" : `http://localhost:8080/image/view?value=${el.email.profileImg}`}
-                />
+                <Styles.ReImage src={getProfileImageUrl(el.email.profileImg)} />
                 <Styles.RefirstBox>
                   <Styles.ReName>{el?.email?.name}</Styles.ReName>
                   <Styles.ReDate>{el?.date}</Styles.ReDate>
@@ -312,13 +310,7 @@ const InformationPage = () => {
             <Styles.ReviewTextBox>
               <Styles.ReviewText>댓글 남기기</Styles.ReviewText>
             </Styles.ReviewTextBox>
-            <Styles.Profile1
-              src={
-                sessionStorage.getItem("profileImg")
-                  ? `http://localhost:8080/image/view?value=${sessionStorage.getItem("profileImg")}`
-                  : "assets/defaultProfile.png"
-              }
-            />
+            <Styles.Profile1 src={getProfileImageUrl(sessionStorage.getItem("profileImg"))} />
             <Styles.InputComment placeholder="댓글 입력" onChange={(e) => setContent(e.target.value)} value={content || ""} />
             <Styles.InputBtn
               onClick={() => {

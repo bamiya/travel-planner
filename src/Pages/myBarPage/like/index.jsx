@@ -7,6 +7,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Spinner from "../../../Common/Spinner";
+import { getTourDetailUrl } from "../../../utils/tourApi";
 
 const Like = () => {
   const navigate = useNavigate();
@@ -28,55 +29,46 @@ const Like = () => {
     getDibsData();
   }, []);
 
-  const getTourURL = (id) => {
-    return `https://apis.data.go.kr/B551011/KorService2/detailCommon2?serviceKey=${process.env.VITE_TOUR_API_KEY}&MobileOS=ETC&MobileApp=AppTest&_type=json&contentId=${id}`;
-  };
-
   // 좋아요를 누른 관광지 정보를 가져옴
   const getTourData = async () => {
     setIsLikeLoding(false);
     setIsPlanLoding(false);
     try {
       const data = await axios.post("/getLikes");
-      if (data) {
-        const likeData = data.data.data.filter((e) => e.type === "T");
-        const likePlanData = data.data.data.filter((e) => e.type === "P");
-        if (likeData.length === 0) {
-          setIsLikeLoding(true);
-        } else {
-          for (let i = 0; i < likeData.length; i++) {
-            const response = await fetch(getTourURL(likeData[i].id));
-            const json = await response.json();
-            const tourItems = json.response?.body?.items?.item ?? [];
-            const tourData = tourInfo;
-            tourData.push(tourItems[0]);
-            setTourInfo(tourData);
-          }
-          setIsLikeLoding(true);
+      const likeData = data.data.data.filter((e) => e.type === "T");
+      const likePlanData = data.data.data.filter((e) => e.type === "P");
+      if (likeData.length === 0) {
+        setIsLikeLoding(true);
+      } else {
+        for (let i = 0; i < likeData.length; i++) {
+          const response = await fetch(getTourDetailUrl(likeData[i].id));
+          const json = await response.json();
+          const tourItems = json.response?.body?.items?.item ?? [];
+          setTourInfo((prev) => [...prev, tourItems[0]]);
         }
-        if (likePlanData.length === 0) {
-          setIsPlanLoding(true);
-          return;
-        } else {
-          for (let i = 0; i < likePlanData.length; i++) {
-            const data = await axios.get(`/getPlansById/${likePlanData[i].id}`);
-            const planData = planInfo;
-            if (!data.data.data.type) {
-              continue;
-            }
-            planData.push({
+        setIsLikeLoding(true);
+      }
+      if (likePlanData.length === 0) {
+        setIsPlanLoding(true);
+        return;
+      } else {
+        for (let i = 0; i < likePlanData.length; i++) {
+          const data = await axios.get(`/getPlansById/${likePlanData[i].id}`);
+          if (!data.data.data.type) {
+            continue;
+          }
+          setPlanInfo((prev) => [
+            ...prev,
+            {
               title: data.data.data.title,
               author: `${data.data.data.email.name}(${data.data.data.email.email})`,
               date: data.data.data.date,
               img: JSON.parse(data.data.data.plan)[0].list[0].firstimage2,
               id: data.data.data.id,
-            });
-            setPlanInfo(planData);
-          }
-          setIsPlanLoding(true);
+            },
+          ]);
         }
-      } else {
-        getTourData();
+        setIsPlanLoding(true);
       }
     } catch (e) {
       toast.error("좋아요 에러");
@@ -90,10 +82,9 @@ const Like = () => {
     try {
       await axios.delete(`/removeLikes/${id}?type=${type}`);
       if (type === "P") {
-        const planData = planInfo;
-        setPlanInfo(planData.filter((e) => e.id !== id));
+        setPlanInfo((prev) => prev.filter((e) => e.id !== id));
       } else {
-        setTourInfo(tourInfo.filter((e) => e.contentid !== id));
+        setTourInfo((prev) => prev.filter((e) => e.contentid !== id));
       }
     } catch (e) {
       toast.error("좋아요 에러");
@@ -103,18 +94,16 @@ const Like = () => {
   // 찜하기 목록 가져오는 함수
   const getDibsData = async () => {
     setIsDibsLoding(false);
-    setDibsInfo((dibsInfo.length = 0));
+    setDibsInfo([]);
     try {
       if (sessionStorage.getItem("dibs")) {
         const dibs = sessionStorage.getItem("dibs").split(" ");
         dibs.pop();
         for (let i = 0; i < dibs.length; i++) {
-          const response = await fetch(getTourURL(dibs[i]));
+          const response = await fetch(getTourDetailUrl(dibs[i]));
           const json = await response.json();
           const dibsItems = json.response?.body?.items?.item ?? [];
-          const dibsData = dibsInfo;
-          dibsData.push(dibsItems[0]);
-          setDibsInfo(dibsData);
+          setDibsInfo((prev) => [...prev, dibsItems[0]]);
         }
       }
     } catch (e) {
@@ -129,15 +118,14 @@ const Like = () => {
     if (window.confirm("찜취소하시겠습니까?")) {
       const dibs = sessionStorage.getItem("dibs");
       sessionStorage.setItem("dibs", dibs.replace(id + " ", ""));
-      const dibsData = dibsInfo;
-      setDibsInfo(dibsData.filter((e) => e.contentid !== id));
+      setDibsInfo((prev) => prev.filter((e) => e.contentid !== id));
     }
   };
 
   const changeName = (author) => {
     const nameStr = author.split("(");
     const emailIdStr = nameStr[1].split("@");
-    if (emailIdStr[0] < 4) return author;
+    if (emailIdStr[0].length < 4) return author;
     else {
       const emailIdStrArr = [...emailIdStr[0]];
       emailIdStrArr[1] = "*";

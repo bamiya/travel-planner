@@ -7,6 +7,7 @@ import Spinner from '../../../Common/Spinner';
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { getTourDetailUrl } from "../../../utils/tourApi";
 
 const MyComments = () => {
   const navigate = useNavigate();
@@ -23,10 +24,6 @@ const MyComments = () => {
   useEffect(() => {
     getMyComments();
   }, []);
-
-  const getTourURL = (id) => {
-    return `https://apis.data.go.kr/B551011/KorService2/detailCommon2?serviceKey=${process.env.VITE_TOUR_API_KEY}&MobileOS=ETC&MobileApp=AppTest&_type=json&contentId=${id}`;
-  };
 
   const getMyComments = async () => {
     try {
@@ -51,7 +48,7 @@ const MyComments = () => {
       const tourResults = await Promise.all(
         tourList.map(async (c) => {
           try {
-            const response = await fetch(getTourURL(c.id));
+            const response = await fetch(getTourDetailUrl(c.id));
             const json = await response.json();
             const tour = (json.response?.body?.items?.item ?? [])[0];
             return { ...c, title: tour?.title ?? "삭제된 관광지" };
@@ -89,7 +86,7 @@ const MyComments = () => {
                 .filter((_, idx) => idx >= (page1 - 1) * itemsCount && idx < page1 * itemsCount)
                 .map((c, idx) => (
                   <Styles.LineBox key={idx}>
-                    <Styles.ImgBox src="assets/기본프로필.png" onClick={() => movePlan(c.id)} />
+                    <Styles.ImgBox src="assets/defaultProfile.png" onClick={() => movePlan(c.id)} />
                     <Styles.ContentBox>
                       <Styles.ContentText onClick={() => movePlan(c.id)}>{c.title}</Styles.ContentText>
                       <Styles.ContentTe>{c.content}</Styles.ContentTe>
@@ -118,7 +115,7 @@ const MyComments = () => {
                 .filter((_, idx) => idx >= (page2 - 1) * itemsCount && idx < page2 * itemsCount)
                 .map((c, idx) => (
                   <Styles.LineBox key={idx}>
-                    <Styles.ImgBox src="assets/기본프로필.png" onClick={() => moveTour(c.id)} />
+                    <Styles.ImgBox src="assets/defaultProfile.png" onClick={() => moveTour(c.id)} />
                     <Styles.ContentBox>
                       <Styles.ContentText onClick={() => moveTour(c.id)}>{c.title}</Styles.ContentText>
                       <Styles.ContentTe>{c.content}</Styles.ContentTe>

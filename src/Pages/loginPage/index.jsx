@@ -6,21 +6,23 @@ import axios from "axios";
 import CryptoJS from "crypto-js";
 import { toast } from "react-toastify";
 
+const KAKAO_CLIENT_ID = "0a61f9efbdac3933e6a14ed6f553bd00";
+const KAKAO_REDIRECT_URI = "http://localhost:3000/login";
+
 const LoginPage = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
 
-  const kakaoLogin = async () => {
-    window.location.href =
-      "https://kauth.kakao.com/oauth/authorize?client_id=0a61f9efbdac3933e6a14ed6f553bd00&redirect_uri=http://localhost:3000/login&response_type=code";
+  const kakaoLogin = () => {
+    window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_CLIENT_ID}&redirect_uri=${KAKAO_REDIRECT_URI}&response_type=code`;
   };
 
   const getToken = async () => {
     const code = new URL(window.location.href).searchParams.get("code");
     const params = {
-      client_id: "0a61f9efbdac3933e6a14ed6f553bd00",
-      redirect_uri: "http://localhost:3000/login",
+      client_id: KAKAO_CLIENT_ID,
+      redirect_uri: KAKAO_REDIRECT_URI,
       client_secret: "K2uqygqk3ddG8UFgrIFdE76bKg9SpEwT",
       code: code,
       grant_type: "authorization_code",
@@ -32,7 +34,7 @@ const LoginPage = () => {
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
         });
         const userInfo = await axios.get("/kakaoLogin", { params: { token: token.data.access_token } });
-        if (userInfo.status == 200) {
+        if (userInfo.status === 200) {
           if (userInfo.data.data.isUser === "N") {
             // 현재 DB에 회원이 없음
             navigate("/sign", { state: { email: userInfo.data.data.email } });
@@ -75,7 +77,7 @@ const LoginPage = () => {
   };
 
   const onKeyPress = (e) => {
-    if (e.key == "Enter") {
+    if (e.key === "Enter") {
       onLogin();
     }
   };

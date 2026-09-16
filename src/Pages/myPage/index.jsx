@@ -3,6 +3,7 @@ import * as Styles from "./style";
 import { useNavigate } from "react-router-dom";
 import { MarginTopWrapper } from "../../Common/style";
 import axios from "axios";
+import { getProfileImageUrl } from "../../utils/profileImage";
 
 const MyPage = ({ myPlanAction, sharedPlanAction, likeAction }) => {
   const navigate = useNavigate();
@@ -22,11 +23,7 @@ const MyPage = ({ myPlanAction, sharedPlanAction, likeAction }) => {
   const getData = async () => {
     // DB에 있는 회원데이터를 불러옴
     const data = await axios.get("/getUserInfo");
-    if (!data) {
-      getData();
-    } else {
-      setName(data.data.data.name);
-    }
+    setName(data.data.data.name);
   };
 
   const tabs = [
@@ -40,13 +37,7 @@ const MyPage = ({ myPlanAction, sharedPlanAction, likeAction }) => {
       <Styles.Box>
         <Styles.ProfileCard>
           <Styles.AvatarWrap>
-            <Styles.Profile
-              src={
-                sessionStorage.getItem("profileImg")
-                  ? `http://localhost:8080/image/view?value=${sessionStorage.getItem("profileImg")}`
-                  : "assets/defaultProfile.png"
-              }
-            />
+            <Styles.Profile src={getProfileImageUrl(sessionStorage.getItem("profileImg"))} />
             <Styles.SettingsBtn onClick={moveEditMember}>
               <svg viewBox="0 0 24 24" fill="none">
                 <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" />

@@ -26,10 +26,10 @@ const SharedPlan = () => {
     }
   };
 
-  const onShareBtn = async () => {
+  const onShareBtn = async (el) => {
     if (window.confirm("공유취소하시겠습니까?")) {
       try {
-        await axios.put("/updateSharePlan", { id: plan[0][1].id });
+        await axios.put("/updateSharePlan", { id: el[1].id });
         getUserPlan();
       } catch (e) {
         toast.error("공유 버튼 에러");
@@ -66,7 +66,7 @@ const SharedPlan = () => {
                             <Styles.ContentText>{el[1].title}</Styles.ContentText>
                             <Styles.DayBox>{el[1].date}</Styles.DayBox>
                           </Styles.ContentBox3>
-                          <Styles.ModifyDeleteBox open={el[1].type} onClick={onShareBtn}>
+                          <Styles.ModifyDeleteBox open={el[1].type} onClick={() => onShareBtn(el)}>
                             공유취소
                           </Styles.ModifyDeleteBox>
                         </Styles.ContentBox2>

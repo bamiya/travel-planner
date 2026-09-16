@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import CryptoJS from "crypto-js";
 import { toast } from "react-toastify";
+import { getProfileImageUrl } from "../../utils/profileImage";
 
 export const EditmemberPage = () => {
   const navigate = useNavigate();
@@ -39,24 +40,19 @@ export const EditmemberPage = () => {
   const getData = async () => {
     // DB에 있는 회원데이터를 불러옴
     const data = await axios.get("/getUserInfo");
-    if (!data) {
-      getData();
-    } else {
-      setEmail(data.data.data.email);
-      setPw(data.data.data.pw);
+    setEmail(data.data.data.email);
 
-      setName(data.data.data.name);
-      setShowName(data.data.data.name);
+    setName(data.data.data.name);
+    setShowName(data.data.data.name);
 
-      setPhone(data.data.data.tel);
-      setBirth(data.data.data.birth);
-    }
+    setPhone(data.data.data.tel);
+    setBirth(data.data.data.birth);
   };
 
   const update = async () => {
     // 회원 데이터를 수정 (이름, 연락처)
     if (window.confirm("수정하시겠습니까?")) {
-      if (isName & isPhone) {
+      if (isName && isPhone) {
         try {
           const data = await axios.post("/getUserUpdate", { name, tel: phone });
           getData(); // 변경된 데이터를 다시 불러오기
@@ -73,7 +69,7 @@ export const EditmemberPage = () => {
   const updatePw = async () => {
     //회원 데이터 수정 비밀번호
     if (window.confirm("수정하시겠습니까?")) {
-      if (isPassword & isPasswordConfirm) {
+      if (isPassword && isPasswordConfirm) {
         try {
           const createHashedPw = CryptoJS.SHA256(pw).toString(CryptoJS.enc.Base64);
           const createHashedNewPw = CryptoJS.SHA256(newPw).toString(CryptoJS.enc.Base64);
@@ -88,10 +84,6 @@ export const EditmemberPage = () => {
     }
   };
 
-  function clickedBtn() {
-    setClicked((clicked) => !clicked);
-  }
-
   const userDelete = async () => {
     if (window.confirm("정말로 탈퇴하시겠습니까??")) {
       try {
@@ -102,7 +94,6 @@ export const EditmemberPage = () => {
         navigate("/");
       } catch (e) {
         toast.error("탈퇴 실패! 잠시 후 다시 시도해주세요.");
-        // console.log("탈퇴 실패", e);
       }
     }
   };
@@ -139,7 +130,7 @@ export const EditmemberPage = () => {
 
   const onChangeName = (e) => {
     setName(e.target.value);
-    if ((e.target.value.length >= 2) & (e.target.value.length <= 4)) {
+    if (e.target.value.length >= 2 && e.target.value.length <= 4) {
       setNameMessage("올바른 이름 형식입니다");
       setIsName(true);
     } else {
@@ -152,7 +143,7 @@ export const EditmemberPage = () => {
     const phoneRegex = /^01(?:0|1|[6-9])(?:\d{3}|\d{4})\d{4}$/;
     const phoneCurrent = e.target.value;
     setPhone(e.target.value);
-    if (phoneRegex.test(phoneCurrent) & (phoneCurrent.length === 11)) {
+    if (phoneRegex.test(phoneCurrent) && phoneCurrent.length === 11) {
       setPhoneMessage("올바른 전화번호 형식입니다.");
       setIsPhone(true);
     } else {
@@ -172,7 +163,7 @@ export const EditmemberPage = () => {
     onFileUpload(fileList);
   };
 
-  const onFileUpload = (fileList) => {
+  const onFileUpload = async (fileList) => {
     const formData = new FormData();
 
     fileList.forEach((file) => {
@@ -180,11 +171,14 @@ export const EditmemberPage = () => {
       formData.append("file", file);
     });
 
-
-    axios.post("/uploadFile", formData, {
-      headers: {"Content-Type": "multipart/form-data"}
-    });
-    toast.info("다시 로그인 후 적용됩니다.");
+    try {
+      await axios.post("/uploadFile", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      toast.info("다시 로그인 후 적용됩니다.");
+    } catch (e) {
+      toast.error("파일 업로드에 실패했습니다.");
+    }
   };
 
   return (
@@ -192,20 +186,14 @@ export const EditmemberPage = () => {
       <Styles.EditTitle>나의 정보 관리</Styles.EditTitle>
       <Styles.ProfileBox>
         <Styles.LeftProfileBox>
-          <Styles.ProfileImg
-            src={
-              sessionStorage.getItem("profileImg")
-                ? `http://localhost:8080/image/view?value=${sessionStorage.getItem("profileImg")}`
-                : "assets/defaultProfile.png"
-            }
-          />
+          <Styles.ProfileImg src={getProfileImageUrl(sessionStorage.getItem("profileImg"))} />
           <Styles.MemberName>{showName}</Styles.MemberName>
           <Styles.Memberemail>{email}</Styles.Memberemail>
           <Styles.TitleBar />
-          <Styles.LeftContent click={clicked === "Profile"} onClick={() => setClicked("Profile") + clickedBtn}>
+          <Styles.LeftContent click={clicked === "Profile"} onClick={() => setClicked("Profile")}>
             내프로필
           </Styles.LeftContent>
-          <Styles.LeftContent click={clicked === "Paw"} onClick={() => setClicked("Paw") + clickedBtn}>
+          <Styles.LeftContent click={clicked === "Paw"} onClick={() => setClicked("Paw")}>
             비밀번호 변경
           </Styles.LeftContent>
           <Styles.LeftContent onClick={logout}>로그아웃</Styles.LeftContent>
@@ -241,13 +229,7 @@ export const EditmemberPage = () => {
           <Styles.MyProfileBox id="Profile">
             <Styles.BasicInformation>기본정보</Styles.BasicInformation>
             <Styles.BasicInformationBox>
-              <Styles.BasicInformationImg
-                src={
-                  sessionStorage.getItem("profileImg")
-                    ? `http://localhost:8080/image/view?value=${sessionStorage.getItem("profileImg")}`
-                    : "assets/defaultProfile.png"
-                }
-              />
+              <Styles.BasicInformationImg src={getProfileImageUrl(sessionStorage.getItem("profileImg"))} />
               <Styles.BasicInformationEamilBox>
                 <Styles.BasicInformationName>{showName}</Styles.BasicInformationName>
                 <Styles.BasicInformationEamil>{birth}</Styles.BasicInformationEamil>

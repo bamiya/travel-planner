@@ -3,6 +3,7 @@ import * as Styles from "./style";
 import { useNavigate, useLocation } from "react-router-dom";
 import { MarginTopWrapper } from "../../Common/style";
 import { toast } from "react-toastify";
+import { getProfileImageUrl } from "../../utils/profileImage";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -17,7 +18,8 @@ const Header = () => {
   };
   useEffect(() => {
     window.addEventListener("scroll", updateScroll);
-  });
+    return () => window.removeEventListener("scroll", updateScroll);
+  }, []);
 
   const logout = () => {
     localStorage.clear();
@@ -103,13 +105,7 @@ const Header = () => {
               ) : (
                 <>
                   <Styles.MyProfile onClick={() => setIsOpenList(!isOpenList)}>
-                    <Styles.MyProfileImg
-                      src={
-                        sessionStorage.getItem("profileImg")
-                          ? `http://localhost:8080/image/view?value=${sessionStorage.getItem("profileImg")}`
-                          : "assets/defaultProfile.png"
-                      }
-                    />
+                    <Styles.MyProfileImg src={getProfileImageUrl(sessionStorage.getItem("profileImg"))} />
                     <Styles.MyProfileListBox clicked={isOpenList}>
                       <Styles.MyProfileItem onClick={() => navigate("/myPlan")}>MY PAGE</Styles.MyProfileItem>
                       <Styles.MyProfileItem last onClick={logout}>

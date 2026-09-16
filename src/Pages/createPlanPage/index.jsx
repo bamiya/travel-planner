@@ -11,6 +11,7 @@ import Spinner from "../../Common/Spinner";
 import { searchNearbyFallback, fetchNearbyTours } from "../../utils/nearbySearch";
 import { generateAutoPlan } from "../../utils/autoPlanner";
 import { fetchVisitorDemand, getHeatTier } from "../../utils/visitorDemand";
+import { getTourDetailUrl } from "../../utils/tourApi";
 
 const CreatePlanCalendar = ({ open, setOpen, setDateList }) => {
   // 팝업
@@ -540,9 +541,7 @@ const CreatePlanPage = () => {
     let Arr = [];
     try {
       for (let i = 0; i < idx.length; i++) {
-        const response = await fetch(
-          `https://apis.data.go.kr/B551011/KorService2/detailCommon2?serviceKey=${process.env.VITE_TOUR_API_KEY}&MobileOS=ETC&MobileApp=AppTest&_type=json&contentId=${idx[i]}`
-        );
+        const response = await fetch(getTourDetailUrl(idx[i]));
         const json = await response.json();
         const tourItems = (json.response?.body?.items?.item ?? [])[0];
         Arr[i] = tourItems;
