@@ -21,6 +21,7 @@ const CalendarPage = () => {
   const [content, setContent] = useState("");
   const [email, setEmail] = useState();
   const { isLiked, toggleLike, reloadLikes } = useLikes("P");
+  const planId = location.search.split("=")[1]; // ?id=<planId> - 여러 곳에서 반복 파싱하지 않도록 한 번만 계산
 
   useEffect(() => {
     if (location.search === "") {
@@ -29,7 +30,7 @@ const CalendarPage = () => {
     } else {
       sessionStorage.getItem("access_token") !== null ? getEmail() : ""; //  비로그인 시 (토큰없음) getEmail() 실행 X
       getcontent(); // 댓글 렌더링
-      getUserPlanById(location.search.split("=")[1]);
+      getUserPlanById(planId);
     }
   }, []);
 
@@ -44,7 +45,7 @@ const CalendarPage = () => {
   };
 
   const getcontent = async () => {
-    const data = await axios.get(`/getComment?id=${location.search.split("=")[1]}&type=P`);
+    const data = await axios.get(`/getComment?id=${planId}&type=P`);
     setComments(data.data.data.filter((e) => e.type === "P"));
   };
 
@@ -101,8 +102,8 @@ const CalendarPage = () => {
 
   const onShareBtn = async () => {
     try {
-      await axios.put("/updateSharePlan", { id: location.search.split("=")[1] });
-      getUserPlanById(location.search.split("=")[1]);
+      await axios.put("/updateSharePlan", { id: planId });
+      getUserPlanById(planId);
     } catch (e) {
       toast.error("사용자 본인만 이용할 수 있는 버튼 입니다.");
     }
@@ -262,7 +263,7 @@ const CalendarPage = () => {
                           <Styles.InputComment placeholder="댓글 입력" onChange={(e) => setContent(e.target.value)} value={content || ""} />
                           <Styles.InputBtn
                             onClick={() => {
-                              writing(location.search.split("=")[1]);
+                              writing(planId);
                             }}>
                             등록
                           </Styles.InputBtn>
