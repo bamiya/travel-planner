@@ -3,6 +3,7 @@ import * as Styles from "./style";
 import { useNavigate, useLocation } from "react-router-dom";
 import { MarginTopWrapper } from "../../Common/style";
 import { toast } from "react-toastify";
+import axios from "axios";
 import { getProfileImageUrl } from "../../utils/profileImage";
 
 const Header = () => {
@@ -21,7 +22,15 @@ const Header = () => {
     return () => window.removeEventListener("scroll", updateScroll);
   }, []);
 
-  const logout = () => {
+  const logout = async () => {
+    // 탈취된 리프레시 토큰이 로그아웃 후에도 계속 쓰일 수 있는 걸 막으려면 서버에도
+    // 폐기를 알려야 한다 - 리프레시 토큰은 httpOnly 쿠키라 요청에 자동으로 실린다.
+    // 실패해도(네트워크 문제 등) 로컬 로그아웃 자체는 계속 진행한다.
+    try {
+      await axios.post("/logout");
+    } catch (e) {
+      // 무시 - 어차피 로컬 토큰은 지운다
+    }
     localStorage.clear();
     sessionStorage.clear();
     navigate("/login");

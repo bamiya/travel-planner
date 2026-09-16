@@ -28,6 +28,9 @@ import "react-toastify/dist/ReactToastify.css";
 // 모든 axios 호출이 "http://localhost:8080/xxx"를 매번 하드코딩하지 않고
 // 상대경로("/xxx")만 쓰도록 기준 주소를 한 곳에서 관리한다.
 axios.defaults.baseURL = "http://localhost:8080";
+// 리프레시 토큰이 httpOnly 쿠키로 오가기 때문에, 브라우저가 쿠키를 실어보내고
+// 받도록 모든 요청에 credentials를 포함시켜야 한다 (백엔드 CORS의 allowCredentials와 짝).
+axios.defaults.withCredentials = true;
 
 axios.interceptors.response.use(
   response => {
@@ -75,11 +78,11 @@ const App = () => {
   const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
-    // 브라우저를 새로 열면 access_token(sessionStorage)은 사라지지만
-    // refresh_token(localStorage)은 남아있다. 이 값으로 access_token을
-    // 먼저 재발급받아둬야 로그인 상태가 유지된 채로 화면이 그려진다.
+    // 브라우저를 새로 열면 access_token(sessionStorage)은 사라지지만 리프레시 토큰은
+    // httpOnly 쿠키로 남아있다 - 다만 httpOnly라 JS에서 값을 직접 읽을 수는 없으므로,
+    // "로그인한 적 있음"만 표시하는 hasSession 플래그(민감정보 아님)로 재발급 시도 여부를 판단한다.
     const restoreSession = async () => {
-      if (!sessionStorage.getItem("access_token") && localStorage.getItem("refresh_token")) {
+      if (!sessionStorage.getItem("access_token") && localStorage.getItem("hasSession")) {
         try {
           await getAccessToken();
         } catch (e) {

@@ -50,9 +50,9 @@ const LoginPage = () => {
             // 현재 DB에 회원이 없음
             navigate("/sign", { state: { email: userInfo.data.data.email } });
           } else if (userInfo.data.data.isUser === "Y") {
-            // 현재 DB에 회원이 있음
+            // 현재 DB에 회원이 있음 - 리프레시 토큰은 httpOnly 쿠키로 이미 세팅됐다.
             sessionStorage.setItem("access_token", userInfo.data.data.access_token);
-            localStorage.setItem("refresh_token", userInfo.data.data.refresh_token);
+            localStorage.setItem("hasSession", "true");
             sessionStorage.setItem("profileImg", userInfo.data.data.profileImg);
             navigate("/");
           }
@@ -68,18 +68,19 @@ const LoginPage = () => {
     getToken();
   }, []);
 
-  // 액세스 토큰은 세션 스토리지
-  // 리프레시 토큰은 로컬 스토리지
+  // 액세스 토큰은 세션 스토리지에 저장한다.
+  // 리프레시 토큰은 httpOnly 쿠키로 오가서 여기서 다룰 필요가 없다 (XSS로부터 안전하게
+  // 서버만 접근 가능) - hasSession은 그냥 "로그인한 적 있음" 표시일 뿐 민감정보가 아니다.
   const onLogin = async () => {
     let data = null;
     const createHashedPassword = CryptoJS.SHA256(pw).toString(CryptoJS.enc.Base64);
-    
+
 
     try {
       data = await axios.post("/login", { email, pw: createHashedPassword });
       sessionStorage.setItem("access_token", data.data.data.access_token);
       sessionStorage.setItem("profileImg", data.data.data.profileImg);
-      localStorage.setItem("refresh_token", data.data.data.refresh_token);
+      localStorage.setItem("hasSession", "true");
       navigate("/");
     } catch (e) {
       toast.error(getErrorMessage(e));

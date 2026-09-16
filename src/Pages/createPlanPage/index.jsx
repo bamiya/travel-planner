@@ -469,19 +469,28 @@ const CreatePlanPage = () => {
     }
   }, [page2]);
 
+  // 수정 모드 진입 시 기존 플랜 데이터를 dayList에 채워넣는다. dayList가 바뀔 때마다
+  // 이 effect가 다시 돌면(관광지를 추가/삭제할 때마다) 매번 원본 데이터로 덮어써버리는
+  // 문제가 있었어서, 최초 1회만 실행되도록 막는다.
+  const hasLoadedUpdateData = useRef(false);
   useEffect(() => {
-    if (dayList && location.state) {
+    if (dayList && location.state && !hasLoadedUpdateData.current) {
+      hasLoadedUpdateData.current = true;
       onUpdateSetDate();
     }
   }, [dayList]);
 
   const onUpdateSetDate = () => {
+    // addTour를 반복 호출하면 각 호출이 effect 실행 시점의 오래된 dayList를 참조해서,
+    // 같은 DAY에 항목이 2개 이상이면 마지막 호출 결과로 서로 덮어써버렸다.
+    // (updater 함수로 한 번에 전체를 채워넣어야 안전하다.)
     const plans = JSON.parse(location.state.updateData.plan);
-    for (let i = 0; i < plans.length; i++) {
-      for (let j = 0; j < plans[i].list.length; j++) {
-        addTour(plans[i].list[j], plans[i].day);
-      }
-    }
+    setDayList((prevDayList) =>
+      prevDayList.map((day) => {
+        const matchingPlanDay = plans.find((p) => p.day === day[0]);
+        return matchingPlanDay ? [day[0], matchingPlanDay.list] : day;
+      })
+    );
   };
 
   const postPlanData = async (el) => {
