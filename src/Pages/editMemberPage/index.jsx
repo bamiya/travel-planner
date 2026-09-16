@@ -6,10 +6,10 @@ import axios from "axios";
 import CryptoJS from "crypto-js";
 import { toast } from "react-toastify";
 import { getProfileImageUrl } from "../../utils/profileImage";
+import { getErrorMessage } from "../../utils/errorMessage";
 
 export const EditmemberPage = () => {
   const navigate = useNavigate();
-  const [clicked, setClicked] = useState("Profile");
 
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
@@ -58,7 +58,7 @@ export const EditmemberPage = () => {
           getData(); // 변경된 데이터를 다시 불러오기
           toast.success(data.data.msg);
         } catch (e) {
-          toast.error(e.response.data.msg);
+          toast.error(getErrorMessage(e));
         }
       } else {
         toast.error("형식에 맞지 않는 값이 있습니다.");
@@ -76,7 +76,7 @@ export const EditmemberPage = () => {
           await axios.post("/getUserUpdatePw", { pw: createHashedPw, newPw: createHashedNewPw });
           toast.success("비밀번호 변경 성공");
         } catch (e) {
-          toast.error(e.response.data.msg);
+          toast.error(getErrorMessage(e));
         }
       } else {
         toast.error("형식에 맞지 않는 값이 있습니다.");
@@ -96,11 +96,6 @@ export const EditmemberPage = () => {
         toast.error("탈퇴 실패! 잠시 후 다시 시도해주세요.");
       }
     }
-  };
-  const logout = () => {
-    localStorage.clear();
-    sessionStorage.clear();
-    navigate("/login");
   };
 
   //새 비밀번호 유효성
@@ -186,57 +181,9 @@ export const EditmemberPage = () => {
       <Styles.EditTitle>나의 정보 관리</Styles.EditTitle>
       <Styles.ProfileBox>
         <Styles.LeftProfileBox>
-          <Styles.ProfileImg src={getProfileImageUrl(sessionStorage.getItem("profileImg"))} />
-          <Styles.MemberName>{showName}</Styles.MemberName>
-          <Styles.Memberemail>{email}</Styles.Memberemail>
-          <Styles.TitleBar />
-          <Styles.LeftContent click={clicked === "Profile"} onClick={() => setClicked("Profile")}>
-            내프로필
-          </Styles.LeftContent>
-          <Styles.LeftContent click={clicked === "Paw"} onClick={() => setClicked("Paw")}>
-            비밀번호 변경
-          </Styles.LeftContent>
-          <Styles.LeftContent onClick={logout}>로그아웃</Styles.LeftContent>
-          <Styles.DeleteBtn onClick={userDelete}>탈퇴하기 ▶ </Styles.DeleteBtn>
-        </Styles.LeftProfileBox>
-        {clicked === "Paw" && (
-          <Styles.MemberInforBox id="Paw">
-            <Styles.BasicInformation>비밀번호 변경</Styles.BasicInformation>
-            <Styles.MemberContentBox>
-              <Styles.MemberEdit>현재 비밀번호</Styles.MemberEdit>
-              <Styles.Content type="password" placeholder="비밀번호를 입력해주세요." onChange={(e) => setPw(e.target.value)}></Styles.Content>
-            </Styles.MemberContentBox>
-
-            <Styles.MemberContentBox>
-              <Styles.MemberEdit>새 비밀번호</Styles.MemberEdit>
-              <Styles.Content type="password" placeholder="새 비밀번호를 입력해주세요." onChange={(e) => onChangePassword(e)}></Styles.Content>
-              <Styles.WarningMessage check={isPassword}>{passwordMessage}</Styles.WarningMessage>
-            </Styles.MemberContentBox>
-
-            <Styles.MemberContentBox>
-              <Styles.MemberEdit>새 비밀번호확인</Styles.MemberEdit>
-              <Styles.Content type="password" placeholder="비밀번호를 다시입력해주세요." onChange={(e) => onChangePasswordConfirm(e)}></Styles.Content>
-              <Styles.WarningMessage check={isPasswordConfirm}>{passwordConfirmMessage}</Styles.WarningMessage>
-            </Styles.MemberContentBox>
-
-            <Styles.BtnBox>
-              <Styles.EditBtn onClick={() => updatePw()}>수정하기</Styles.EditBtn>
-            </Styles.BtnBox>
-          </Styles.MemberInforBox>
-        )}
-
-        {clicked === "Profile" && (
-          <Styles.MyProfileBox id="Profile">
-            <Styles.BasicInformation>기본정보</Styles.BasicInformation>
-            <Styles.BasicInformationBox>
-              <Styles.BasicInformationImg src={getProfileImageUrl(sessionStorage.getItem("profileImg"))} />
-              <Styles.BasicInformationEamilBox>
-                <Styles.BasicInformationName>{showName}</Styles.BasicInformationName>
-                <Styles.BasicInformationEamil>{birth}</Styles.BasicInformationEamil>
-                <Styles.BasicInformationEamil>{email}</Styles.BasicInformationEamil>
-              </Styles.BasicInformationEamilBox>
-            </Styles.BasicInformationBox>
-            <Styles.LabelBox htmlFor="ex_file">
+          <Styles.AvatarWrap>
+            <Styles.ProfileImg src={getProfileImageUrl(sessionStorage.getItem("profileImg"))} />
+            <Styles.PhotoEditLabel htmlFor="ex_file">
               <svg viewBox="0 0 24 24" fill="none">
                 <path
                   d="M4 8a2 2 0 012-2h1.2l.7-1.4A1 1 0 018.8 4h6.4a1 1 0 01.9.6L16.8 6H18a2 2 0 012 2v9a2 2 0 01-2 2H6a2 2 0 01-2-2V8z"
@@ -246,26 +193,60 @@ export const EditmemberPage = () => {
                 />
                 <circle cx="12" cy="13" r="3.2" stroke="currentColor" strokeWidth="2" />
               </svg>
-              <Styles.ProfileImgInput type="file" id="ex_file" accept="image/jpg, image/png, image/jpeg" onChange={onSaveFiles} />
-            </Styles.LabelBox>
+            </Styles.PhotoEditLabel>
+            <Styles.ProfileImgInput type="file" id="ex_file" accept="image/jpg, image/png, image/jpeg" onChange={onSaveFiles} />
+          </Styles.AvatarWrap>
+          <Styles.MemberName>{showName}</Styles.MemberName>
+          <Styles.Memberemail>{email}</Styles.Memberemail>
+          {birth && <Styles.Memberemail>{birth}</Styles.Memberemail>}
+          <Styles.TitleBar />
+          <Styles.DeleteBtn onClick={userDelete}>탈퇴하기 ▶ </Styles.DeleteBtn>
+        </Styles.LeftProfileBox>
 
-            <Styles.BasicInforContentBox>
-              <Styles.MemberEdit htmlFor="name">이름</Styles.MemberEdit>
-              <Styles.Content placeholder="홍길동" onChange={(e) => onChangeName(e)} value={name || ""} />
-              <Styles.WarningMessage check={isName}>{nameMessage}</Styles.WarningMessage>
-            </Styles.BasicInforContentBox>
+        <Styles.MyProfileBox>
+          <Styles.SectionTitle>기본정보</Styles.SectionTitle>
 
-            <Styles.BasicInforContentBox>
-              <Styles.MemberEdit htmlFor="phone">연락처</Styles.MemberEdit>
-              <Styles.Content placeholder="01012345678" onChange={(e) => onChangePhoneNumber(e)} value={phone || ""} />
-              <Styles.WarningMessage check={isPhone}>{phoneMessage}</Styles.WarningMessage>
-            </Styles.BasicInforContentBox>
+          <Styles.BasicInforContentBox>
+            <Styles.MemberEdit htmlFor="name">이름</Styles.MemberEdit>
+            <Styles.Content placeholder="홍길동" onChange={(e) => onChangeName(e)} value={name || ""} />
+            <Styles.WarningMessage check={isName}>{nameMessage}</Styles.WarningMessage>
+          </Styles.BasicInforContentBox>
 
-            <Styles.BtnBox>
-              <Styles.BasicInfoBtn onClick={update}>수정하기</Styles.BasicInfoBtn>
-            </Styles.BtnBox>
-          </Styles.MyProfileBox>
-        )}
+          <Styles.BasicInforContentBox>
+            <Styles.MemberEdit htmlFor="phone">연락처</Styles.MemberEdit>
+            <Styles.Content placeholder="01012345678" onChange={(e) => onChangePhoneNumber(e)} value={phone || ""} />
+            <Styles.WarningMessage check={isPhone}>{phoneMessage}</Styles.WarningMessage>
+          </Styles.BasicInforContentBox>
+
+          <Styles.BtnBox>
+            <Styles.BasicInfoBtn onClick={update}>수정하기</Styles.BasicInfoBtn>
+          </Styles.BtnBox>
+
+          <Styles.SectionDivider />
+
+          <Styles.SectionTitle>비밀번호 변경</Styles.SectionTitle>
+
+          <Styles.MemberContentBox>
+            <Styles.MemberEdit>현재 비밀번호</Styles.MemberEdit>
+            <Styles.Content type="password" placeholder="비밀번호를 입력해주세요." onChange={(e) => setPw(e.target.value)}></Styles.Content>
+          </Styles.MemberContentBox>
+
+          <Styles.MemberContentBox>
+            <Styles.MemberEdit>새 비밀번호</Styles.MemberEdit>
+            <Styles.Content type="password" placeholder="새 비밀번호를 입력해주세요." onChange={(e) => onChangePassword(e)}></Styles.Content>
+            <Styles.WarningMessage check={isPassword}>{passwordMessage}</Styles.WarningMessage>
+          </Styles.MemberContentBox>
+
+          <Styles.MemberContentBox>
+            <Styles.MemberEdit>새 비밀번호확인</Styles.MemberEdit>
+            <Styles.Content type="password" placeholder="비밀번호를 다시입력해주세요." onChange={(e) => onChangePasswordConfirm(e)}></Styles.Content>
+            <Styles.WarningMessage check={isPasswordConfirm}>{passwordConfirmMessage}</Styles.WarningMessage>
+          </Styles.MemberContentBox>
+
+          <Styles.BtnBox>
+            <Styles.EditBtn onClick={() => updatePw()}>수정하기</Styles.EditBtn>
+          </Styles.BtnBox>
+        </Styles.MyProfileBox>
       </Styles.ProfileBox>
     </MarginTopWrapper>
   );

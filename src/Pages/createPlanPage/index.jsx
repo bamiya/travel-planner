@@ -12,6 +12,7 @@ import { searchNearbyFallback, fetchNearbyTours } from "../../utils/nearbySearch
 import { generateAutoPlan } from "../../utils/autoPlanner";
 import { fetchVisitorDemand, getHeatTier } from "../../utils/visitorDemand";
 import { getTourDetailUrl } from "../../utils/tourApi";
+import { getErrorMessage } from "../../utils/errorMessage";
 
 const CreatePlanCalendar = ({ open, setOpen, setDateList }) => {
   // 팝업
@@ -474,7 +475,7 @@ const CreatePlanPage = () => {
       }
       navigate("/");
     } catch (e) {
-      toast.error(e.response.data.msg);
+      toast.error(getErrorMessage(e));
       navigate("/");
     }
   };

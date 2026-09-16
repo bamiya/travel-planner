@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import Spinner from "../../Common/Spinner";
 import { useLikes } from "../../hooks/useLikes";
 import { getProfileImageUrl } from "../../utils/profileImage";
+import { getErrorMessage } from "../../utils/errorMessage";
 
 const CalendarPage = () => {
   const navigate = useNavigate();
@@ -89,7 +90,7 @@ const CalendarPage = () => {
         toast.success("댓글 추가 성공");
         setContent("");
       } catch (e) {
-        toast.error(e.response.data.msg);
+        toast.error(getErrorMessage(e));
       }
     }
   };

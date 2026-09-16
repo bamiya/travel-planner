@@ -35,7 +35,11 @@ axios.interceptors.response.use(
     return response;
   },
   async error => {
-    if(error.response.status === 401){
+    // 네트워크 단절/타임아웃처럼 서버 응답 자체가 없는 실패는 error.response가 없다.
+    // 가드 없이 .status를 읽으면 여기서 새 예외가 터지고, 그게 호출부의
+    // catch(e) { ...e.response... }까지 그대로 전파되어 에러 토스트조차 안 뜨는
+    // 완전히 조용한 실패로 이어진다.
+    if(error.response?.status === 401){
       try{
         await getAccessToken();
         return await axios.request(error.config);

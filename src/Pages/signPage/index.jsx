@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import CryptoJS from "crypto-js";
 import { toast } from "react-toastify";
+import { getErrorMessage } from "../../utils/errorMessage";
 
 const SignPage = () => {
   const location = useLocation();
@@ -56,7 +57,7 @@ const SignPage = () => {
         toast.success(data.data.msg);
         replace("/");
       } catch (e) {
-        toast.error(e.response.data.msg);
+        toast.error(getErrorMessage(e));
       }
     } else {
       toast.error("형식에 맞지 않는 값이 있습니다.");

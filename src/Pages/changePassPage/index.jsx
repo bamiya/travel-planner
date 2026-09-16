@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import CryptoJS from "crypto-js";
 import { toast } from "react-toastify";
+import { getErrorMessage } from "../../utils/errorMessage";
 
 const ChangePassPage = () => {
   const data = useLocation();
@@ -28,7 +29,7 @@ const ChangePassPage = () => {
         await axios.post("/passwordChange", { resetToken: data.state, pw: createHashedPassword });
         navigate("/login");
       } catch (e) {
-        toast.error(e.response.data.msg);
+        toast.error(getErrorMessage(e));
       }
     } else {
       toast.error("형식에 맞지 않는 값이 있습니다.");

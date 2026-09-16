@@ -15,21 +15,17 @@ export const EditTitle = styled.div`
 export const TitleBar = styled.div`
     width: 170px;
     height: 1px;
-    margin-left: 60px;
-    margin-top: 15px;
+    margin-top: 20px;
     background-color: var(--color-border);
-
-    @media (max-width: 768px) {
-        margin-left: auto;
-        margin-right: auto;
-    }
 `
 export const ProfileBox = styled.div`
     display: flex;
+    align-items: flex-start;
     table-layout: fixed;
     width: 800px;
     max-width: 100%;
     margin: 0 150px 200px ;
+    gap: 24px;
 
     @media (max-width: 768px) {
         flex-direction: column;
@@ -38,72 +34,102 @@ export const ProfileBox = styled.div`
     }
 `
 export const LeftProfileBox = styled.div`
-    width: 300px;
-    background-color: var(--color-primary-light);
-    border-radius: var(--radius-md) 0 0 var(--radius-md);
+    width: 260px;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    padding: 44px 20px 28px;
+    background: linear-gradient(180deg, var(--color-primary-light) 0%, var(--color-white) 100%);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-card);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
     @media (max-width: 768px) {
         width: 100%;
-        box-sizing: border-box;
-        padding-bottom: 20px;
-        border-radius: var(--radius-md) var(--radius-md) 0 0;
     }
 `
-export const LeftContent = styled.div`
-    width: 120px;
-    font-size: 16px;
-    margin: 40px 90px 30px;
-    text-align: center;
+export const AvatarWrap = styled.div`
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin-bottom: 16px;
+`
+export const PhotoEditLabel = styled.label`
+    position: absolute;
+    right: -2px;
+    bottom: -2px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: var(--color-primary);
+    color: white;
+    box-shadow: var(--shadow-hover);
     cursor: pointer;
-    color: ${props => props.click ? "var(--color-primary-dark)" : "var(--color-text-muted)"};
-    border-bottom: ${props => {
-        if(props.click) return "2px solid var(--color-primary)"
-        else return "2px solid transparent"
-    }};
-
-    font-weight: ${props => {
-        if(props.click) return "700"
-        else return "500"
-    }};
     transition: var(--transition-base);
 
-    @media (max-width: 768px) {
-        width: auto;
-        margin: 20px auto;
+    &:hover {
+        background-color: var(--color-primary-dark);
+    }
+
+    svg {
+        width: 14px;
+        height: 14px;
     }
 `
-export const MemberInforBox = styled.div`
-    height: 600px;
-    margin-left: 100px;
-    padding: 20px 17px 0;
+export const MyProfileBox = styled.div`
+    flex: 1;
+    min-width: 0;
+    padding: 32px 36px 36px;
     border-radius: var(--radius-md);
-    box-shadow: var(--shadow-card);
+    box-shadow: var(--shadow-hover);
     border: 1px solid var(--color-border);
     background-color: var(--color-white);
     box-sizing: border-box;
 
     @media (max-width: 768px) {
-        height: auto;
         margin: 20px 0 0;
-        padding-bottom: 30px;
+        padding: 28px 20px 30px;
     }
+`
+export const SectionTitle = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--color-text);
+
+    &::before {
+        content: "";
+        display: inline-block;
+        width: 4px;
+        height: 18px;
+        border-radius: 999px;
+        background-color: var(--color-primary);
+    }
+`
+export const SectionDivider = styled.div`
+    height: 1px;
+    margin: 8px 0 32px;
+    background-color: var(--color-border);
 `
 export const ProfileImg = styled.img`
     width: 100px;
     height: 100px;
-    border-radius: 50px;
+    border-radius: 50%;
+    object-fit: cover;
     box-shadow: var(--shadow-card);
     border: 3px solid var(--color-white);
-    margin: 100px 100px 10px;
-
-    @media (max-width: 768px) {
-        display: block;
-        margin: 40px auto 10px;
-    }
+    box-sizing: border-box;
 `
 export const MemberContentBox = styled.div`
-    margin: 20px 0 0;
-    padding: 30px 30px 0;
+    margin-top: 20px;
 `
 export const MemberEdit = styled.div`
     width: 150px;
@@ -120,58 +146,10 @@ export const MemberName = styled.div`
     color: var(--color-text);
     text-align:center;
 `
-export const BasicInformation = styled.div`
-    margin-bottom: 20px;
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--color-text);
-    text-align:center;
-`
-export const BasicInformationBox = styled.div`
-    height: 60px;
-    display: flex;
-    margin: 0 30px;
-`
-export const BasicInformationImg = styled.img`
-    width: 56px;
-    height: 56px;
-    border-radius: 50px;
-    margin-top: 15px;
-    box-shadow: var(--shadow-card);
-`
-export const BasicInformationName =styled.div`
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--color-text);
-`
-export const BasicInformationEamil = styled.div`
-    font-size: 14px;
-    color: var(--color-text-muted);
-`
-export const BasicInformationEamilBox = styled.div`
-    margin-top: 10px;
-    margin-left: 10px;
-`
 export const Memberemail = styled.div`
     text-align:center;
     font-size: 14px;
     color: var(--color-text-muted);
-`
-export const MyProfileBox = styled.div`
-    height: 600px;
-    margin-left: 100px;
-    padding: 20px 17px 0;
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-card);
-    border: 1px solid var(--color-border);
-    background-color: var(--color-white);
-    box-sizing: border-box;
-
-    @media (max-width: 768px) {
-        height: auto;
-        margin: 20px 0 0;
-        padding-bottom: 30px;
-    }
 `
 export const Content = styled.input`
     margin: 0;
@@ -199,7 +177,7 @@ export const EditBtn = styled.button`
     border: 0;
     width: 120px;
     height: 42px;
-    margin: 45px 150px;
+    margin: 28px 0 0;
     font-size: 15px;
     font-weight: 700;
     background: var(--color-primary);
@@ -213,7 +191,7 @@ export const EditBtn = styled.button`
     }
 
     @media (max-width: 768px) {
-        margin: 30px auto;
+        margin: 28px auto 0;
         display: block;
     }
 `
@@ -221,7 +199,7 @@ export const BasicInfoBtn = styled.button`
     border: 0;
     width: 120px;
     height: 42px;
-    margin: 85px 150px ;
+    margin: 28px 0 0;
     font-size: 15px;
     font-weight: 700;
     background: var(--color-primary);
@@ -235,14 +213,13 @@ export const BasicInfoBtn = styled.button`
     }
 
     @media (max-width: 768px) {
-        margin: 30px auto;
+        margin: 28px auto 0;
         display: block;
     }
 `
 export const DeleteBtn = styled.button`
     border: none;
-    margin-top: 30px;
-    margin-left: 200px;
+    margin-top: 20px;
     background-color:transparent;
     color: var(--color-text-muted);
     font-weight: 600;
@@ -264,35 +241,10 @@ export const BtnBox = styled.div`
     width: 100%;
 `
 export const BasicInforContentBox = styled.div`
-    margin: 20px 0 0;
-    padding: 20px 30px 0;
+    margin-top: 20px;
 `
 export const ProfileImgInput = styled.input`
     display: none ;
-`
-export const LabelBox = styled.label`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background-color: var(--color-primary);
-    color: white;
-    box-shadow: var(--shadow-card);
-    cursor: pointer;
-    margin-top: 5px;
-    margin-left: 70px;
-    transition: var(--transition-base);
-
-    &:hover {
-        background-color: var(--color-primary-dark);
-    }
-
-    svg {
-        width: 15px;
-        height: 15px;
-    }
 `
 
 export const ErrorMessage = styled.label`
@@ -307,5 +259,3 @@ export const WarningMessage = styled.span`
         return props.check ? "var(--color-success)" : "var(--color-accent)"
     }}
 `
-
-//사진변경가능하게 해야함

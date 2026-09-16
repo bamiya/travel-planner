@@ -10,6 +10,7 @@ import Spinner from "../../Common/Spinner";
 import { useLikes } from "../../hooks/useLikes";
 import { getProfileImageUrl } from "../../utils/profileImage";
 import { getTourDetailUrl } from "../../utils/tourApi";
+import { getErrorMessage } from "../../utils/errorMessage";
 
 const InformationPage = () => {
   const navigate = useNavigate();
@@ -136,7 +137,7 @@ const InformationPage = () => {
         toast.success("댓글 추가 성공");
         setContent("");
       } catch (e) {
-        toast.error(e.response.data.msg);
+        toast.error(getErrorMessage(e));
       }
     }
   };

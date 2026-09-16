@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import CryptoJS from "crypto-js";
 import { toast } from "react-toastify";
+import { getErrorMessage } from "../../utils/errorMessage";
 
 const KAKAO_CLIENT_ID = "0a61f9efbdac3933e6a14ed6f553bd00";
 const KAKAO_REDIRECT_URI = "http://localhost:3000/login";
@@ -81,7 +82,7 @@ const LoginPage = () => {
       localStorage.setItem("refresh_token", data.data.data.refresh_token);
       navigate("/");
     } catch (e) {
-      toast.error(e.response.data.msg);
+      toast.error(getErrorMessage(e));
       navigate("/login");
     }
   };
