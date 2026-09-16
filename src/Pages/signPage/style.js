@@ -102,6 +102,35 @@ export const UserGreenBtn = styled.button`
     }
 `
 
+export const AgreeBox = styled.label`
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    max-width: 350px;
+    margin-top: 16px;
+    padding: 12px 14px;
+    background-color: var(--color-bg);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    color: var(--color-text);
+    cursor: pointer;
+`
+
+export const AgreeCheckbox = styled.input.attrs({ type: "checkbox" })`
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    accent-color: var(--color-primary);
+    cursor: pointer;
+`
+
+export const AgreeLink = styled.a`
+    color: var(--color-primary-dark);
+    font-weight: 700;
+    text-decoration: underline;
+`
+
 export const WarningMessage = styled.span`
     font-size: 13px;
     font-weight: 600;

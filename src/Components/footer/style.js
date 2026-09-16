@@ -41,3 +41,21 @@ export const Copyright = styled.div`
     color: rgba(255, 255, 255, 0.45);
     font-size: 13px;
 `
+
+export const LinkBox = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 18px;
+`
+
+export const Link = styled.div`
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-base);
+
+    &:hover {
+        color: var(--color-white);
+    }
+`

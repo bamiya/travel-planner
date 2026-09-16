@@ -18,6 +18,8 @@ import LoginPage from "./Pages/loginPage";
 import SignPage from "./Pages/signPage";
 import FindPassPage from "./Pages/findPassPage";
 import ChangePassPage from "./Pages/changePassPage";
+import PrivacyPolicyPage from "./Pages/privacyPolicyPage";
+import TermsPage from "./Pages/termsPage";
 import ScrollToTop from "./scrollToTop";
 import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
 import { getAccessToken } from "./Data";
@@ -109,6 +111,8 @@ const App = () => {
             <Route path="/sign" element={<SignPage />}/>
             <Route path="/findPass" element={<FindPassPage />}/>
             <Route path="/changePass" element={<ChangePassPage />}/>
+            <Route path="/privacyPolicy" element={<PrivacyPolicyPage />}/>
+            <Route path="/terms" element={<TermsPage />}/>
             <Route path="/calendar" element={<CalendarPage/>}/>
             <Route path="/information" element={<InformationPage/>}/>
             <Route path="/travel" element={<TravelPage/>}/>

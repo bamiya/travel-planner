@@ -15,6 +15,7 @@ const SignPage = () => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [birth, setBirth] = useState("");
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   //유효성 검사
   const [isEmail, setIsEmail] = useState(true);
@@ -41,6 +42,9 @@ const SignPage = () => {
   }, []);
 
   const signUp = async () => {
+    if (!agreedToTerms) {
+      return toast.error("이용약관 및 개인정보 수집·이용에 동의해주세요.");
+    }
     if (isEmail && isPassword && isPasswordConfirm && isName && isPhone && isBirth) {
       try {
         const createHashedPassword = CryptoJS.SHA256(password).toString(CryptoJS.enc.Base64);
@@ -189,6 +193,28 @@ const SignPage = () => {
           <Styles.Input placeholder="예: 19990909" onKeyPress={handleOnKeyPress} onChange={(e) => onBirth(e)} value={birth || ""} maxLength={10} />
           <Styles.WarningMessage check={isBirth}>{birthMessage}</Styles.WarningMessage>
         </Styles.SignText2>
+
+        <Styles.AgreeBox>
+          <Styles.AgreeCheckbox checked={agreedToTerms} onChange={(e) => setAgreedToTerms(e.target.checked)} />
+          <span>
+            <Styles.AgreeLink
+              href={`${window.location.origin}${import.meta.env.BASE_URL}terms`}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}>
+              이용약관
+            </Styles.AgreeLink>{" "}
+            및{" "}
+            <Styles.AgreeLink
+              href={`${window.location.origin}${import.meta.env.BASE_URL}privacyPolicy`}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}>
+              개인정보 수집·이용
+            </Styles.AgreeLink>
+            에 동의합니다. (필수)
+          </span>
+        </Styles.AgreeBox>
 
         <Styles.UserGreenBtn onClick={() => signUp()}>가입하기</Styles.UserGreenBtn>
       </Styles.ContentBox>
