@@ -8,6 +8,14 @@ import { toast } from "react-toastify";
 
 const KAKAO_CLIENT_ID = "0a61f9efbdac3933e6a14ed6f553bd00";
 const KAKAO_REDIRECT_URI = "http://localhost:3000/login";
+const KAKAO_OAUTH_STATE_KEY = "kakao_oauth_state";
+
+// CSRF 방지용 state 값 생성 (공격자가 자기 코드로 남의 브라우저에 로그인 요청을 흘려넣는 것을 막음)
+const generateOAuthState = () => {
+  const bytes = new Uint8Array(16);
+  window.crypto.getRandomValues(bytes);
+  return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+};
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -15,25 +23,27 @@ const LoginPage = () => {
   const [pw, setPw] = useState("");
 
   const kakaoLogin = () => {
-    window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_CLIENT_ID}&redirect_uri=${KAKAO_REDIRECT_URI}&response_type=code`;
+    const state = generateOAuthState();
+    sessionStorage.setItem(KAKAO_OAUTH_STATE_KEY, state);
+    window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_CLIENT_ID}&redirect_uri=${KAKAO_REDIRECT_URI}&response_type=code&state=${state}`;
   };
 
   const getToken = async () => {
-    const code = new URL(window.location.href).searchParams.get("code");
-    const params = {
-      client_id: KAKAO_CLIENT_ID,
-      redirect_uri: KAKAO_REDIRECT_URI,
-      client_secret: "K2uqygqk3ddG8UFgrIFdE76bKg9SpEwT",
-      code: code,
-      grant_type: "authorization_code",
-    };
+    // 인증코드(code)만 백엔드로 전달한다. code→액세스토큰 교환은 client_secret이 필요한
+    // 단계라 백엔드(서버 사이드)에서 처리한다 - 비밀키를 프론트 번들에 노출하지 않기 위함.
+    const url = new URL(window.location.href);
+    const code = url.searchParams.get("code");
+    const state = url.searchParams.get("state");
     if (code !== null) {
+      const expectedState = sessionStorage.getItem(KAKAO_OAUTH_STATE_KEY);
+      sessionStorage.removeItem(KAKAO_OAUTH_STATE_KEY);
+      if (!expectedState || state !== expectedState) {
+        toast.error("잘못된 접근입니다. 다시 로그인해주세요.");
+        navigate("/login");
+        return;
+      }
       try {
-        const token = await axios.get("https://kauth.kakao.com/oauth/token", {
-          params: params,
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        });
-        const userInfo = await axios.get("/kakaoLogin", { params: { token: token.data.access_token } });
+        const userInfo = await axios.get("/kakaoLogin", { params: { code } });
         if (userInfo.status === 200) {
           if (userInfo.data.data.isUser === "N") {
             // 현재 DB에 회원이 없음
