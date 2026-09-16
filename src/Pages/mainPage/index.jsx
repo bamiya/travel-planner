@@ -7,6 +7,7 @@ import axios from "axios";
 import { HeartOutlined, HeartFilled } from "@ant-design/icons";
 import { toast } from "react-toastify";
 import Spinner from "../../Common/Spinner";
+import { useLikes } from "../../hooks/useLikes";
 
 const MainPage = () => {
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ const MainPage = () => {
   const [searchKeyword, setSearchKeyword] = useState();
   const [searcWord, setSearchWord] = useState();
   const [content, setContent] = useState([]);
-  const [like, setLike] = useState([]);
+  const { isLiked, toggleLike, reloadLikes } = useLikes("P");
   const [isLoding, setIsLoding] = useState(false);
 
   useEffect(() => {
@@ -24,19 +25,19 @@ const MainPage = () => {
   }, []);
 
   const reload = async () => {
-    // getUserPlan/getLikes는 비동기라 기다리지 않고 setIsLoding(true)를
+    // getUserPlan/reloadLikes는 비동기라 기다리지 않고 setIsLoding(true)를
     // 바로 호출하면 실제로는 데이터가 오기 전에 로딩이 끝난 것처럼 보인다.
     // 실패하더라도 finally에서 로딩을 꺼줘야 스피너가 영원히 돌지 않는다.
     setIsLoding(false);
     try {
-      await Promise.all([getUserPlan(), getLikes()]);
+      await Promise.all([getUserPlan(), reloadLikes()]);
     } finally {
       setIsLoding(true);
     }
   };
   const getUserPlan = async () => {
     // DB에 있는 플랜데이터
-    const data = await axios.get("http://localhost:8080/getPlan");
+    const data = await axios.get("/getPlan");
     if (data) {
       setContent(data.data.data.sort((a, b) => b.likeCount - a.likeCount).slice(0, data.data.data.length < 5 ? data.data.data.length : 5));
     } else {
@@ -106,28 +107,8 @@ const MainPage = () => {
     }
   };
 
-  const getLikes = async () => {
-    try {
-      const data = await axios.post("http://localhost:8080/getLikes");
-      setLike(data.data.data.filter((e) => e.type === "P"));
-    } catch (e) {
-      setLike([]);
-    }
-  };
-  const addLikes = async (id) => {
-    try {
-      if (like.filter((e) => Number(e.id) === Number(id)).length) {
-        await axios.delete(`http://localhost:8080/removeLikes/${id}?type=P`);
-      } else {
-        await axios.post("http://localhost:8080/addLikes", {
-          id: id,
-          type: "P",
-        });
-      }
-      reload();
-    } catch (e) {
-      toast.info("로그인 후 이용해 주세요.");
-    }
+  const addLikes = (id) => {
+    toggleLike(id, () => reload());
   };
 
   const infoMove = (e) => {
@@ -256,7 +237,7 @@ const MainPage = () => {
                           <Styles.SliderInfoText>{el.date}</Styles.SliderInfoText>
                           <Styles.SliderInfoBottomBox>
                             <Styles.SliderInfoBox>
-                              {like.filter((e) => Number(e.id) === Number(el.id)).length ? (
+                              {isLiked(el.id) ? (
                                 <HeartFilled style={{ color: "red", fontSize: "30px" }} onClick={() => addLikes(el.id)} />
                               ) : (
                                 <HeartOutlined style={{ fontSize: "30px" }} onClick={() => addLikes(el.id)} />

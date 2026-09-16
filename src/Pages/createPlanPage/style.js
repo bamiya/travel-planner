@@ -61,9 +61,12 @@ export const BtnBox = styled.div`
     padding: 0 28px;
 `
 
-export const Btn = styled.div`
+export const Btn = styled.button.attrs({ type: "button" })`
     display: inline-flex;
     box-sizing: border-box;
+    border: none;
+    outline: none;
+    font-family: inherit;
     padding: 9px 18px;
     height: 38px;
     border-radius: 999px;
@@ -277,7 +280,10 @@ export const ContentBox = styled.div`
     padding: 40px 20px;
 `
 
-export const OpenBtn = styled.div`
+export const OpenBtn = styled.button.attrs({ type: "button" })`
+    border: none;
+    outline: none;
+    font-family: inherit;
     width: 44px;
     height: 44px;
     background-color: var(--color-white);
@@ -321,7 +327,10 @@ export const TravelDate = styled.div`
     white-space: nowrap;
 `
 
-export const AutoPlanBtn = styled.div`
+export const AutoPlanBtn = styled.button.attrs({ type: "button" })`
+    border: none;
+    outline: none;
+    font-family: inherit;
     display: inline-flex;
     align-items: center;
     width: fit-content;
@@ -562,7 +571,10 @@ export const PlanAddBtnBox = styled.div`
     justify-content: center;
 `
 
-export const PlanAddBtn = styled.div`
+export const PlanAddBtn = styled.button.attrs({ type: "button" })`
+    border: none;
+    outline: none;
+    font-family: inherit;
     width: 104px;
     height: 32px;
     border-radius: 999px;
@@ -585,7 +597,11 @@ export const PlanAddBtn = styled.div`
     }
 `
 
-export const CloseBtn = styled.div`
+export const CloseBtn = styled.button.attrs({ type: "button" })`
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: inherit;
     width: 32px;
     height: 32px;
     display: flex;
@@ -622,7 +638,10 @@ export const CategoryTabBox = styled.div`
     gap: 8px;
     margin-bottom: 15px;
 `
-export const CategoryTab = styled.div`
+export const CategoryTab = styled.button.attrs({ type: "button" })`
+    border: none;
+    outline: none;
+    font-family: inherit;
     padding: 6px 14px;
     border-radius: var(--radius-lg);
     font-size: 13px;
@@ -662,7 +681,10 @@ export const TravelInput = styled.input`
     }
 `
 
-export const TravelInputBtn = styled.div`
+export const TravelInputBtn = styled.button.attrs({ type: "button" })`
+    border: none;
+    outline: none;
+    font-family: inherit;
     width: 60px;
     height: 40px;
     background-color: var(--color-primary);
@@ -710,7 +732,10 @@ export const ListTitle = styled.div`
     color: var(--color-text);
 `
 
-export const ListFilter = styled.div`
+export const ListFilter = styled.button.attrs({ type: "button" })`
+    border: none;
+    outline: none;
+    font-family: inherit;
     padding: 6px 14px;
     border-radius: var(--radius-lg);
     background-color: var(--color-bg);
@@ -736,7 +761,7 @@ export const ItemBox = styled.div`
     align-items: center;
 `
 
-export const ItemBtn = styled.button`
+export const ItemBtn = styled.button.attrs({ type: "button" })`
     width: 60px;
     height: 25px;
     border-radius: 999px;
@@ -817,7 +842,11 @@ export const FilterBtnBox = styled.div`
     justify-content: flex-end;
 `
 
-export const FilterBtn = styled.div`
+export const FilterBtn = styled.button.attrs({ type: "button" })`
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: inherit;
     margin: 0 15px;
     cursor: pointer;
     font-size: 13px;
@@ -828,7 +857,7 @@ export const FilterBtn = styled.div`
     }
 `
 
-export const PlanApplyBtn = styled.button`
+export const PlanApplyBtn = styled.button.attrs({ type: "button" })`
     border:  none;
     outline: none;
     width: 180px;
@@ -860,7 +889,7 @@ const pinSvg = (color) =>
         `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${color}"><path d="M12 2C8.13 2 5 5.24 5 9.2 5 14.6 12 22 12 22s7-7.4 7-12.8C19 5.24 15.87 2 12 2zm0 9.7a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>`
     )}`
 
-export const LocationImg = styled.button`
+export const LocationImg = styled.button.attrs({ type: "button" })`
     border: none;
     outline: none;
     border-radius: 50%;

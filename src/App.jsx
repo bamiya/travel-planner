@@ -25,6 +25,10 @@ import axios from "axios";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+// 모든 axios 호출이 "http://localhost:8080/xxx"를 매번 하드코딩하지 않고
+// 상대경로("/xxx")만 쓰도록 기준 주소를 한 곳에서 관리한다.
+axios.defaults.baseURL = "http://localhost:8080";
+
 axios.interceptors.response.use(
   response => {
     // console.log("interceptors: ", response);

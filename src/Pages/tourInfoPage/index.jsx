@@ -7,6 +7,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate, useLocation } from "react-router-dom";
 import Spinner from "../../Common/Spinner";
+import { useLikes } from "../../hooks/useLikes";
 
 const InformationPage = () => {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ const InformationPage = () => {
   const [content, setContent] = useState("");
   const [comments, setComments] = useState([]);
   const [dibs, setDibs] = useState(false); // 찜 이벤트를 할때마다 렌더링이 되지 않아 업데이트가 안됨 따라서 생성
-  const [like, setLike] = useState([]);
+  const { isLiked, toggleLike, reloadLikes } = useLikes("T");
 
   useEffect(() => {
 
@@ -113,7 +114,7 @@ const InformationPage = () => {
       // 좋아요 수 조회(백엔드)가 실패해도 이미 받아온 본문 정보는 그대로 보여줘야 한다.
       setInfoData({ ...data[0], likeCount: 0 });
       try {
-        const likeCount = await axios.get(`http://localhost:8080/getLikeCount/${data[0].contentid}`);
+        const likeCount = await axios.get(`/getLikeCount/${data[0].contentid}`);
         setInfoData((prev) => ({ ...prev, likeCount: likeCount.data.data }));
       } catch (e) {
         // 좋아요 수는 부가 정보라 실패해도 무시한다.
@@ -130,7 +131,7 @@ const InformationPage = () => {
     }
     if (window.confirm("등록하시겠습니까?")) {
       try {
-        await axios.post("http://localhost:8080/addComment", { id, content, type: "T" });
+        await axios.post("/addComment", { id, content, type: "T" });
         getcontent();
         toast.success("댓글 추가 성공");
         setContent("");
@@ -142,11 +143,11 @@ const InformationPage = () => {
 
   useEffect(() => {
     getcontent();
-    getLikes();
+    reloadLikes();
   }, [location.search]);
 
   const getcontent = async () => {
-    const data = await axios.get(`http://localhost:8080/getComment?id=${location.search.split("=")[1]}&type=T`);
+    const data = await axios.get(`/getComment?id=${location.search.split("=")[1]}&type=T`);
     setComments(data.data.data.filter((e) => e.type === "T"));
   };
 
@@ -170,32 +171,11 @@ const InformationPage = () => {
     setDibs(!dibs);
   };
 
-  //좋아요 불러오기
-  const getLikes = async () => {
-    try {
-      const data = await axios.post("http://localhost:8080/getLikes");
-      setLike(data.data.data.filter((e) => e.type === "T"));
-    } catch (e) {
-      // 로그인 전이거나 토큰이 유효하지 않으면 좋아요 표시 없이 진행한다.
-      setLike([]);
-    }
-  };
-
   // 좋아요 추가
-  const addLikes = async (id) => {
-    try {
-      if (like.filter((e) => e.id === id).length) {
-        // 있으면
-        await axios.delete(`http://localhost:8080/removeLikes/${id}?type=T`);
-        setInfoData({ ...infoData, likeCount: infoData.likeCount - 1 });
-      } else {
-        await axios.post("http://localhost:8080/addLikes", { id: id, type: "T" });
-        setInfoData({ ...infoData, likeCount: infoData.likeCount + 1 });
-      }
-      getLikes();
-    } catch (e) {
-      toast.info("로그인 후 이용해 주세요.");
-    }
+  const addLikes = (id) => {
+    toggleLike(id, (wasLiked) => {
+      setInfoData((prev) => ({ ...prev, likeCount: prev.likeCount + (wasLiked ? -1 : 1) }));
+    });
   };
 
   if (!infoData) {
@@ -217,7 +197,7 @@ const InformationPage = () => {
         </Styles.TitleGroup>
         <Styles.LikeBox>
           <Styles.HeartBox>
-            {like.filter((e) => e.id === location.search.split("=")[1]).length ? (
+            {isLiked(location.search.split("=")[1]) ? (
               <HeartFilled style={{ color: "var(--color-accent)", fontSize: "26px" }} onClick={() => addLikes(location.search.split("=")[1])} />
             ) : (
               <HeartOutlined style={{ color: "var(--color-text-muted)", fontSize: "26px" }} onClick={() => addLikes(location.search.split("=")[1])} />

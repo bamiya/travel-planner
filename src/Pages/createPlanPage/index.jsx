@@ -90,7 +90,7 @@ const CreatePlanPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [isModelOpen, setIsModelOpen] = useState(true); //날짜 모달
+  const [isModalOpen, setIsModalOpen] = useState(true); //날짜 모달
   const [dateList, setDateList] = useState();
 
   // AI 자동 플래너 (목적지 키워드만 주면 TourAPI 데이터로 일정을 규칙 기반으로 채워준다)
@@ -126,28 +126,28 @@ const CreatePlanPage = () => {
 
   //박스를 움직이게 하는 state
   const [controlOpen, setControlOpen] = useState(false); // Control
-  const [travelOpen, settravelOpen] = useState(false); // Travel
+  const [travelOpen, setTravelOpen] = useState(false); // Travel
 
   const [update, setUpdate] = useState(null);
 
   // 추천 여행지 페이지네이션
   const [page1, setPage1] = useState(1);
   const [itemsCount] = useState(6);
-  const [totalItemsCount1, setStotalItemCount1] = useState(50); 
+  const [totalItemsCount1, setTotalItemsCount1] = useState(50); 
 
   // 찜한 여행지 페이지네이션
   const [page2, setPage2] = useState(1);
   const [itemsCount2] = useState(6);
-  const [totalItemsCount2, setStotalItemCount2] = useState(50); 
+  const [totalItemsCount2, setTotalItemsCount2] = useState(50); 
 
   // 페이지 이동 시 마커 삭제
   const pagingHook = useRef(false);
 
   // 마커 클릭 시 지도
   const [coordinate, setCoordinate] = useState([]); // 좌표
-  const [tourMakerSelect0, setTourMakerSelect0] = useState(); // 추가한 관광지 지도 마커
-  const [tourMakerSelect1, setTourMakerSelect1] = useState(); // 전체 관광지 지도 마커
-  const [tourMakerSelect2, setTourMakerSelect2] = useState(); // 찜하기 관광지 지도 마커
+  const [dayMarkerOpen, setDayMarkerOpen] = useState(); // 추가한 관광지 지도 마커
+  const [searchMarkerOpen, setSearchMarkerOpen] = useState(); // 전체 관광지 지도 마커
+  const [dibsMarkerOpen, setDibsMarkerOpen] = useState(); // 찜하기 관광지 지도 마커
 
   // 관광지
   // TourAPI contentTypeId: 12 관광지 / 39 음식점 / 32 숙박
@@ -179,7 +179,6 @@ const CreatePlanPage = () => {
   const [tours, setTours] = useState([]); // 키워드 검색 결과 관광지
   const visibleTours = selectedCats.length === 0 ? tours : tours.filter((t) => selectedCats.includes(t.cat1));
   const [cart, setCart] = useState([]); // 찜
-  const [tourSelect, setTourSelect] = useState([]); // 필요없는데 필요함..? 렌더링안됨
   const [dayList, setDayList] = useState(); // 총 일정목록
 
   // 방금 추가한 장소 근처의 다른 가볼만한 곳 추천 (TourAPI 위치기반 조회, tourInfoPage
@@ -227,7 +226,7 @@ const CreatePlanPage = () => {
   // 수정인지 생성인지 구분
   useEffect(() => {
     if (location.state) {
-      setIsModelOpen(false);
+      setIsModalOpen(false);
       setIsUpdate(true);
       const date = location.state.updateData.date.split("~");
       const dateArr = [];
@@ -435,7 +434,7 @@ const CreatePlanPage = () => {
 
   useEffect(() => {
     if (pagingHook.current) {
-      setTourMakerSelect1(Array(totalItemsCount1).fill(false));
+      setSearchMarkerOpen(Array(totalItemsCount1).fill(false));
     } else {
       pagingHook.current = true;
     }
@@ -443,28 +442,11 @@ const CreatePlanPage = () => {
 
   useEffect(() => {
     if (pagingHook.current) {
-      setTourMakerSelect2(Array(totalItemsCount2).fill(false));
+      setDibsMarkerOpen(Array(totalItemsCount2).fill(false));
     } else {
       pagingHook.current = true;
     }
   }, [page2]);
-
-  useEffect(() => {
-    if (pagingHook.current) {
-      setTourMakerSelect1(Array(totalItemsCount1).fill(false));
-      setTourMakerSelect2(Array(totalItemsCount2).fill(false));
-    } else {
-      pagingHook.current = true;
-    }
-  }, [page2]);
-
-  useEffect(() => {
-
-  }, [page1, itemsCount]);
-
-  useEffect(() => {
-
-  }, [page2, itemsCount2]);
 
   useEffect(() => {
     if (dayList && location.state) {
@@ -485,9 +467,9 @@ const CreatePlanPage = () => {
     // 플랜
     try {
       if (isUpdate) {
-        await axios.put("http://localhost:8080/updatePlan", { ...el, id: `${location.state.updateData.id}` });
+        await axios.put("/updatePlan", { ...el, id: `${location.state.updateData.id}` });
       } else {
-        await axios.post("http://localhost:8080/createPlan", el);
+        await axios.post("/createPlan", el);
       }
       navigate("/");
     } catch (e) {
@@ -499,20 +481,20 @@ const CreatePlanPage = () => {
   const cancelDayEdit = (idx) => {
     setTourSelect([]);
     setUpdate(null);
-    settravelOpen(false);
-    setTourMakerSelect0(Array(dayList[idx - 1][1].length).fill(false)); // 취소 시 마커 초기화
+    setTravelOpen(false);
+    setDayMarkerOpen(Array(dayList[idx - 1][1].length).fill(false)); // 취소 시 마커 초기화
     setNearbyAnchor(null); // 다른 DAY의 추천이 남아있지 않도록 초기화
   };
 
   const onUpdate = (idx) => {
     if (update == null) {
       setUpdate(idx);
-      settravelOpen(true);
+      setTravelOpen(true);
       setNearbyAnchor(null);
       // addTour를 한 번도 안 거치고 바로 여러 개가 채워진 DAY(자동 플래너로 채운 경우 등)를
       // 처음 열 때, 마커 표시용 배열이 초기화 안 돼 있으면 렌더링이 깨진다.
-      setTourMakerSelect0(Array(dayList[idx - 1][1].length).fill(false));
-    } else if ((update !== null) & (update !== idx)) {
+      setDayMarkerOpen(Array(dayList[idx - 1][1].length).fill(false));
+    } else if (update !== null && update !== idx) {
       toast.error("현재 수정하고 있는 DAY가 있습니다.");
     } else {
       cancelDayEdit(idx);
@@ -539,11 +521,11 @@ const CreatePlanPage = () => {
         );
         const json = await response.json();
         const tourItems = json.response?.body?.items?.item ?? [];
-        setStotalItemCount1(tourItems.length);
+        setTotalItemsCount1(tourItems.length);
         setTours(tourItems);
         setTourStorage(tourItems);
         setPage1(1);
-        setTourMakerSelect1(Array(tourItems.length).fill(false));
+        setSearchMarkerOpen(Array(tourItems.length).fill(false));
       } catch (e) {
         toast.error("여행지 정보를 불러오지 못했습니다.");
       } finally {
@@ -564,9 +546,9 @@ const CreatePlanPage = () => {
         const json = await response.json();
         const tourItems = (json.response?.body?.items?.item ?? [])[0];
         Arr[i] = tourItems;
-        setStotalItemCount2(Arr.length);
+        setTotalItemsCount2(Arr.length);
         setPage2(1);
-        setTourMakerSelect2(Array(Arr.length).fill(false));
+        setDibsMarkerOpen(Array(Arr.length).fill(false));
       }
     } catch (e) {
       toast.error("찜한 여행지 정보를 불러오지 못했습니다.");
@@ -578,18 +560,16 @@ const CreatePlanPage = () => {
 
   const deleteDibs = (el) => {
     // 찜 삭제
-    for (let i = 0; i < cart.length; i++) {
-      if (cart[i].contentid === el.contentid) {
-        cart.splice(i, 1);
-        setCart(cart);
-        setTourSelect([...tourSelect]); // 렌더링 요청
-        const dibs = sessionStorage.getItem("dibs");
-        sessionStorage.setItem("dibs", dibs.replace(el.contentid + " ", ""));
-        setStotalItemCount2(totalItemsCount2 - 1);
-      }
-    }
-    if(!Math.ceil(cart.length / itemsCount2) - 1 === page2 || Math.ceil(cart.length / itemsCount2) - 1 === 0){
-      setPage2(Math.ceil(cart.length / itemsCount2));
+    const newCart = cart.filter((c) => c.contentid !== el.contentid);
+    setCart(newCart);
+    const dibs = sessionStorage.getItem("dibs");
+    sessionStorage.setItem("dibs", dibs.replace(el.contentid + " ", ""));
+    setTotalItemsCount2(newCart.length);
+
+    // 마지막 페이지의 항목을 지워서 지금 보던 페이지가 사라졌으면 마지막 유효 페이지로 되돌아간다.
+    const lastPage = Math.max(1, Math.ceil(newCart.length / itemsCount2));
+    if (page2 > lastPage) {
+      setPage2(lastPage);
     }
   };
 
@@ -599,8 +579,8 @@ const CreatePlanPage = () => {
     // contentType state가 아직 리렌더 전이라 옛 값을 참조하게 된다. 그래서 새 값을 직접 받는다.
     if (!keyword) {
       setTours(tourStorage);
-      setStotalItemCount1(tourStorage.length);
-      setTourMakerSelect1(Array(tourStorage.length).fill(false));
+      setTotalItemsCount1(tourStorage.length);
+      setSearchMarkerOpen(Array(tourStorage.length).fill(false));
       setPage1(1);
       return;
     }
@@ -623,8 +603,8 @@ const CreatePlanPage = () => {
       }
 
       setTours(tourItems);
-      setStotalItemCount1(tourItems.length);
-      setTourMakerSelect1(Array(tourItems.length).fill(false));
+      setTotalItemsCount1(tourItems.length);
+      setSearchMarkerOpen(Array(tourItems.length).fill(false));
       setPage1(1);
     } catch (e) {
       toast.error("검색 결과를 불러오지 못했습니다.");
@@ -662,23 +642,23 @@ const CreatePlanPage = () => {
     const newCoor = { lat: coor[0], lon: coor[1] };
     const num = coor[2];
     if (num == 0) {
-      const newArr = tourMakerSelect1.fill(false);
+      const newArr = searchMarkerOpen.fill(false);
       newArr[id] = true;
-      setTourMakerSelect1(Array(tourMakerSelect1.length).fill(false));
-      setTourMakerSelect2(Array(tourMakerSelect1.length).fill(false));
-      setTourMakerSelect0(newArr);
+      setSearchMarkerOpen(Array(searchMarkerOpen.length).fill(false));
+      setDibsMarkerOpen(Array(searchMarkerOpen.length).fill(false));
+      setDayMarkerOpen(newArr);
     } else if (num == 1) {
-      const newArr = tourMakerSelect1.fill(false);
+      const newArr = searchMarkerOpen.fill(false);
       newArr[id] = true;
-      setTourMakerSelect0(Array(tourMakerSelect1.length).fill(false));
-      setTourMakerSelect2(Array(tourMakerSelect1.length).fill(false));
-      setTourMakerSelect1(newArr);
+      setDayMarkerOpen(Array(searchMarkerOpen.length).fill(false));
+      setDibsMarkerOpen(Array(searchMarkerOpen.length).fill(false));
+      setSearchMarkerOpen(newArr);
     } else {
-      const newArr = tourMakerSelect2.fill(false);
+      const newArr = dibsMarkerOpen.fill(false);
       newArr[id] = true;
-      setTourMakerSelect0(Array(tourMakerSelect2.length).fill(false));
-      setTourMakerSelect1(Array(tourMakerSelect2.length).fill(false));
-      setTourMakerSelect2(newArr);
+      setDayMarkerOpen(Array(dibsMarkerOpen.length).fill(false));
+      setSearchMarkerOpen(Array(dibsMarkerOpen.length).fill(false));
+      setDibsMarkerOpen(newArr);
     }
     setCoordinate(newCoor);
   };
@@ -691,8 +671,7 @@ const CreatePlanPage = () => {
     const newStops = [...dayList[idx - 1][1], el];
     const newDayList = dayList.map((day, i) => (i === idx - 1 ? [day[0], newStops] : day));
     setDayList(newDayList);
-    setTourMakerSelect0(Array(newStops.length).fill(false));
-    setTourSelect([...tourSelect, el]);
+    setDayMarkerOpen(Array(newStops.length).fill(false));
     setNearbyAnchor(el); // 방금 추가한 장소 기준으로 "근처 가볼만한 곳" 갱신
   };
 
@@ -701,7 +680,6 @@ const CreatePlanPage = () => {
     const newStops = dayList[idx2 - 1][1].filter((_, i) => i !== idx);
     const newDayList = dayList.map((day, i) => (i === idx2 - 1 ? [day[0], newStops] : day));
     setDayList(newDayList);
-    setTourSelect([...tourSelect]);
   };
 
   const checkTitle = () => {
@@ -758,7 +736,7 @@ const CreatePlanPage = () => {
 
   return (
     <>
-      {!isUpdate && <CreatePlanCalendar open={isModelOpen} setOpen={setIsModelOpen} setDateList={setDateList} />}
+      {!isUpdate && <CreatePlanCalendar open={isModalOpen} setOpen={setIsModalOpen} setDateList={setDateList} />}
       <Styles.ModalCustom isOpen={autoPlanOpen} onRequestClose={() => setAutoPlanOpen(false)} style={{ overlay: { zIndex: "4", backgroundColor: "rgba(20, 20, 30, 0.5)" } }} ariaHideApp={false}>
         <Styles.ModalTitle>✨ 어디로 여행 가시나요?</Styles.ModalTitle>
         <Styles.AutoPlanDesc>목적지만 입력하면 근처 관광지·맛집으로 {dateList?.length ?? 0}일 일정을 자동으로 채워드려요.</Styles.AutoPlanDesc>
@@ -775,7 +753,7 @@ const CreatePlanPage = () => {
           <Styles.Btn onClick={() => setAutoPlanOpen(false)}>닫기</Styles.Btn>
         </Styles.BtnBox>
       </Styles.ModalCustom>
-      {isModelOpen ? null : (
+      {isModalOpen ? null : (
         <Styles.Wrapper>
           <Styles.PlanApplyBtn onClick={checkTitle}>적용하기</Styles.PlanApplyBtn>
           <Styles.OpenBtn
@@ -872,7 +850,7 @@ const CreatePlanPage = () => {
                                       <Styles.DayItemTitle onClick={() => window.open(`${window.location.origin}${import.meta.env.BASE_URL}information?id=${e.contentid}`)}>
                                         {e.title}
                                       </Styles.DayItemTitle>
-                                      <Styles.LocationImg open={tourMakerSelect0[id]} value={[e.mapy, e.mapx, 0]} onClick={(e) => moveMapLocation(e, id)} />
+                                      <Styles.LocationImg open={dayMarkerOpen[id]} value={[e.mapy, e.mapx, 0]} onClick={(e) => moveMapLocation(e, id)} />
                                     </Styles.DayItemTextBox>
                                     <Styles.DayItemSubTextBox>
                                       <Styles.DayItemText>{e.addr1.split(" ")[0] + e.addr1.split(" ")[1]}</Styles.DayItemText>
@@ -980,7 +958,7 @@ const CreatePlanPage = () => {
                                   <Styles.DayItemTitle onClick={() => window.open(`${window.location.origin}${import.meta.env.BASE_URL}information?id=${tour.contentid}`)}>
                                     {tour.title}
                                   </Styles.DayItemTitle>
-                                  <Styles.LocationImg open={tourMakerSelect1[id]} value={[tour.mapy, tour.mapx, 1]} onClick={(e) => moveMapLocation(e, id)} />
+                                  <Styles.LocationImg open={searchMarkerOpen[id]} value={[tour.mapy, tour.mapx, 1]} onClick={(e) => moveMapLocation(e, id)} />
                                 </Styles.DayItemTextBox>
                                 <Styles.ItemBox>
                                   <Styles.DayItemText>{tour.addr1}</Styles.DayItemText>
@@ -1069,7 +1047,7 @@ const CreatePlanPage = () => {
                                   <Styles.DayItemTitle onClick={() => window.open(`${window.location.origin}${import.meta.env.BASE_URL}information?id=${el.contentid}`)}>
                                     {el.title}
                                   </Styles.DayItemTitle>
-                                  <Styles.LocationImg open={tourMakerSelect2[idx]} value={[el.mapy, el.mapx, 2]} onClick={(e) => moveMapLocation(e, idx)} />
+                                  <Styles.LocationImg open={dibsMarkerOpen[idx]} value={[el.mapy, el.mapx, 2]} onClick={(e) => moveMapLocation(e, idx)} />
                                 </Styles.DayItemTextBox>
                                 <Styles.ItemBox>
                                   <Styles.DayItemText>{el.addr1}</Styles.DayItemText>

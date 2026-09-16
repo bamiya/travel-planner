@@ -13,7 +13,7 @@ const FindPassPage = () => {
 
   const sendCode = async () => {
     try {
-      await axios.post("http://localhost:8080/sendResetCode", { email });
+      await axios.post("/sendResetCode", { email });
       setStep("code");
     } catch (e) {
       toast.error(e.response.data.msg);
@@ -22,7 +22,7 @@ const FindPassPage = () => {
 
   const verifyCode = async () => {
     try {
-      const result = await axios.post("http://localhost:8080/verifyResetCode", { email, code });
+      const result = await axios.post("/verifyResetCode", { email, code });
       navigate("/changePass", { state: result.data.data.resetToken });
     } catch (e) {
       toast.error(e.response.data.msg);

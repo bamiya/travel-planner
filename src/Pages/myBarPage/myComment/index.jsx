@@ -30,7 +30,7 @@ const MyComments = () => {
 
   const getMyComments = async () => {
     try {
-      const data = await axios.get("http://localhost:8080/getMyComments");
+      const data = await axios.get("/getMyComments");
       const comments = data.data.data;
 
       const planList = comments.filter((c) => c.type === "P");
@@ -39,7 +39,7 @@ const MyComments = () => {
       const planResults = await Promise.all(
         planList.map(async (c) => {
           try {
-            const plan = await axios.get(`http://localhost:8080/getPlansById/${c.id}`);
+            const plan = await axios.get(`/getPlansById/${c.id}`);
             return { ...c, title: plan.data.data.title };
           } catch (e) {
             return { ...c, title: "삭제된 플랜" };

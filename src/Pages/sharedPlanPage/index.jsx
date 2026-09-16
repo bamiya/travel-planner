@@ -7,6 +7,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Spinner from "../../Common/Spinner";
+import { useLikes } from "../../hooks/useLikes";
 
 const SharedPlanPage = () => {
   const [clicked, setClicked] = useState("Latest");
@@ -14,7 +15,7 @@ const SharedPlanPage = () => {
   const [itemsCount] = useState(6); //페이지당 게시글 수
   const [content, setContent] = useState([]);
   const [contentStorage, setContentStorage] = useState([]);
-  const [like, setLike] = useState([]);
+  const { isLiked, toggleLike, reloadLikes } = useLikes("P");
   const [isLoding, setIsLoding] = useState(false);
   const [totalContent, setTotalContent] = useState(1);
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ const SharedPlanPage = () => {
   const reload = async () => {
     setIsLoding(false);
     try {
-      await Promise.all([getUserPlan(), getLikes()]);
+      await Promise.all([getUserPlan(), reloadLikes()]);
     } finally {
       setIsLoding(true);
     }
@@ -34,7 +35,7 @@ const SharedPlanPage = () => {
 
   const getUserPlan = async (pageNumber = 1) => {
     // DB에 있는 플랜데이터
-    const data = await axios.get("http://localhost:8080/getPlanWithPagination", { params: { page: pageNumber - 1, size: itemsCount } });
+    const data = await axios.get("/getPlanWithPagination", { params: { page: pageNumber - 1, size: itemsCount } });
     if (data) {
       setTotalContent(data.data.data[0]);
       if (clicked === "Popular") {
@@ -57,28 +58,8 @@ const SharedPlanPage = () => {
     navigate(`/calendar?id=${e.id}`);
   };
 
-  const getLikes = async () => {
-    try {
-      const data = await axios.post("http://localhost:8080/getLikes");
-      setLike(data.data.data.filter((e) => e.type === "P"));
-    } catch (e) {
-      setLike([]);
-    }
-  };
-  const addLikes = async (id) => {
-    try {
-      if (like.filter((e) => Number(e.id) === Number(id)).length) {
-        await axios.delete(`http://localhost:8080/removeLikes/${id}?type=P`);
-      } else {
-        await axios.post("http://localhost:8080/addLikes", {
-          id: id,
-          type: "P",
-        });
-      }
-      reload();
-    } catch (e) {
-      toast.info("로그인 후 이용해 주세요.");
-    }
+  const addLikes = (id) => {
+    toggleLike(id, () => reload());
   };
 
   const contentOrder = (e) => {
@@ -140,7 +121,7 @@ const SharedPlanPage = () => {
                       <Styles.LikeListfontBox>
                         <Styles.LikefontBox>
                           {/* {el.id} */}
-                          {like.filter((e) => Number(e.id) === Number(el.id)).length ? (
+                          {isLiked(el.id) ? (
                             // "1"
                             <HeartFilled style={{ color: "red", fontSize: "30px" }} onClick={() => addLikes(el.id)} />
                           ) : (

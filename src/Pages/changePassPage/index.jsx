@@ -25,7 +25,7 @@ const ChangePassPage = () => {
     if (isPassword && isPasswordConfirm) {
       try {
         const createHashedPassword = CryptoJS.SHA256(pw).toString(CryptoJS.enc.Base64);
-        await axios.post("http://localhost:8080/passwordChange", { resetToken: data.state, pw: createHashedPassword });
+        await axios.post("/passwordChange", { resetToken: data.state, pw: createHashedPassword });
         navigate("/login");
       } catch (e) {
         toast.error(e.response.data.msg);

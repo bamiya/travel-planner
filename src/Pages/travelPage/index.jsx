@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import Spinner from "../../Common/Spinner";
 import axios from "axios";
 import { searchNearbyFallback } from "../../utils/nearbySearch";
+import { useLikes } from "../../hooks/useLikes";
 
 
 const TravelPage = () => {
@@ -21,7 +22,7 @@ const TravelPage = () => {
   const pagingHook = useRef(false);
   const searchInputRef = useRef(null);
   const [dibs, setDibs] = useState(false); // 찜 이벤트를 할때마다 렌더링이 되지 않아 업데이트가 안됨 따라서 생성
-  const [like, setLike] = useState([]);
+  const { isLiked, toggleLike, reloadLikes } = useLikes("T");
   const [rendering, setRendering] = useState(false);
   const location = useLocation(); //mainPage 받아온 키워드 값
   const { state } = location;
@@ -50,7 +51,7 @@ const TravelPage = () => {
   }, [location.search, contentType]);
 
   useEffect(() => {
-    getLikes();
+    reloadLikes();
   }, []);
 
   useEffect(() => {
@@ -135,29 +136,6 @@ const TravelPage = () => {
     }
   };
 
-  const getLikes = async () => {
-    try {
-      const data = await axios.post("http://localhost:8080/getLikes");
-      setLike(data.data.data.filter((e) => e.type === "T"));
-    } catch (e) {
-      setLike([]);
-    }
-  };
-
-  const addLikes = async (id) => {
-    try {
-      if (like.filter((e) => e.id === id).length) {
-        // 있으면
-        await axios.delete(`http://localhost:8080/removeLikes/${id}?type=T`);
-      } else {
-        await axios.post("http://localhost:8080/addLikes", { id: id, type: "T" });
-      }
-      getLikes();
-    } catch (e) {
-      toast.info("로그인 후 이용해 주세요.");
-    }
-  };
-
   const goCreatePlanPage = () => {
     toast.info("로그인 후 이용해 주세요.");
     navigate("/login");
@@ -206,10 +184,10 @@ const TravelPage = () => {
                         <Styles.Tel>{tour.tel}</Styles.Tel>
                       </Styles.Txt>
                       <Styles.LikeBox>
-                        {like.filter((e) => e.id === tour.contentid).length ? (
-                          <HeartFilled style={{ color: "var(--color-accent)", fontSize: "26px" }} onClick={() => addLikes(tour.contentid)} />
+                        {isLiked(tour.contentid) ? (
+                          <HeartFilled style={{ color: "var(--color-accent)", fontSize: "26px" }} onClick={() => toggleLike(tour.contentid)} />
                         ) : (
-                          <HeartOutlined style={{ color: "var(--color-text-muted)", fontSize: "26px" }} onClick={() => addLikes(tour.contentid)} />
+                          <HeartOutlined style={{ color: "var(--color-text-muted)", fontSize: "26px" }} onClick={() => toggleLike(tour.contentid)} />
                         )}
                         <Styles.Like
                           onClick={() => onDibs(tour)}

@@ -21,7 +21,7 @@ const MyPage = ({ myPlanAction, sharedPlanAction, likeAction }) => {
 
   const getData = async () => {
     // DB에 있는 회원데이터를 불러옴
-    const data = await axios.get("http://localhost:8080/getUserInfo");
+    const data = await axios.get("/getUserInfo");
     if (!data) {
       getData();
     } else {

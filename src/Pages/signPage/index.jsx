@@ -44,7 +44,7 @@ const SignPage = () => {
       try {
         const createHashedPassword = CryptoJS.SHA256(password).toString(CryptoJS.enc.Base64);
         const createHashedPasswordConfirm = CryptoJS.SHA256(passwordCheck).toString(CryptoJS.enc.Base64);
-        const data = await axios.post("http://localhost:8080/register", {
+        const data = await axios.post("/register", {
           email,
           password: createHashedPassword,
           passwordCheck: createHashedPasswordConfirm,

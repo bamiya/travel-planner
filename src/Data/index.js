@@ -8,7 +8,7 @@ export const getAddressData = async () => {
 
 // 리프레쉬를 통해 액세스 토큰 다시 발급
 export const getAccessToken = async () => {
-  const data = await axios.post("http://localhost:8080/getTokenUsedRefreshToken", { refreshToken: localStorage.getItem("refresh_token") });
+  const data = await axios.post("/getTokenUsedRefreshToken", { refreshToken: localStorage.getItem("refresh_token") });
   sessionStorage.setItem("access_token", data.data.data.access_token);
   if (data.data.data.profileImg) {
     sessionStorage.setItem("profileImg", data.data.data.profileImg);

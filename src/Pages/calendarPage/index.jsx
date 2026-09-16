@@ -7,6 +7,7 @@ import axios from "axios";
 import { HeartOutlined, HeartFilled } from "@ant-design/icons";
 import { toast } from "react-toastify";
 import Spinner from "../../Common/Spinner";
+import { useLikes } from "../../hooks/useLikes";
 
 const CalendarPage = () => {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ const CalendarPage = () => {
   const [comments, setComments] = useState([]);
   const [content, setContent] = useState("");
   const [email, setEmail] = useState();
-  const [like, setLike] = useState([]);
+  const { isLiked, toggleLike, reloadLikes } = useLikes("P");
 
   useEffect(() => {
     if (location.search === "") {
@@ -31,12 +32,12 @@ const CalendarPage = () => {
   }, []);
 
   useEffect(() => {
-    getLikes();
+    reloadLikes();
   }, []);
 
   const getEmail = async () => {
     // DB에 있는 회원데이터를 불러옴
-    const data = await axios.get("http://localhost:8080/getUserInfo");
+    const data = await axios.get("/getUserInfo");
     if (!data) {
       getEmail();
     } else {
@@ -45,14 +46,14 @@ const CalendarPage = () => {
   };
 
   const getcontent = async () => {
-    const data = await axios.get(`http://localhost:8080/getComment?id=${location.search.split("=")[1]}&type=P`);
+    const data = await axios.get(`/getComment?id=${location.search.split("=")[1]}&type=P`);
     setComments(data.data.data.filter((e) => e.type === "P"));
   };
 
   const getUserPlanById = async (id) => {
     // DB에 있는 플랜데이터
     try {
-      const data = await axios.get(`http://localhost:8080/getPlansById/${id}`);
+      const data = await axios.get(`/getPlansById/${id}`);
       setDateList(data.data.data);
       let count = 0;
       let newArr = [];
@@ -86,7 +87,7 @@ const CalendarPage = () => {
     }
     if (window.confirm("등록하시겠습니까?")) {
       try {
-        await axios.post("http://localhost:8080/addComment", { id, content, type: "P" });
+        await axios.post("/addComment", { id, content, type: "P" });
         getcontent();
         toast.success("댓글 추가 성공");
         setContent("");
@@ -102,36 +103,17 @@ const CalendarPage = () => {
 
   const onShareBtn = async () => {
     try {
-      await axios.put("http://localhost:8080/updateSharePlan", { id: location.search.split("=")[1] });
+      await axios.put("/updateSharePlan", { id: location.search.split("=")[1] });
       getUserPlanById(location.search.split("=")[1]);
     } catch (e) {
       toast.error("사용자 본인만 이용할 수 있는 버튼 입니다.");
     }
   };
 
-  const getLikes = async () => {
-    try {
-      const data = await axios.post("http://localhost:8080/getLikes");
-      setLike(data.data.data.filter((e) => e.type === "P"));
-    } catch (e) {
-      setLike([]);
-    }
-  };
-
-  const addLikes = async (id) => {
-    try {
-      if (like.filter((e) => e.id == id).length) {
-        // 있으면
-        await axios.delete(`http://localhost:8080/removeLikes/${id}?type=P`);
-        setDateList({ ...dateList, likeCount: dateList.likeCount - 1 });
-      } else {
-        await axios.post("http://localhost:8080/addLikes", { id: id, type: "P" });
-        setDateList({ ...dateList, likeCount: dateList.likeCount + 1 });
-      }
-      getLikes();
-    } catch (e) {
-      toast.info("로그인 후 이용해 주세요.");
-    }
+  const addLikes = (id) => {
+    toggleLike(id, (wasLiked) => {
+      setDateList((prev) => ({ ...prev, likeCount: prev.likeCount + (wasLiked ? -1 : 1) }));
+    });
   };
 
   const changeName = (author) => {
@@ -192,7 +174,7 @@ const CalendarPage = () => {
                     <div style={{ height: "70px" }} />
                   )}
                   <Styles.HeartBox>
-                    {like.filter((e) => e.id == dateList.id).length ? (
+                    {isLiked(dateList.id) ? (
                       <HeartFilled style={{ color: "red", fontSize: "30px" }} onClick={() => addLikes(dateList.id)} />
                     ) : (
                       <HeartOutlined style={{ fontSize: "30px" }} onClick={() => addLikes(dateList.id)} />
