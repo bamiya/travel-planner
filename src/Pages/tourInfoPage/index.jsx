@@ -13,6 +13,8 @@ import { getTourDetailUrl } from "../../utils/tourApi";
 import { getErrorMessage } from "../../utils/errorMessage";
 import { useConfirm } from "../../Common/ConfirmDialog";
 import NicknamePopover from "../../Common/NicknamePopover";
+import StarRating from "../../Common/StarRating";
+import { useIsAdmin } from "../../hooks/useIsAdmin";
 
 const InformationPage = () => {
   const navigate = useNavigate();
@@ -33,9 +35,11 @@ const InformationPage = () => {
   }, [location.search]);
 
   const [content, setContent] = useState("");
+  const [rating, setRating] = useState(0);
   const [comments, setComments] = useState([]);
   const [dibs, setDibs] = useState(false); // 찜 이벤트를 할때마다 렌더링이 되지 않아 업데이트가 안됨 따라서 생성
   const { isLiked, toggleLike, reloadLikes } = useLikes("T");
+  const isAdmin = useIsAdmin();
 
   useEffect(() => {
 
@@ -133,12 +137,29 @@ const InformationPage = () => {
       toast.info("로그인 후 이용해 주세요");
       return;
     }
+    if (!rating) {
+      toast.error("별점을 선택해주세요.");
+      return;
+    }
     if (await confirm("등록하시겠습니까?")) {
       try {
-        await axios.post("/addComment", { id, content, type: "T" });
+        await axios.post("/addComment", { id, content, rating, type: "T" });
         getcontent();
         toast.success("댓글 추가 성공");
         setContent("");
+        setRating(0);
+      } catch (e) {
+        toast.error(getErrorMessage(e));
+      }
+    }
+  };
+
+  const deleteCommentAdmin = async (idx) => {
+    if (await confirm("이 댓글을 삭제하시겠습니까?", { danger: true, confirmText: "삭제" })) {
+      try {
+        await axios.delete(`/deleteComment/${idx}?type=T`);
+        getcontent();
+        toast.success("댓글이 삭제되었습니다.");
       } catch (e) {
         toast.error(getErrorMessage(e));
       }
@@ -297,6 +318,19 @@ const InformationPage = () => {
       )}
       <Styles.Comment1>
         <Styles.Title1>톡톡</Styles.Title1>
+        {(() => {
+          const rated = comments.filter((c) => c.rating);
+          if (rated.length === 0) return null;
+          const avg = rated.reduce((sum, c) => sum + c.rating, 0) / rated.length;
+          return (
+            <Styles.AvgRatingBox>
+              <StarRating value={Math.round(avg)} size="15px" />
+              <span>
+                {avg.toFixed(1)} ({rated.length})
+              </span>
+            </Styles.AvgRatingBox>
+          );
+        })()}
         <Styles.CommentBox>
           {comments.map((el, idx) => {
             return (
@@ -304,8 +338,10 @@ const InformationPage = () => {
                 <Styles.ReImage src={getProfileImageUrl(el.email.profileImg)} />
                 <Styles.RefirstBox>
                   <NicknamePopover nickname={el?.email?.nickname} />
+                  {el.rating && <StarRating value={el.rating} size="13px" />}
                   <Styles.ReDate>{el?.date}</Styles.ReDate>
                   <Styles.ReContent>{el?.content}</Styles.ReContent>
+                  {isAdmin && <Styles.AdminDeleteBtn onClick={() => deleteCommentAdmin(el.idx)}>삭제</Styles.AdminDeleteBtn>}
                 </Styles.RefirstBox>
               </Styles.ReviewBox>
             );
@@ -313,6 +349,7 @@ const InformationPage = () => {
           <Styles.InputBox>
             <Styles.ReviewTextBox>
               <Styles.ReviewText>댓글 남기기</Styles.ReviewText>
+              <StarRating value={rating} onChange={setRating} size="20px" />
             </Styles.ReviewTextBox>
             <Styles.Profile1 src={getProfileImageUrl(sessionStorage.getItem("profileImg"))} />
             <Styles.InputComment placeholder="댓글 입력" onChange={(e) => setContent(e.target.value)} value={content || ""} />

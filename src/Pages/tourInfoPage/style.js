@@ -397,6 +397,35 @@ export const InputBox = styled.div`
 export const ReviewTextBox= styled.div`
     position: absolute;
     top: -40px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+`
+
+export const AvgRatingBox = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 20px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-text-muted);
+`
+
+export const AdminDeleteBtn = styled.button.attrs({ type: "button" })`
+    align-self: flex-start;
+    margin-top: 6px;
+    border: none;
+    background: none;
+    padding: 0;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--color-accent);
+    cursor: pointer;
+
+    &:hover {
+        text-decoration: underline;
+    }
 `
 
 export const ReviewText= styled.div`

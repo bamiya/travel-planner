@@ -30,8 +30,9 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 // 모든 axios 호출이 "http://localhost:8080/xxx"를 매번 하드코딩하지 않고
-// 상대경로("/xxx")만 쓰도록 기준 주소를 한 곳에서 관리한다.
-axios.defaults.baseURL = "http://localhost:8080";
+// 상대경로("/xxx")만 쓰도록 기준 주소를 한 곳에서 관리한다. 터널(ngrok 등)로 테스트
+// 서버를 외부에 공유할 때는 .env의 VITE_API_BASE_URL을 백엔드의 공개 주소로 바꿔주면 된다.
+axios.defaults.baseURL = process.env.VITE_API_BASE_URL || "http://localhost:8080";
 // 리프레시 토큰이 httpOnly 쿠키로 오가기 때문에, 브라우저가 쿠키를 실어보내고
 // 받도록 모든 요청에 credentials를 포함시켜야 한다 (백엔드 CORS의 allowCredentials와 짝).
 axios.defaults.withCredentials = true;
