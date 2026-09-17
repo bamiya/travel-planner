@@ -1,334 +1,156 @@
 import styled from "styled-components";
 
 export const BigBox = styled.div`
-    width: 100%;
+    width: 895px;
+    max-width: 100%;
+    margin: 40px auto 60px;
+    box-sizing: border-box;
+
+    @media (max-width: 768px) {
+        margin: 24px 0 40px;
+        padding: 0 16px;
+    }
+`
+
+export const Section = styled.div`
+    margin-bottom: 48px;
+`
+
+export const SectionTitle = styled.div`
     display: flex;
-
-    @media (max-width: 768px) {
-        flex-direction: column;
-    }
-`
-
-export const Box = styled.div`
-    display: inline-flex;
     align-items: center;
-    padding: 6px 16px;
-    background-color: var(--color-primary-light);
-    border-radius: 999px;
-    margin-left: 35px;
-    margin-top: 32px;
+    gap: 10px;
+    margin-bottom: 20px;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--color-text);
 
-    @media (max-width: 768px) {
-        margin-left: 15px;
+    &::before {
+        content: "";
+        display: inline-block;
+        width: 4px;
+        height: 18px;
+        border-radius: 999px;
+        background-color: var(--color-primary);
     }
 `
 
-export const Box2 = styled.div`
-    width: 100%;
+export const EmptyText = styled.div`
+    padding: 40px 0;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text-muted);
+`
+
+export const CardGrid = styled.div`
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+
+    @media (max-width: 768px) {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+    }
+
+    @media (max-width: 520px) {
+        grid-template-columns: 1fr;
+    }
+`
+
+export const Card = styled.div`
     background-color: var(--color-white);
     border: 1px solid var(--color-border);
-    box-shadow: var(--shadow-card);
     border-radius: var(--radius-md);
-    box-sizing: border-box;
-    display: flex;
-
-    @media (max-width: 768px) {
-        flex-direction: column;
-    }
-`
-
-export const SmallBox = styled.div`
-    width: 100%;
-    box-sizing: border-box;
-    background-color: var(--color-bg);
-    border-radius: var(--radius-lg);
-    margin-top: 14px;
-    padding: 4px;
-`
-export const SmallBox2 = styled.div`
-    width: 1100px;
-    max-width: 100%;
-    box-sizing: border-box;
-    background-color: var(--color-bg);
-    border-radius: var(--radius-lg);
-    margin-bottom: 30px;
-    margin-left: 35px;
-    margin-right: 35px;
-    margin-top: 14px;
-    padding: 4px;
-
-    @media (max-width: 768px) {
-        width: 100%;
-        margin-left: 15px;
-        margin-right: 15px;
-    }
-`
-
-export const LineBox = styled.div`
-    width: 1000px;
-    padding: 30px 0 10px 0;
-    display: flex;
-
-    @media (max-width: 768px) {
-        width: 100%;
-        flex-direction: column;
-    }
-`
-
-export const ContentBox = styled.div`
-    width: 100%;
-    height: 120px;
-    border-radius: var(--radius-sm);
-
-    @media (max-width: 768px) {
-        height: auto;
-    }
-`
-
-export const ContentBox2 = styled.div`
-    width: 100%;
-    height: 50px;
-    display: flex;
-
-    @media (max-width: 768px) {
-        height: auto;
-        flex-wrap: wrap;
-    }
-`
-
-export const DayBox = styled.div`
-    width: 550px;
-    font-size: 14px;
-    margin-top: 20px;
-    text-align: center;
-    font-weight: 600;
-    color: var(--color-text-muted);
-
-    @media (max-width: 768px) {
-        width: auto;
-    }
-`
-
-export const NameBox = styled.div`
-    width: 450px;
-    font-size: 16px;
-    margin-top:35px;
-    font-weight: 700;
-    color: var(--color-text);
-    text-align :center ;
-
-    @media (max-width: 768px) {
-        width: auto;
-    }
-`
-export const HeartSumText = styled.div`
-    display: flex;
-    flex-direction: column;
-    min-height: 60px;
-    align-items: center;
-    justify-content: center;
-    padding: 20px 10px;
-    color: var(--color-text-muted);
-    font-size: 14px;
-    font-weight: 600;
-`
-
-export const KeepDeleteBox = styled.div`
-    width: 80px;
-    height: 20px;
-    font-size: 12px;
-    margin-top:50px;
-    margin-left: 20px;
-    margin-right: 50px;
-    font-weight: 700;
-    border-radius: 100px;
-    background-color: var(--color-text-muted);
-    color: white;
-    text-align: center;
-    padding-top: 5px;
-    cursor: pointer;
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
     transition: var(--transition-base);
 
     &:hover {
-        background-color: var(--color-text);
-    }
-
-    @media (max-width: 768px) {
-        margin-right: 10px;
-    }
-`
-
-export const KeepDeleteBox2 = styled.div`
-    width: 100px;
-    height: 20px;
-    margin-top:50px;
-    margin-right: 30px;
-    text-align: center;
-
-    @media (max-width: 768px) {
-        margin-right: 10px;
+        box-shadow: var(--shadow-hover);
+        transform: translateY(-3px);
     }
 `
 
 export const ImgBox = styled.img`
-    width: 100px;
-    height: 100px;
-    border-radius: var(--radius-sm);
-    margin-top: 10px;
-    margin-left: 10px;
-    cursor: pointer;
+    width: 100%;
+    height: 130px;
     object-fit: cover;
-`
-
-export const ImgBox2 = styled.img`
-    min-width: 200px;
-    height: 150px;
-    border-radius: var(--radius-sm);
     cursor: pointer;
-    object-fit: cover;
-
-    @media (max-width: 768px) {
-        width: 100%;
-        min-width: 0;
-        height: auto;
-        max-height: 200px;
-        object-fit: cover;
-    }
+    background-color: var(--color-bg);
+    display: block;
 `
 
-export const Imgheart = styled.div`
-    width: 400px;
-    height: 35px;
-    margin-left: 25px;
-    margin-top: 25px;
-    display: flex;
-
-    @media (max-width: 768px) {
-        width: auto;
-        margin-left: 15px;
-    }
-`
-
-export const Text = styled.div`
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--color-primary-dark);
+export const CardBody = styled.div`
+    padding: 14px 16px 16px;
 `
 
 export const ContentText = styled.div`
-    width: 400px;
     font-size: 15px;
-    margin-left: 20px;
-    font-weight: 500;
+    font-weight: 700;
     color: var(--color-text);
-    margin-top:20px;
     cursor: pointer;
-
-    @media (max-width: 768px) {
-        width: auto;
-        margin-left: 15px;
-    }
-`
-
-export const LikeText = styled.div`
-    font-size: 22px;
-    font-weight: 800;
-    color: var(--color-text);
-    margin-left: 40px;
-    margin-top: 100px;
-
-    &:first-of-type {
-        margin-top: 150px;
-    }
-
-    @media (max-width: 768px) {
-        margin-left: 15px;
-        margin-top: 60px;
-
-        &:first-of-type {
-            margin-top: 110px;
-        }
-    }
-`
-
-export const LikesListBox1 = styled.div`
-    width: 100%;
-    margin-left: 35px;
-
-    @media (max-width: 768px) {
-        margin-left: 0;
-        padding: 0 15px;
-        box-sizing: border-box;
-    }
-`
-
-export const KeepBox = styled.div`
-    width: 900px;
-    height: 120px;
-    border-radius: var(--radius-sm);
-
-    @media (max-width: 768px) {
-        width: 100%;
-        height: auto;
-    }
-`
-
-export const KeepBox2 = styled.div`
-    width: 100%;
-    height: 50px;
-    display: flex;
-
-    @media (max-width: 768px) {
-        height: auto;
-        flex-wrap: wrap;
-    }
-`
-export const KeepBox3 = styled.div`
-    width: 100%;
-    background-color: var(--color-white);
-    border: 1px solid var(--color-border);
-    box-shadow: var(--shadow-card);
-    border-radius: var(--radius-md);
-    box-sizing: border-box;
-    display: flex;
-
-    @media (max-width: 768px) {
-        flex-direction: column;
-    }
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 `
 
 export const AddressText = styled.div`
-    width: 300px;
-    font-size: 14px;
-    text-align: center;
-    margin-top: 20px;
-    font-weight: 600;
+    margin-top: 5px;
+    font-size: 12px;
+    font-weight: 500;
     color: var(--color-text-muted);
-
-    @media (max-width: 768px) {
-        width: auto;
-    }
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 `
 
-export const KeepContentText = styled.div`
-    width: 650px;
-    height: 70px;
-    font-size: 14px;
-    margin-left: 20px;
-    margin-top:10px;
-    overflow: hidden;
-    line-height: 17.5px;
-    color: var(--color-text-muted);
-    display: -webkit-box;
-    overflow: hidden;
-    word-break: keep-all;
-    text-overflow: ellipsis;
-    -webkit-line-clamp: 4;
-    -webkit-box-orient: vertical;
+export const CardFooterRow = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 12px;
+`
 
-    @media (max-width: 768px) {
-        width: auto;
-        margin-left: 15px;
-        margin-right: 15px;
+export const NameText = styled.div`
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+`
+
+export const HeartBtn = styled.button.attrs({ type: "button" })`
+    flex-shrink: 0;
+    border: none;
+    background: none;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    color: var(--color-accent);
+    font-size: 18px;
+`
+
+export const CancelBtn = styled.button.attrs({ type: "button" })`
+    width: 100%;
+    border: none;
+    outline: none;
+    font-family: inherit;
+    padding: 7px 0;
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: var(--transition-base);
+    background-color: var(--color-bg);
+    color: var(--color-text-muted);
+    margin-top: 12px;
+
+    &:hover {
+        background-color: var(--color-accent);
+        color: white;
     }
 `

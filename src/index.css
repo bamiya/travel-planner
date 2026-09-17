@@ -6,9 +6,11 @@
   /* 브랜드 컬러 - 미니멀(화이트/뉴트럴) 베이스 + 포인트 컬러 하나(코랄).
      사진(관광지 썸네일)이 콘텐츠의 주인공이라, 색은 최소한으로 쓰고 대신
      버튼/뱃지처럼 "지금 누를 수 있다"는 걸 알려줘야 하는 곳에만 포인트를 준다. */
-  --color-primary: #FF385C;
-  --color-primary-dark: #E31C41;
-  --color-primary-light: #FFE9EC;
+  /* 핑크 느낌이 너무 강하다는 피드백으로 톤 다운 - 채도를 낮추고 주황 쪽으로
+     기울여서(코랄/테라코타) "핑크"보다는 "따뜻한 여행 컬러"로 읽히게 했다 */
+  --color-primary: #E8664F;
+  --color-primary-dark: #C94A3A;
+  --color-primary-light: #FCE9E3;
   --color-accent: #FF6B6B;
   --color-accent-dark: #E85555;
   --color-success: #2ECC71;

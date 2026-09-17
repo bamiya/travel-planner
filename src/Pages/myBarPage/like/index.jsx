@@ -74,7 +74,11 @@ const Like = () => {
         setIsPlanLoding(true);
       }
     } catch (e) {
-      toast.error("좋아요 에러");
+      // 로그인 세션이 없어서 401이 나는 건 정상 상태(그냥 빈 목록으로 보여주면 됨)라
+      // 놀랄 만한 빨간 에러 토스트를 띄울 이유가 아니다. 그 외의 진짜 실패만 알린다.
+      if (e.response?.status !== 401) {
+        toast.error("좋아요 정보를 불러오지 못했습니다.");
+      }
       setIsLikeLoding(true);
       setIsPlanLoding(true);
     }
@@ -90,7 +94,7 @@ const Like = () => {
         setTourInfo((prev) => prev.filter((e) => e.contentid !== id));
       }
     } catch (e) {
-      toast.error("좋아요 에러");
+      toast.error("좋아요 취소에 실패했습니다.");
     }
   };
 
@@ -142,116 +146,91 @@ const Like = () => {
     <>
       <MyPage likeAction="like" />
       <MarginTopWrapper>
-        <Styles.LikeText>좋아요 목록</Styles.LikeText>
         <Styles.BigBox>
-          <Styles.LikesListBox1>
-            <Styles.Box>
-              <Styles.Text>공유한 플랜</Styles.Text>
-            </Styles.Box>
-            <Styles.SmallBox>
-              <Styles.HeartSumText>
-                {!isPlanLoding
-                  ? <Spinner text="불러오는 중입니다..." padding="30px 0" size="26px" />
-                  : planInfo.length === 0
-                  ? "좋아요를 누른 항목이 없습니다."
-                  : planInfo.map((el, idx) => {
-                      return (
-                        <Styles.LineBox key={idx}>
-                          <Styles.Box2>
-                            <Styles.ImgBox src={el.img ? el.img : "assets/logo.png"} onClick={() => navigate(`/calendar?id=${el.id}`)} />
-                            <Styles.ContentBox>
-                              <Styles.ContentBox2>
-                                <Styles.ContentText onClick={() => navigate(`/calendar?id=${el.id}`)}>{el.title}</Styles.ContentText>
-                                <Styles.DayBox>{el.date}</Styles.DayBox>
-                              </Styles.ContentBox2>
-                              <Styles.ContentBox2>
-                                <Styles.Imgheart>
-                                  <HeartFilled style={{ color: "red", fontSize: "30px", cursor: "pointer" }} onClick={() => likeCancel(el.id, "P")} />
-                                </Styles.Imgheart>
-                                <Styles.NameBox>{changeName(el?.author)}</Styles.NameBox>
-                              </Styles.ContentBox2>
-                            </Styles.ContentBox>
-                          </Styles.Box2>
-                        </Styles.LineBox>
-                      );
-                    })}
-              </Styles.HeartSumText>
-            </Styles.SmallBox>
-            <Styles.Box>
-              <Styles.Text>관광지</Styles.Text>
-            </Styles.Box>
-            <Styles.SmallBox>
-              <Styles.HeartSumText>
-                {!isLikeLoding
-                  ? <Spinner text="불러오는 중입니다..." padding="30px 0" size="26px" />
-                  : tourInfo.length === 0
-                  ? "좋아요를 누른 항목이 없습니다."
-                  : tourInfo.map((el, idx) => {
-                      return (
-                        <Styles.LineBox key={idx}>
-                          <Styles.KeepBox3>
-                            <Styles.ImgBox2
-                              src={el?.firstimage2 === "" ? "assets/logo.png" : el?.firstimage2}
-                              onClick={() => navigate(`/information?id=${el?.contentid}`)}
-                            />
-                            <Styles.KeepBox>
-                              <Styles.KeepBox2>
-                                <Styles.ContentText onClick={() => navigate(`/information?id=${el?.contentid}`)}>{el?.title}</Styles.ContentText>
-                                <Styles.AddressText>{el?.addr1 + " " + el?.addr2}</Styles.AddressText>
-                              </Styles.KeepBox2>
-                              <Styles.KeepBox2>
-                                <Styles.KeepContentText>
-                                  <div dangerouslySetInnerHTML={{ __html: el?.overview }}></div>
-                                </Styles.KeepContentText>
-                                <Styles.KeepDeleteBox2>
-                                  <HeartFilled
-                                    style={{ color: "red", fontSize: "30px", cursor: "pointer", marginLeft: "50px" }}
-                                    onClick={() => likeCancel(el?.contentid, "T")}
-                                  />
-                                </Styles.KeepDeleteBox2>
-                              </Styles.KeepBox2>
-                            </Styles.KeepBox>
-                          </Styles.KeepBox3>
-                        </Styles.LineBox>
-                      );
-                    })}
-              </Styles.HeartSumText>
-            </Styles.SmallBox>
-          </Styles.LikesListBox1>
+          <Styles.Section>
+            <Styles.SectionTitle>좋아요한 플랜</Styles.SectionTitle>
+            {!isPlanLoding ? (
+              <Spinner text="불러오는 중입니다..." padding="30px 0" size="26px" />
+            ) : planInfo.length === 0 ? (
+              <Styles.EmptyText>좋아요를 누른 항목이 없습니다.</Styles.EmptyText>
+            ) : (
+              <Styles.CardGrid>
+                {planInfo.map((el, idx) => (
+                  <Styles.Card key={idx}>
+                    <Styles.ImgBox src={el.img ? el.img : "assets/logo.png"} onClick={() => navigate(`/calendar?id=${el.id}`)} />
+                    <Styles.CardBody>
+                      <Styles.ContentText onClick={() => navigate(`/calendar?id=${el.id}`)}>{el.title}</Styles.ContentText>
+                      <Styles.AddressText>{el.date}</Styles.AddressText>
+                      <Styles.CardFooterRow>
+                        <Styles.NameText>{changeName(el?.author)}</Styles.NameText>
+                        <Styles.HeartBtn onClick={() => likeCancel(el.id, "P")}>
+                          <HeartFilled />
+                        </Styles.HeartBtn>
+                      </Styles.CardFooterRow>
+                    </Styles.CardBody>
+                  </Styles.Card>
+                ))}
+              </Styles.CardGrid>
+            )}
+          </Styles.Section>
+
+          <Styles.Section>
+            <Styles.SectionTitle>좋아요한 관광지</Styles.SectionTitle>
+            {!isLikeLoding ? (
+              <Spinner text="불러오는 중입니다..." padding="30px 0" size="26px" />
+            ) : tourInfo.length === 0 ? (
+              <Styles.EmptyText>좋아요를 누른 항목이 없습니다.</Styles.EmptyText>
+            ) : (
+              <Styles.CardGrid>
+                {tourInfo.map((el, idx) => (
+                  <Styles.Card key={idx}>
+                    <Styles.ImgBox
+                      src={el?.firstimage2 === "" ? "assets/logo.png" : el?.firstimage2}
+                      onClick={() => navigate(`/information?id=${el?.contentid}`)}
+                    />
+                    <Styles.CardBody>
+                      <Styles.ContentText onClick={() => navigate(`/information?id=${el?.contentid}`)}>{el?.title}</Styles.ContentText>
+                      <Styles.AddressText>{el?.addr1}</Styles.AddressText>
+                      <Styles.CardFooterRow>
+                        <Styles.NameText />
+                        <Styles.HeartBtn onClick={() => likeCancel(el?.contentid, "T")}>
+                          <HeartFilled />
+                        </Styles.HeartBtn>
+                      </Styles.CardFooterRow>
+                    </Styles.CardBody>
+                  </Styles.Card>
+                ))}
+              </Styles.CardGrid>
+            )}
+          </Styles.Section>
+
+          <Styles.Section>
+            <Styles.SectionTitle>찜 목록</Styles.SectionTitle>
+            {!sessionStorage.getItem("dibs") ? (
+              <Styles.EmptyText>찜하기로 선택된 항목이 없습니다.</Styles.EmptyText>
+            ) : !isDibsLoding ? (
+              <Spinner text="불러오는 중입니다..." padding="30px 0" size="26px" />
+            ) : dibsInfo.length === 0 ? (
+              <Styles.EmptyText>찜하기로 선택된 항목이 없습니다.</Styles.EmptyText>
+            ) : (
+              <Styles.CardGrid>
+                {dibsInfo.map((el, idx) => (
+                  <Styles.Card key={idx}>
+                    <Styles.ImgBox
+                      src={el?.firstimage2 === "" ? "assets/logo.png" : el?.firstimage2}
+                      onClick={() => navigate(`/information?id=${el?.contentid}`)}
+                    />
+                    <Styles.CardBody>
+                      <Styles.ContentText onClick={() => navigate(`/information?id=${el?.contentid}`)}>{el?.title}</Styles.ContentText>
+                      <Styles.AddressText>{el?.addr1}</Styles.AddressText>
+                      <Styles.CancelBtn onClick={() => dibsCancel(el?.contentid)}>찜 취소</Styles.CancelBtn>
+                    </Styles.CardBody>
+                  </Styles.Card>
+                ))}
+              </Styles.CardGrid>
+            )}
+          </Styles.Section>
         </Styles.BigBox>
-        <Styles.LikeText>찜 목록</Styles.LikeText>
-        <Styles.SmallBox2>
-          <Styles.HeartSumText>
-            {!sessionStorage.getItem("dibs")
-              ? "찜하기로 선택된 항목이 없습니다."
-              : !isDibsLoding
-              ? <Spinner text="불러오는 중입니다..." padding="30px 0" size="26px" />
-              : dibsInfo.map((el, idx) => {
-                  return (
-                    <Styles.LineBox key={idx}>
-                      <Styles.KeepBox3>
-                        <Styles.ImgBox2
-                          src={el?.firstimage2 === "" ? "assets/logo.png" : el?.firstimage2}
-                          onClick={() => navigate(`/information?id=${el?.contentid}`)}
-                        />
-                        <Styles.KeepBox>
-                          <Styles.KeepBox2>
-                            <Styles.ContentText onClick={() => navigate(`/information?id=${el?.contentid}`)}>{el?.title}</Styles.ContentText>
-                            <Styles.AddressText>{el?.addr1 + " " + el?.addr2}</Styles.AddressText>
-                          </Styles.KeepBox2>
-                          <Styles.KeepBox2>
-                            <Styles.KeepContentText>
-                              <div dangerouslySetInnerHTML={{ __html: el?.overview }}></div>
-                            </Styles.KeepContentText>
-                            <Styles.KeepDeleteBox onClick={() => dibsCancel(el?.contentid)}>찜 취소</Styles.KeepDeleteBox>
-                          </Styles.KeepBox2>
-                        </Styles.KeepBox>
-                      </Styles.KeepBox3>
-                    </Styles.LineBox>
-                  );
-                })}
-          </Styles.HeartSumText>
-        </Styles.SmallBox2>
       </MarginTopWrapper>
     </>
   );

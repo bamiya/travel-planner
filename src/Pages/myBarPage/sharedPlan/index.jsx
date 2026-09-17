@@ -14,7 +14,6 @@ const SharedPlan = () => {
   const confirm = useConfirm();
   const [plan, setPlan] = useState();
 
-
   useEffect(() => {
     getUserPlan();
   }, []);
@@ -39,45 +38,41 @@ const SharedPlan = () => {
       }
     }
   };
+
   const infoMove = (e) => {
     navigate(`/calendar?id=${e[1].id}`);
   };
+
   return (
     <>
       <MyPage sharedPlanAction="sharedPlan" />
       <MarginTopWrapper>
         <Styles.BigBox>
-          <Styles.Box>
-            <Styles.Text>공유한 플랜</Styles.Text>
-          </Styles.Box>
+          <Styles.SectionTitle>공유한 플랜</Styles.SectionTitle>
           {plan === undefined ? (
             <Spinner text="공유한 플랜을 불러오는 중입니다..." />
           ) : plan.length === 0 ? (
-            "공유한 플랜이 없습니다."
+            <Styles.EmptyText>공유한 플랜이 없습니다.</Styles.EmptyText>
           ) : (
-            plan.map((el, idx) => {
-                return (
-                  <Styles.SmallBox key={idx}>
-                    <Styles.LineBox>
-                      <Styles.ImgBox
-                        src={getPlanThumbnail(el[1].plan)}
-                        onClick={() => infoMove(el)}
-                      />
-                      <Styles.ContentBox>
-                        <Styles.ContentBox2>
-                          <Styles.ContentBox3>
-                            <Styles.ContentText>{el[1].title}</Styles.ContentText>
-                            <Styles.DayBox>{el[1].date}</Styles.DayBox>
-                          </Styles.ContentBox3>
-                          <Styles.ModifyDeleteBox open={el[1].type} onClick={() => onShareBtn(el)}>
-                            공유취소
-                          </Styles.ModifyDeleteBox>
-                        </Styles.ContentBox2>
-                      </Styles.ContentBox>
-                    </Styles.LineBox>
-                  </Styles.SmallBox>
-                );
-              })
+            <Styles.PlanGrid>
+              {plan.map((el, idx) => (
+                <Styles.PlanCard key={idx}>
+                  <Styles.ImgBox src={getPlanThumbnail(el[1].plan)} onClick={() => infoMove(el)} />
+                  <Styles.CardBody>
+                    <Styles.ContentText onClick={() => infoMove(el)}>{el[1].title}</Styles.ContentText>
+                    <Styles.DayBox>{el[1].date}</Styles.DayBox>
+                    <Styles.ActionRow>
+                      <Styles.ModifyDeleteBox primary onClick={() => infoMove(el)}>
+                        보기
+                      </Styles.ModifyDeleteBox>
+                      <Styles.ModifyDeleteBox danger onClick={() => onShareBtn(el)}>
+                        공유취소
+                      </Styles.ModifyDeleteBox>
+                    </Styles.ActionRow>
+                  </Styles.CardBody>
+                </Styles.PlanCard>
+              ))}
+            </Styles.PlanGrid>
           )}
         </Styles.BigBox>
       </MarginTopWrapper>

@@ -21,9 +21,14 @@ const MyPage = ({ myPlanAction, sharedPlanAction, likeAction }) => {
   const [name, setName] = useState("");
 
   const getData = async () => {
-    // DB에 있는 회원데이터를 불러옴
-    const data = await axios.get("/getUserInfo");
-    setName(data.data.data.name);
+    // DB에 있는 회원데이터를 불러옴 - 로그인 세션이 없으면 401이 나는 게 정상이라
+    // (이 페이지들은 헤더의 로그인 상태와 무관하게 직접 URL로도 올 수 있다) 조용히 무시한다.
+    try {
+      const data = await axios.get("/getUserInfo");
+      setName(data.data.data.name);
+    } catch (e) {
+      // 비로그인 상태 - 이름 표시 없이 진행
+    }
   };
 
   const tabs = [

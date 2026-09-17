@@ -918,7 +918,7 @@ const CreatePlanPage = () => {
                                       <Styles.LocationImg open={dayMarkerOpen[id]} value={[e.mapy, e.mapx, 0]} onClick={(e) => moveMapLocation(e, id)} />
                                     </Styles.DayItemTextBox>
                                     <Styles.DayItemSubTextBox>
-                                      <Styles.DayItemText>{e.addr1.split(" ")[0] + e.addr1.split(" ")[1]}</Styles.DayItemText>
+                                      <Styles.DayItemText>{e.addr1?.split(" ").slice(0, 2).join(" ") ?? ""}</Styles.DayItemText>
                                       <Styles.ItemBtn remove onClick={() => removeTour(id, update)}>
                                         삭제
                                       </Styles.ItemBtn>
@@ -933,6 +933,26 @@ const CreatePlanPage = () => {
                               </div>
                             );
                           })
+                        : // 이 DAY가 지금 편집 중이 아니어도(다른 DAY를 편집 중이거나 아무 것도 편집 중이 아니어도),
+                          // 수정 모드에서 불러온 기존 저장 항목은 계속 보여야 한다 - "일정 수정"을 눌러야만
+                          // 보이면 마치 전부 초기화된 것처럼 보인다. 여기서는 읽기 전용 미리보기만 보여주고,
+                          // 삭제/지도 토글 같은 편집 동작은 "일정 수정"으로 들어간 뒤에만 가능하게 한다.
+                          // dateList가 막 바뀌어서 dayList가 아직 새로 안 채워진 순간(렌더 한 번)이 있어서
+                          // ?.로 안전하게 접근해야 한다 - 그 순간 dayList[idx]가 없다.
+                          dayList?.[idx]?.[1]?.length > 0
+                        ? dayList[idx][1].map((e, id) => (
+                            <Styles.DayItem key={id}>
+                              <Styles.DayItemImg src={e.firstimage ? e.firstimage : e.firstimage2 ? e.firstimage2 : "assets/logo.png"} />
+                              <Styles.DayItemTextBox notcolumn={true}>
+                                <Styles.DayItemTextBox>
+                                  <Styles.DayItemTitle>{e.title}</Styles.DayItemTitle>
+                                </Styles.DayItemTextBox>
+                                <Styles.DayItemSubTextBox>
+                                  <Styles.DayItemText>{e.addr1?.split(" ").slice(0, 2).join(" ") ?? ""}</Styles.DayItemText>
+                                </Styles.DayItemSubTextBox>
+                              </Styles.DayItemTextBox>
+                            </Styles.DayItem>
+                          ))
                         : ""}
                       <Styles.PlanAddBtnBox>
                         <Styles.PlanAddBtn
