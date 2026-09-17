@@ -13,6 +13,7 @@ import { generateAutoPlan } from "../../utils/autoPlanner";
 import { fetchVisitorDemand, fetchVisitorDemandMap, getHeatTier } from "../../utils/visitorDemand";
 import { getTourDetailUrl } from "../../utils/tourApi";
 import { getErrorMessage } from "../../utils/errorMessage";
+import { useConfirm } from "../../Common/ConfirmDialog";
 
 const CreatePlanCalendar = ({ open, setOpen, setDateList }) => {
   // 팝업
@@ -91,6 +92,7 @@ const CreatePlanCalendar = ({ open, setOpen, setDateList }) => {
 const CreatePlanPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const confirm = useConfirm();
 
   const [isModalOpen, setIsModalOpen] = useState(true); //날짜 모달
   const [dateList, setDateList] = useState();
@@ -110,7 +112,7 @@ const CreatePlanPage = () => {
       return;
     }
     const hasExistingStops = dayList?.some((day) => day[1].length > 0);
-    if (hasExistingStops && !window.confirm("기존에 담아둔 일정이 모두 새 일정으로 교체됩니다. 계속할까요?")) {
+    if (hasExistingStops && !(await confirm("기존에 담아둔 일정이 모두 새 일정으로 교체됩니다. 계속할까요?"))) {
       return;
     }
     setAutoPlanLoading(true);

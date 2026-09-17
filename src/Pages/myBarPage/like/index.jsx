@@ -9,9 +9,11 @@ import { toast } from "react-toastify";
 import Spinner from "../../../Common/Spinner";
 import { getTourDetailUrl } from "../../../utils/tourApi";
 import { getPlanThumbnail } from "../../../utils/planThumbnail";
+import { useConfirm } from "../../../Common/ConfirmDialog";
 
 const Like = () => {
   const navigate = useNavigate();
+  const confirm = useConfirm();
 
   // 관광지 좋아요 로딩 state
   const [isLikeLoding, setIsLikeLoding] = useState(false);
@@ -116,7 +118,7 @@ const Like = () => {
 
   // 찜하기 취소 함수
   const dibsCancel = async (id) => {
-    if (window.confirm("찜취소하시겠습니까?")) {
+    if (await confirm("찜취소하시겠습니까?", { danger: true, confirmText: "취소" })) {
       const dibs = sessionStorage.getItem("dibs");
       sessionStorage.setItem("dibs", dibs.replace(id + " ", ""));
       setDibsInfo((prev) => prev.filter((e) => e.contentid !== id));

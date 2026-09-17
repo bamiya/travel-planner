@@ -7,9 +7,11 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import Spinner from "../../../Common/Spinner";
 import { getPlanThumbnail } from "../../../utils/planThumbnail";
+import { useConfirm } from "../../../Common/ConfirmDialog";
 
 const SharedPlan = () => {
   const navigate = useNavigate();
+  const confirm = useConfirm();
   const [plan, setPlan] = useState();
 
 
@@ -28,7 +30,7 @@ const SharedPlan = () => {
   };
 
   const onShareBtn = async (el) => {
-    if (window.confirm("공유취소하시겠습니까?")) {
+    if (await confirm("공유취소하시겠습니까?", { danger: true, confirmText: "공유 취소" })) {
       try {
         await axios.put("/updateSharePlan", { id: el[1].id });
         getUserPlan();

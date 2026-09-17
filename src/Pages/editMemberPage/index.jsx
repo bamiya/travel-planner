@@ -7,9 +7,11 @@ import CryptoJS from "crypto-js";
 import { toast } from "react-toastify";
 import { getProfileImageUrl } from "../../utils/profileImage";
 import { getErrorMessage } from "../../utils/errorMessage";
+import { useConfirm } from "../../Common/ConfirmDialog";
 
 export const EditmemberPage = () => {
   const navigate = useNavigate();
+  const confirm = useConfirm();
 
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
@@ -52,7 +54,7 @@ export const EditmemberPage = () => {
 
   const update = async () => {
     // 회원 데이터를 수정 (이름, 연락처)
-    if (window.confirm("수정하시겠습니까?")) {
+    if (await confirm("수정하시겠습니까?")) {
       if (isName && isPhone) {
         try {
           const data = await axios.post("/getUserUpdate", { name, tel: phone });
@@ -69,7 +71,7 @@ export const EditmemberPage = () => {
 
   const updatePw = async () => {
     //회원 데이터 수정 비밀번호
-    if (window.confirm("수정하시겠습니까?")) {
+    if (await confirm("수정하시겠습니까?")) {
       if (isPassword && isPasswordConfirm) {
         try {
           const createHashedPw = CryptoJS.SHA256(pw).toString(CryptoJS.enc.Base64);
@@ -86,7 +88,7 @@ export const EditmemberPage = () => {
   };
 
   const userDelete = async () => {
-    if (window.confirm("정말로 탈퇴하시겠습니까??")) {
+    if (await confirm("정말로 탈퇴하시겠습니까?", { danger: true, confirmText: "탈퇴" })) {
       try {
         const data = await axios.delete("/userDelete");
         toast.success(data.data.msg);

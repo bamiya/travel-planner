@@ -21,6 +21,7 @@ import ChangePassPage from "./Pages/changePassPage";
 import PrivacyPolicyPage from "./Pages/privacyPolicyPage";
 import TermsPage from "./Pages/termsPage";
 import ScrollToTop from "./scrollToTop";
+import { ConfirmProvider } from "./Common/ConfirmDialog";
 import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
 import { getAccessToken } from "./Data";
 import axios from "axios";
@@ -44,10 +45,21 @@ axios.interceptors.response.use(
     // 가드 없이 .status를 읽으면 여기서 새 예외가 터지고, 그게 호출부의
     // catch(e) { ...e.response... }까지 그대로 전파되어 에러 토스트조차 안 뜨는
     // 완전히 조용한 실패로 이어진다.
-    if(error.response?.status === 401){
+    const originalRequest = error.config;
+    // 리프레시 토큰 재발급 요청 자체가 401이면(쿠키 만료/무효) 여기서 다시
+    // getAccessToken()을 부르면 그 요청도 이 인터셉터를 타고 또 401 -> 재시도로
+    // 이어지는 무한루프가 된다. 재발급 요청의 실패는 재시도하지 않는다.
+    if (error.response?.status === 401 && originalRequest?.url === "/getTokenUsedRefreshToken") {
+      localStorage.removeItem("hasSession");
+      return Promise.reject(error);
+    }
+    // 같은 요청을 두 번 이상 재시도하지 않도록 표시해서, 재발급 후에도 401이면
+    // 더 재시도하지 않고 바로 실패 처리한다.
+    if (error.response?.status === 401 && !originalRequest?._retried) {
+      originalRequest._retried = true;
       try{
         await getAccessToken();
-        return await axios.request(error.config);
+        return await axios.request(originalRequest);
       }catch(e){
         // console.log(e);
       }
@@ -102,6 +114,7 @@ const App = () => {
 
   return (
       <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+        <ConfirmProvider>
         <ToastContainer position="top-center" autoClose={2500} pauseOnHover />
         <ScrollToTop/>
         <Routes>
@@ -129,6 +142,7 @@ const App = () => {
           </Route>
           <Route path="/createPlanPage" element={<CreatePlanPage/>}/>
         </Routes>
+        </ConfirmProvider>
       </BrowserRouter>
   );
 }

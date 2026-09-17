@@ -11,10 +11,12 @@ import { useLikes } from "../../hooks/useLikes";
 import { getProfileImageUrl } from "../../utils/profileImage";
 import { getTourDetailUrl } from "../../utils/tourApi";
 import { getErrorMessage } from "../../utils/errorMessage";
+import { useConfirm } from "../../Common/ConfirmDialog";
 
 const InformationPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const confirm = useConfirm();
   const [infoData, setInfoData] = useState();
   useEffect(() => {
     // location.search에 의존해야, 이 페이지에서 다른 관광지로 바로 이동(주변 추천
@@ -130,7 +132,7 @@ const InformationPage = () => {
       toast.info("로그인 후 이용해 주세요");
       return;
     }
-    if (window.confirm("등록하시겠습니까?")) {
+    if (await confirm("등록하시겠습니까?")) {
       try {
         await axios.post("/addComment", { id, content, type: "T" });
         getcontent();

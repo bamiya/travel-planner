@@ -6,9 +6,11 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Spinner from "../../../Common/Spinner";
 import { getPlanThumbnail } from "../../../utils/planThumbnail";
+import { useConfirm } from "../../../Common/ConfirmDialog";
 
 const MyPlan = () => {
   const navigate = useNavigate();
+  const confirm = useConfirm();
   const [plan, setPlan] = useState();
 
   useEffect(() => {
@@ -27,7 +29,7 @@ const MyPlan = () => {
   };
 
   const deleteUserPlan = async (id) => {
-    if (window.confirm("삭제하시겠습니까?")) {
+    if (await confirm("삭제하시겠습니까?", { danger: true, confirmText: "삭제" })) {
       await axios.delete(`/deleteUserPlan/${id}`);
       getUserPlan();
     }
@@ -37,8 +39,8 @@ const MyPlan = () => {
     navigate(`/calendar?id=${e.id}`);
   };
 
-  const onPlanEdit = (el) => {
-    if (window.confirm("수정하시겠습니까?")) {
+  const onPlanEdit = async (el) => {
+    if (await confirm("수정하시겠습니까?")) {
       navigate("/createPlanPage", { state: { updateData: el[1], date: el[1].date } });
     }
   };
