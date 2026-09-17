@@ -14,4 +14,16 @@
     font-size: 13px;
     border: 2px solid #fff;
     box-shadow: 0 2px 6px rgba(20, 20, 43, 0.25);
+    transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+/* 리스트를 스크롤하거나 클릭해서 특정 스팟에 포커스했을 때 해당 마커를 강조한다. */
+.map_num_marker--active {
+    width: 34px;
+    height: 34px;
+    font-size: 15px;
+    background-color: var(--color-accent, #FF6B6B);
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(20, 20, 43, 0.35);
+    z-index: 1;
 }

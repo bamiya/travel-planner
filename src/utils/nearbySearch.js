@@ -28,7 +28,7 @@ export const geocodeKeyword = (keyword) => {
 };
 
 // 두 좌표 사이의 실제 거리(m) - Haversine 공식.
-const distanceMeters = (lat1, lon1, lat2, lon2) => {
+export const distanceMeters = (lat1, lon1, lat2, lon2) => {
   const toRad = (deg) => (deg * Math.PI) / 180;
   const R = 6371000;
   const dLat = toRad(lat2 - lat1);

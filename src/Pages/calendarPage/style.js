@@ -3,7 +3,11 @@ import styled from "styled-components";
 export const Wrapper = styled.div`
     position: relative;
     width: 100%;
-    overflow: hidden;
+    /* overflow-x: hidden만 줘도 CSS 스펙상 overflow-y가 자동으로 auto로
+       계산돼버려서(둘 중 하나라도 visible이 아니면 나머지도 auto가 됨, overflow-y를
+       명시적으로 visible로 적어도 소용없음) 스크롤 컨테이너로 취급되어 안쪽 MapBox의
+       position: sticky가 전혀 고정되지 않는 문제가 있었다. 가로 스크롤 방지는 이미
+       html/body(index.css)에 있어서 여기서 또 막을 필요가 없다 - 그냥 지운다. */
     display: flex;
     flex-direction: column;
 `
@@ -128,14 +132,25 @@ export const ShareBtnBox = styled.div`
     margin: 24px 0 8px;
 `
 
-export const ShareBtn = styled.button`
-    display: flex;
-    border: none;
+export const ShareToggleBtn = styled.button`
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 40px;
+    padding: 0 18px;
+    border-radius: 999px;
+    border: 1px solid ${(props) => (props.shared ? "transparent" : "var(--color-border)")};
+    background-color: ${(props) => (props.shared ? "var(--color-primary)" : "var(--color-white)")};
+    color: ${(props) => (props.shared ? "white" : "var(--color-text)")};
+    font-weight: 700;
+    font-size: 14px;
     cursor: pointer;
-    background: ${(props) => (!props.open ? "url(/assets/lockon.png) " : "url(/assets/lockoff.png) ") + "no-repeat scroll 0 0 transparent"};
-    background-size: contain;
-    min-width: 44px;
-    min-height: 44px;
+    box-shadow: ${(props) => (props.shared ? "0 4px 10px rgba(0,0,0,0.15)" : "none")};
+    transition: var(--transition-base);
+
+    &:hover {
+        background-color: ${(props) => (props.shared ? "var(--color-primary-dark)" : "var(--color-bg)")};
+    }
 `
 
 export const HeartBox = styled.div`
@@ -166,6 +181,16 @@ export const Menu = styled.div`
     display: flex;
     flex-direction: column;
     width: 100%;
+    box-sizing: border-box;
+    background-color: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    padding: 28px;
+
+    @media (max-width: 560px) {
+        padding: 20px;
+    }
 `
 
 export const Title = styled.div`
@@ -221,21 +246,84 @@ export const Day = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 72px;
-    height: 40px;
-    font-weight: 700;
-    font-size: 15px;
-    color: var(--color-primary-dark);
-    background-color: var(--color-primary-light);
-    border-radius: var(--radius-sm);
-    margin-right: 16px;
+    width: fit-content;
+    height: 36px;
+    padding: 0 18px;
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    color: white;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+    border-radius: 999px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+    margin-right: 20px;
 
     @media (max-width: 560px) {
-        width: fit-content;
-        padding: 6px 14px;
         margin-right: 0;
         margin-bottom: 12px;
     }
+`
+
+export const TimelineRow = styled.div`
+    display: flex;
+    align-items: stretch;
+    gap: 12px;
+
+    &:not(:last-child) {
+        margin-bottom: 4px;
+    }
+`
+
+export const BadgeColumn = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    width: 32px;
+`
+
+export const NumberBadge = styled.div`
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: var(--color-primary);
+    color: white;
+    font-weight: 700;
+    font-size: 14px;
+`
+
+export const ConnectorLine = styled.div`
+    flex: 1;
+    width: 2px;
+    min-height: 12px;
+    margin: 4px 0;
+    background-color: var(--color-border);
+`
+
+export const RowContent = styled.div`
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    gap: 8px;
+`
+
+export const TravelChip = styled.div`
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
 `
 
 export const PlaceInfo = styled.div`
@@ -248,10 +336,6 @@ export const PlaceInfo = styled.div`
     border: 1px solid var(--color-border);
     box-shadow: var(--shadow-card);
     transition: var(--transition-base);
-
-    &:not(:last-child) {
-        margin-bottom: 12px;
-    }
 
     &:hover {
         box-shadow: var(--shadow-hover);
@@ -326,9 +410,14 @@ export const MapBox = styled.div`
     z-index: 0;
 
     @media (max-width: 900px) {
-        position: static;
+        /* 좁은 화면에서는 리스트/지도가 세로로 쌓이는데(Box의 flex-direction: column),
+           지도가 스크롤에 밀려 화면 밖으로 사라지면 스크롤에 맞춰 마커를 강조해봤자
+           보이지가 않는다. order로 지도를 리스트보다 위로 올리고 상단에 고정한다. */
+        order: -1;
+        position: sticky;
+        top: 90px;
         width: 100%;
-        height: 360px;
+        height: 260px;
     }
 `
 
