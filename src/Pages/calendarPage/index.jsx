@@ -15,6 +15,7 @@ import { distanceMeters } from "../../utils/nearbySearch";
 import { estimateTravelTime } from "../../utils/travelTime";
 import { fetchRouteInfo } from "../../utils/routing";
 import { useConfirm } from "../../Common/ConfirmDialog";
+import NicknamePopover from "../../Common/NicknamePopover";
 
 const CalendarPage = () => {
   const navigate = useNavigate();
@@ -312,7 +313,7 @@ const CalendarPage = () => {
                             <Styles.ReviewBox key={idx}>
                               <Styles.ReImage src={getProfileImageUrl(el.email.profileImg)} />
                               <Styles.RefirstBox>
-                                <Styles.ReName>{el?.email?.nickname}</Styles.ReName>
+                                <NicknamePopover nickname={el?.email?.nickname} />
                                 <Styles.ReDate>{el?.date}</Styles.ReDate>
                                 <Styles.ReContent>{el?.content}</Styles.ReContent>
                               </Styles.RefirstBox>

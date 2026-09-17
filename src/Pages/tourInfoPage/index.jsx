@@ -12,6 +12,7 @@ import { getProfileImageUrl } from "../../utils/profileImage";
 import { getTourDetailUrl } from "../../utils/tourApi";
 import { getErrorMessage } from "../../utils/errorMessage";
 import { useConfirm } from "../../Common/ConfirmDialog";
+import NicknamePopover from "../../Common/NicknamePopover";
 
 const InformationPage = () => {
   const navigate = useNavigate();
@@ -302,7 +303,7 @@ const InformationPage = () => {
               <Styles.ReviewBox key={idx}>
                 <Styles.ReImage src={getProfileImageUrl(el.email.profileImg)} />
                 <Styles.RefirstBox>
-                  <Styles.ReName>{el?.email?.nickname}</Styles.ReName>
+                  <NicknamePopover nickname={el?.email?.nickname} />
                   <Styles.ReDate>{el?.date}</Styles.ReDate>
                   <Styles.ReContent>{el?.content}</Styles.ReContent>
                 </Styles.RefirstBox>

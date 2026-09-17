@@ -63,16 +63,20 @@ const MainPage = () => {
     return <Styles.SliderArrow src="assets/arrow.png" className={className} onClick={onClick} prev />;
   };
 
+  // slidesToShow가 실제 슬라이드 개수보다 많으면 react-slick이 무한루프(infinite)를
+  // 채우려고 항목을 복제해서 이상하게 보인다 - 플랜이 1~2개뿐일 때도 실제 개수에 맞춰
+  // 보여주기 위해 항상 3개 이상이어야 한다는 제약을 없애고 동적으로 계산한다.
+  const slideCount = Math.max(content.length, 1);
   const settings = {
     dots: true,
-    infinite: true,
+    infinite: content.length > 3,
     speed: 500,
-    slidesToShow: 3,
+    slidesToShow: Math.min(3, slideCount),
     slidesToScroll: 1,
     nextArrow: <NextArrow />,
     prevArrow: <PrevArrow />,
     responsive: [
-      { breakpoint: 1024, settings: { slidesToShow: 2 } },
+      { breakpoint: 1024, settings: { slidesToShow: Math.min(2, slideCount) } },
       { breakpoint: 640, settings: { slidesToShow: 1 } },
     ],
   };
@@ -215,10 +219,10 @@ const MainPage = () => {
             {!isLoding ? (
               <Spinner text="플랜을 불러오는 중입니다..." padding="40px 0" />
             ) : (
-              content.length < 3 && "현재 플랜이 3개 이상이 되지 않습니다."
+              content.length === 0 && "아직 공유된 플랜이 없습니다."
             )}
             <Styles.SliderCustom {...settings}>
-              {content.length < 3
+              {content.length === 0
                 ? null
                 : content.map((el, idx) => {
                     return (
