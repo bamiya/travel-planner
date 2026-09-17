@@ -92,6 +92,22 @@ const Header = () => {
                 }}>
                 공유된 플랜 보기
               </Styles.Text>
+              <Styles.Text
+                onClick={() => {
+                  navigate("/notice");
+                  setIsMobileMenuOpen(false);
+                }}>
+                공지사항
+              </Styles.Text>
+              {sessionStorage.getItem("access_token") && (
+                <Styles.Text
+                  onClick={() => {
+                    navigate("/myPlan");
+                    setIsMobileMenuOpen(false);
+                  }}>
+                  나의 플랜
+                </Styles.Text>
+              )}
             </Styles.Menu>
             <Styles.LogSign>
               {!sessionStorage.getItem("access_token") ? (

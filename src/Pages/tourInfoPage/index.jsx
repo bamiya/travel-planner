@@ -302,7 +302,7 @@ const InformationPage = () => {
               <Styles.ReviewBox key={idx}>
                 <Styles.ReImage src={getProfileImageUrl(el.email.profileImg)} />
                 <Styles.RefirstBox>
-                  <Styles.ReName>{el?.email?.name}</Styles.ReName>
+                  <Styles.ReName>{el?.email?.nickname}</Styles.ReName>
                   <Styles.ReDate>{el?.date}</Styles.ReDate>
                   <Styles.ReContent>{el?.content}</Styles.ReContent>
                 </Styles.RefirstBox>

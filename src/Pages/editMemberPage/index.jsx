@@ -19,8 +19,10 @@ export const EditmemberPage = () => {
   const [newPwConfirm, setNewPwConfirm] = useState("");
 
   const [name, setName] = useState("");
+  const [nickname, setNickname] = useState("");
   const [phone, setPhone] = useState("");
   const [showName, setShowName] = useState("");
+  const [showNickname, setShowNickname] = useState("");
   const [birth, setBirth] = useState("");
   const [profileImg, setProfileImg] = useState(sessionStorage.getItem("profileImg"));
 
@@ -28,11 +30,13 @@ export const EditmemberPage = () => {
   const [isPassword, setIsPassword] = useState(true);
   const [isPasswordConfirm, setIsPasswordConfirm] = useState(true);
   const [isName, setIsName] = useState(true);
+  const [isNickname, setIsNickname] = useState(true);
   const [isPhone, setIsPhone] = useState(true);
   //유효성 메세지
   const [passwordMessage, setPasswordMessage] = useState("");
   const [passwordConfirmMessage, setPasswordConfirmMessage] = useState("");
   const [nameMessage, setNameMessage] = useState("");
+  const [nicknameMessage, setNicknameMessage] = useState("");
   const [phoneMessage, setPhoneMessage] = useState("");
 
   useEffect(() => {
@@ -47,6 +51,8 @@ export const EditmemberPage = () => {
 
     setName(data.data.data.name);
     setShowName(data.data.data.name);
+    setNickname(data.data.data.nickname);
+    setShowNickname(data.data.data.nickname);
 
     setPhone(data.data.data.tel);
     setBirth(data.data.data.birth);
@@ -55,9 +61,9 @@ export const EditmemberPage = () => {
   const update = async () => {
     // 회원 데이터를 수정 (이름, 연락처)
     if (await confirm("수정하시겠습니까?")) {
-      if (isName && isPhone) {
+      if (isName && isNickname && isPhone) {
         try {
-          const data = await axios.post("/getUserUpdate", { name, tel: phone });
+          const data = await axios.post("/getUserUpdate", { name, nickname, tel: phone });
           getData(); // 변경된 데이터를 다시 불러오기
           toast.success(data.data.msg);
         } catch (e) {
@@ -137,6 +143,17 @@ export const EditmemberPage = () => {
     }
   };
 
+  const onChangeNickname = (e) => {
+    setNickname(e.target.value);
+    if (e.target.value.length >= 2 && e.target.value.length <= 10) {
+      setNicknameMessage("올바른 닉네임 형식입니다");
+      setIsNickname(true);
+    } else {
+      setNicknameMessage("2~10 글자로 입력해주세요.");
+      setIsNickname(false);
+    }
+  };
+
   const onChangePhoneNumber = (e) => {
     const phoneRegex = /^01(?:0|1|[6-9])(?:\d{3}|\d{4})\d{4}$/;
     const phoneCurrent = e.target.value;
@@ -207,7 +224,7 @@ export const EditmemberPage = () => {
             </Styles.PhotoEditLabel>
             <Styles.ProfileImgInput type="file" id="ex_file" accept="image/jpg, image/png, image/jpeg" onChange={onSaveFiles} />
           </Styles.AvatarWrap>
-          <Styles.MemberName>{showName}</Styles.MemberName>
+          <Styles.MemberName>{showNickname || showName}</Styles.MemberName>
           <Styles.Memberemail>{email}</Styles.Memberemail>
           {birth && <Styles.Memberemail>{birth}</Styles.Memberemail>}
           <Styles.TitleBar />
@@ -221,6 +238,12 @@ export const EditmemberPage = () => {
             <Styles.MemberEdit htmlFor="name">이름</Styles.MemberEdit>
             <Styles.Content placeholder="홍길동" onChange={(e) => onChangeName(e)} value={name || ""} />
             <Styles.WarningMessage check={isName}>{nameMessage}</Styles.WarningMessage>
+          </Styles.BasicInforContentBox>
+
+          <Styles.BasicInforContentBox>
+            <Styles.MemberEdit htmlFor="nickname">닉네임</Styles.MemberEdit>
+            <Styles.Content placeholder="다른 사람에게 보여질 닉네임" onChange={(e) => onChangeNickname(e)} value={nickname || ""} />
+            <Styles.WarningMessage check={isNickname}>{nicknameMessage}</Styles.WarningMessage>
           </Styles.BasicInforContentBox>
 
           <Styles.BasicInforContentBox>

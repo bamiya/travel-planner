@@ -23,7 +23,6 @@ const CalendarPage = () => {
   const [selectedStop, setSelectedStop] = useState(null); // 특정 장소를 클릭해 지도에서 단일 조회 중이면 그 좌표
   const [comments, setComments] = useState([]);
   const [content, setContent] = useState("");
-  const [email, setEmail] = useState();
   const { isLiked, toggleLike, reloadLikes } = useLikes("P");
   const planId = location.search.split("=")[1]; // ?id=<planId> - 여러 곳에서 반복 파싱하지 않도록 한 번만 계산
 
@@ -32,7 +31,6 @@ const CalendarPage = () => {
       toast.error("url이 잘못되었습니다.");
       history.back();
     } else {
-      sessionStorage.getItem("access_token") !== null ? getEmail() : ""; //  비로그인 시 (토큰없음) getEmail() 실행 X
       getcontent(); // 댓글 렌더링
       getUserPlanById(planId);
     }
@@ -41,12 +39,6 @@ const CalendarPage = () => {
   useEffect(() => {
     reloadLikes();
   }, []);
-
-  const getEmail = async () => {
-    // DB에 있는 회원데이터를 불러옴
-    const data = await axios.get("/getUserInfo");
-    setEmail(data.data.data.email);
-  };
 
   const getcontent = async () => {
     const data = await axios.get(`/getComment?id=${planId}&type=P`);
@@ -187,18 +179,6 @@ const CalendarPage = () => {
     });
   };
 
-  const changeName = (author) => {
-    const emailIdStr = author.split("@");
-    if (emailIdStr[0].length < 4) return author;
-    else {
-      const emailIdStrArr = [...emailIdStr[0]];
-      emailIdStrArr[1] = "*";
-      emailIdStrArr[2] = "*";
-      const result = "(" + emailIdStrArr.join("") + "@" + emailIdStr[1] + ")";
-      return result;
-    }
-  };
-
   return (
     <>
       {dateList === undefined ? (
@@ -213,8 +193,7 @@ const CalendarPage = () => {
                   <Styles.IntroText color={"true"}>{dateList.title}</Styles.IntroText>
                   <Styles.IntroDate color={"true"}>{dateList.date.split("~")[0] + " - " + dateList.date.split("~")[1]}</Styles.IntroDate>
                   <Styles.IntroNE>
-                    <Styles.IntroName color={"true"}>{dateList?.email.name}</Styles.IntroName>
-                    <Styles.IntroEmail color={"true"}>{changeName(dateList?.email.email)}</Styles.IntroEmail>
+                    <Styles.IntroName color={"true"}>{dateList?.email.nickname}</Styles.IntroName>
                   </Styles.IntroNE>
                 </Styles.IntroTitle>
               </>
@@ -224,8 +203,7 @@ const CalendarPage = () => {
                   <Styles.IntroText color={"false"}>{dateList.title}</Styles.IntroText>
                   <Styles.IntroDate color={"false"}>{dateList.date.split("~")[0] + " - " + dateList.date.split("~")[1]}</Styles.IntroDate>
                   <Styles.IntroNE>
-                    <Styles.IntroName color={"false"}>{dateList?.email.name}</Styles.IntroName>
-                    <Styles.IntroEmail color={"false"}>{changeName(dateList?.email.email)}</Styles.IntroEmail>
+                    <Styles.IntroName color={"false"}>{dateList?.email.nickname}</Styles.IntroName>
                   </Styles.IntroNE>
                 </Styles.IntroTitle>
               </>
@@ -236,7 +214,7 @@ const CalendarPage = () => {
               <Styles.ContentBox>
                 <Styles.ShareBtnBox>
                   {sessionStorage.getItem("access_token") !== null ? (
-                    email !== dateList.email.email ? (
+                    !dateList.mine ? (
                       <div style={{ height: "40px" }} />
                     ) : (
                       <Styles.ShareToggleBtn shared={dateList.type === 1} onClick={onShareBtn}>
@@ -334,7 +312,7 @@ const CalendarPage = () => {
                             <Styles.ReviewBox key={idx}>
                               <Styles.ReImage src={getProfileImageUrl(el.email.profileImg)} />
                               <Styles.RefirstBox>
-                                <Styles.ReName>{el?.email?.name}</Styles.ReName>
+                                <Styles.ReName>{el?.email?.nickname}</Styles.ReName>
                                 <Styles.ReDate>{el?.date}</Styles.ReDate>
                                 <Styles.ReContent>{el?.content}</Styles.ReContent>
                               </Styles.RefirstBox>

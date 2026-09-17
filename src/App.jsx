@@ -20,6 +20,7 @@ import FindPassPage from "./Pages/findPassPage";
 import ChangePassPage from "./Pages/changePassPage";
 import PrivacyPolicyPage from "./Pages/privacyPolicyPage";
 import TermsPage from "./Pages/termsPage";
+import NoticePage from "./Pages/noticePage";
 import ScrollToTop from "./scrollToTop";
 import { ConfirmProvider } from "./Common/ConfirmDialog";
 import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
@@ -126,6 +127,7 @@ const App = () => {
             <Route path="/changePass" element={<ChangePassPage />}/>
             <Route path="/privacyPolicy" element={<PrivacyPolicyPage />}/>
             <Route path="/terms" element={<TermsPage />}/>
+            <Route path="/notice" element={<NoticePage />}/>
             <Route path="/calendar" element={<CalendarPage/>}/>
             <Route path="/information" element={<InformationPage/>}/>
             <Route path="/travel" element={<TravelPage/>}/>

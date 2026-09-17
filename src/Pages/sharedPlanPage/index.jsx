@@ -135,7 +135,7 @@ const SharedPlanPage = () => {
                           onClick={() => {
                             infoMove(el);
                           }}>
-                          {el.email.name}
+                          {el.email.nickname}
                         </Styles.ContentBox>
                       </Styles.LikeListfontBox>
                     </Styles.ContentListBox>

@@ -13,6 +13,7 @@ const SignPage = () => {
   const [password, setPassword] = useState("");
   const [passwordCheck, setPasswordCheck] = useState("");
   const [name, setName] = useState("");
+  const [nickname, setNickname] = useState("");
   const [phone, setPhone] = useState("");
   const [birth, setBirth] = useState("");
   const [agreedToTerms, setAgreedToTerms] = useState(false);
@@ -22,6 +23,7 @@ const SignPage = () => {
   const [isPassword, setIsPassword] = useState(true);
   const [isPasswordConfirm, setIsPasswordConfirm] = useState(true);
   const [isName, setIsName] = useState(true);
+  const [isNickname, setIsNickname] = useState(true);
   const [isPhone, setIsPhone] = useState(true);
   const [isBirth, setIsBirth] = useState(true);
   //유효성 메세지
@@ -29,6 +31,7 @@ const SignPage = () => {
   const [passwordMessage, setPasswordMessage] = useState("");
   const [passwordConfirmMessage, setPasswordConfirmMessage] = useState("");
   const [nameMessage, setNameMessage] = useState("");
+  const [nicknameMessage, setNicknameMessage] = useState("");
   const [phoneMessage, setPhoneMessage] = useState("");
   const [birthMessage, setbirthMessage] = useState("");
 
@@ -45,7 +48,7 @@ const SignPage = () => {
     if (!agreedToTerms) {
       return toast.error("이용약관 및 개인정보 수집·이용에 동의해주세요.");
     }
-    if (isEmail && isPassword && isPasswordConfirm && isName && isPhone && isBirth) {
+    if (isEmail && isPassword && isPasswordConfirm && isName && isNickname && isPhone && isBirth) {
       try {
         const createHashedPassword = CryptoJS.SHA256(password).toString(CryptoJS.enc.Base64);
         const createHashedPasswordConfirm = CryptoJS.SHA256(passwordCheck).toString(CryptoJS.enc.Base64);
@@ -54,6 +57,7 @@ const SignPage = () => {
           password: createHashedPassword,
           passwordCheck: createHashedPasswordConfirm,
           name,
+          nickname,
           tel: phone,
           birth,
           profileImg: "",
@@ -113,6 +117,18 @@ const SignPage = () => {
     } else {
       setNameMessage("2~5 글자로 입력해주세요.");
       setIsName(false);
+    }
+  };
+
+  const onNickname = (e) => {
+    const nicknameCurrent = e.target.value;
+    setNickname(nicknameCurrent);
+    if (nicknameCurrent.length >= 2 && nicknameCurrent.length <= 10) {
+      setNicknameMessage("올바른 닉네임 형식입니다.");
+      setIsNickname(true);
+    } else {
+      setNicknameMessage("2~10 글자로 입력해주세요.");
+      setIsNickname(false);
     }
   };
 
@@ -180,6 +196,12 @@ const SignPage = () => {
           이름
           <Styles.Input placeholder="이름을 입력해주세요." onChange={(e) => onName(e)} value={name || ""} />
           <Styles.WarningMessage check={isName}>{nameMessage}</Styles.WarningMessage>
+        </Styles.SignText2>
+
+        <Styles.SignText2>
+          닉네임
+          <Styles.Input placeholder="다른 사람에게 보여질 닉네임을 입력해주세요." onChange={(e) => onNickname(e)} value={nickname || ""} />
+          <Styles.WarningMessage check={isNickname}>{nicknameMessage}</Styles.WarningMessage>
         </Styles.SignText2>
 
         <Styles.SignText2>

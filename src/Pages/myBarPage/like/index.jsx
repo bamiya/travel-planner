@@ -64,7 +64,7 @@ const Like = () => {
             ...prev,
             {
               title: data.data.data.title,
-              author: `${data.data.data.email.name}(${data.data.data.email.email})`,
+              author: data.data.data.email.nickname,
               date: data.data.data.date,
               img: getPlanThumbnail(data.data.data.plan),
               id: data.data.data.id,
@@ -129,19 +129,6 @@ const Like = () => {
     }
   };
 
-  const changeName = (author) => {
-    const nameStr = author.split("(");
-    const emailIdStr = nameStr[1].split("@");
-    if (emailIdStr[0].length < 4) return author;
-    else {
-      const emailIdStrArr = [...emailIdStr[0]];
-      emailIdStrArr[1] = "*";
-      emailIdStrArr[2] = "*";
-      const result = nameStr[0] + "(" + emailIdStrArr.join("") + "@" + emailIdStr[1];
-      return result;
-    }
-  };
-
   return (
     <>
       <MyPage likeAction="like" />
@@ -162,7 +149,7 @@ const Like = () => {
                       <Styles.ContentText onClick={() => navigate(`/calendar?id=${el.id}`)}>{el.title}</Styles.ContentText>
                       <Styles.AddressText>{el.date}</Styles.AddressText>
                       <Styles.CardFooterRow>
-                        <Styles.NameText>{changeName(el?.author)}</Styles.NameText>
+                        <Styles.NameText>{el?.author}</Styles.NameText>
                         <Styles.HeartBtn onClick={() => likeCancel(el.id, "P")}>
                           <HeartFilled />
                         </Styles.HeartBtn>

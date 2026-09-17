@@ -236,7 +236,7 @@ const MainPage = () => {
                               )}
                               <Styles.SliderInfoText>{el.likeCount}</Styles.SliderInfoText>
                             </Styles.SliderInfoBox>
-                            <Styles.SliderInfoText>{el.email.name}</Styles.SliderInfoText>
+                            <Styles.SliderInfoText>{el.email.nickname}</Styles.SliderInfoText>
                           </Styles.SliderInfoBottomBox>
                         </Styles.SliderInfo>
                       </Styles.SliderBox>
