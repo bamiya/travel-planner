@@ -1,20 +1,34 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
-    <meta
-      name="TRAVEL-PLANNER"
-    />
-    <link rel="manifest" href="data:application/json;base64,ew0KICAic2hvcnRfbmFtZSI6ICJSZWFjdCBBcHAiLA0KICAibmFtZSI6ICJDcmVhdGUgUmVhY3QgQXBwIFNhbXBsZSIsDQogICJpY29ucyI6IFtdLA0KICAic3RhcnRfdXJsIjogIi4iLA0KICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwNCiAgInRoZW1lX2NvbG9yIjogIiMwMDAwMDAiLA0KICAiYmFja2dyb3VuZF9jb2xvciI6ICIjZmZmZmZmIg0KfQ0K" />
+    <meta name="description" content="다양한 관광지 데이터를 통해 여행 계획을 세우고, 관광지를 찜하고 좋아요를 남겨보세요. 나만의 여행 플랜을 만들고 다른 사람들과 공유할 수 있는 여행 플래너입니다." />
+
+    <!-- 카카오톡/페이스북 등에 링크를 공유했을 때 뜨는 미리보기용 태그 -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="TRAVEL PLANNER" />
+    <meta property="og:title" content="TRAVEL PLANNER" />
+    <meta property="og:description" content="다양한 관광지 데이터를 통해 여행 계획을 세우고, 관광지를 찜하고 좋아요를 남겨보세요." />
+    <meta property="og:image" content="https://bamiya.github.io/travel-planner/assets/main_img1.png" />
+    <meta property="og:url" content="https://bamiya.github.io/travel-planner/" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="TRAVEL PLANNER" />
+    <meta name="twitter:description" content="다양한 관광지 데이터를 통해 여행 계획을 세우고, 관광지를 찜하고 좋아요를 남겨보세요." />
+    <meta name="twitter:image" content="https://bamiya.github.io/travel-planner/assets/main_img1.png" />
+
+    <link rel="manifest" href="/travel-planner/manifest.json" />
     <link rel="icon" href="logo_web.ico" />
-    <title>TRAVEL-PLANNER</title>
-    <script type="module" crossorigin src="/travel-planner/assets/index.34929d3a.js"></script>
-    <link rel="stylesheet" href="/travel-planner/assets/index.cdc9e1fa.css">
+    <!-- Pretendard: 국내 여행 서비스(무신사/에어비앤비 코리아 등)에서 널리 쓰이는, 한글에 맞춰진 깔끔한 서체 -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+    <title>TRAVEL PLANNER</title>
+    <script type="module" crossorigin src="/travel-planner/assets/index.d1d5a0af.js"></script>
+    <link rel="stylesheet" href="/travel-planner/assets/index.0bfb5f79.css">
   </head>
   <body>
-    <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=&libraries=services"></script>
+    <script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=&submodules=geocoder"></script>
     <div id="root"></div>
     
   </body>
