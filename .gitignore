@@ -10,6 +10,8 @@
 
 # production
 /build
+# 빌드 결과물 - 빌드 시점 환경변수(API 키 등)가 그대로 박히므로 커밋하지 않는다.
+/dist
 
 # misc
 .env
